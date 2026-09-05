@@ -30,8 +30,20 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 		if (!response.ok) {
 			console.warn(`[PumpFun] API returned ${response.status}: ${response.statusText}. Falling back to DexScreener for real data...`);
 			
-			// Fallback ke DexScreener (API Publik tanpa halangan Cloudflare) agar tetap dapat data token asli (bukan dummy)
-			const dexResponse = await fetch('https://api.dexscreener.com/latest/dex/search?q=solana', {
+			// Fallback ke DexScreener (API Publik tanpa halangan Cloudflare) agar tetap dapat data token asli
+			
+			// 1. Dapatkan daftar alamat token yang BENAR-BENAR TERBARU rilis detik ini
+			const profilesRes = await fetch('https://api.dexscreener.com/token-profiles/latest/v1', { signal: AbortSignal.timeout(5000) });
+			if (!profilesRes.ok) return [];
+			const profilesData = await profilesRes.json();
+			if (!Array.isArray(profilesData)) return [];
+			
+			// 2. Ambil 30 address terbaru
+			const addresses = profilesData.slice(0, 30).map((p: any) => p.tokenAddress).filter(Boolean);
+			if (addresses.length === 0) return [];
+
+			// 3. Batch request untuk mendapatkan Nama Asli & Simbol token tersebut
+			const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addresses.join(',')}`, {
 				signal: AbortSignal.timeout(5000)
 			});
 			if (!dexResponse.ok) return [];
@@ -39,13 +51,23 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			const dexData = await dexResponse.json();
 			if (!dexData.pairs || !Array.isArray(dexData.pairs)) return [];
 			
-			return dexData.pairs.slice(0, 30).map((pair: any) => ({
-				mint: pair.baseToken.address,
-				ticker: pair.baseToken.symbol || 'UNKNOWN',
-				name: pair.baseToken.name || 'Unknown Token',
-				imageUrl: pair.info?.imageUrl || null,
-				createdAt: new Date()
-			}));
+			const seenMints = new Set();
+			const result: IngestedToken[] = [];
+			
+			for (const pair of dexData.pairs) {
+				const mint = pair.baseToken.address;
+				if (!seenMints.has(mint)) {
+					seenMints.add(mint);
+					result.push({
+						mint: mint,
+						ticker: pair.baseToken.symbol || 'UNKNOWN',
+						name: pair.baseToken.name || 'Unknown Token',
+						imageUrl: pair.info?.imageUrl || null,
+						createdAt: new Date()
+					});
+				}
+			}
+			return result.slice(0, 30);
 		}
 
 		const data = await response.json();
