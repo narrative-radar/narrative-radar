@@ -4,7 +4,7 @@ import { generateClusterLabel } from './labeling.service.js';
 import type { Token, Cluster } from '../db/schema/index.js';
 
 // Threshold: seberapa mirip vektor token baru dengan centroid agar bisa masuk cluster
-const SIMILARITY_THRESHOLD = 0.82;
+const SIMILARITY_THRESHOLD = 0.75;
 // Threshold untuk menandai cluster sebagai "breakout"
 const BREAKOUT_MEMBER_MIN = 5;
 const BREAKOUT_GROWTH_MIN = 50.0; 

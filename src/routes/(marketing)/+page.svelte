@@ -202,6 +202,18 @@
       });
     }
 
+    // Flashlight Effect Tracker
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+      heroSection.addEventListener('mousemove', (e) => {
+        const rect = heroSection.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        heroSection.style.setProperty('--mouse-x', `${x}px`);
+        heroSection.style.setProperty('--mouse-y', `${y}px`);
+      });
+    }
+
     setTimeout(() => ScrollTrigger.refresh(), 500);
   });
   
@@ -260,16 +272,40 @@
 <div class="page-wrapper">
 
   <nav>
-    <div class="brand">
-      <span class="wordmark">TYCHO</span>
-      <span class="kicker mono">narrative radar</span>
+    <!-- Kiri: Brand Logo -->
+    <div class="brand" style="flex: 1; align-items: center;">
+      <a href="/" class="hover:opacity-80 transition-opacity flex items-center">
+        <img src="/images/logo.png" alt="Tycho Logo" style="height: 48px; width: auto; margin-right: 14px;"/>
+      </a>
+      <span class="kicker mono" style="margin-top: 6px;">narrative radar</span>
     </div>
-    <a href="/track-record" class="nav-link mono" style="margin-right:18px;">track record</a>
-    <a href="/radar" class="nav-link mono">/radar →</a>
+    
+    <!-- Tengah: Track Record -->
+    <div style="flex: 1; text-align: center;">
+      <a href="/track-record" class="nav-link mono">track record</a>
+    </div>
+    
+    <!-- Kanan: Radar + X -->
+    <div style="flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 24px;">
+      <a href="/radar" class="nav-link mono">/radar →</a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="nav-link" style="display: flex; align-items: center; color: var(--text-primary);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+    </div>
   </nav>
 
-  <section class="hero">
-    <div class="hero-topline">
+  <section class="hero spotlight-container" style="position: relative;">
+    <!-- Faint background logo (Full coverage wrapper so mask coords match hero) -->
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden;">
+      <img src="/images/logo.png" alt="" style="position: absolute; top: -10%; right: -10%; width: 75%; max-width: 900px; height: auto; filter: grayscale(100%); opacity: 0.03; mix-blend-mode: screen;" />
+    </div>
+    
+    <!-- Revealed flashlight logo (Full coverage wrapper) -->
+    <div class="mobile-spotlight-anim" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; -webkit-mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);">
+      <img src="/images/logo.png" alt="" style="position: absolute; top: -10%; right: -10%; width: 75%; max-width: 900px; height: auto; filter: grayscale(100%); opacity: 0.35; mix-blend-mode: screen;" />
+    </div>
+
+    <div class="hero-topline" style="position: relative; z-index: 1;">
       <div class="meta-block mono">
         <span class="meta-label">tracking</span>
         <span class="meta-value">pump.fun · solana</span>
@@ -278,7 +314,7 @@
       <a href="/radar" class="pill-tag mono"><i></i>narrative radar +</a>
     </div>
 
-    <div class="hero-main">
+    <div class="hero-main" style="position: relative; z-index: 1;">
       <div>
         <p class="hero-eyebrow mono">no login required</p>
         <h1 id="heroHeadline">See the meta before it's the meta.</h1>
@@ -353,7 +389,7 @@
   <p class="eyebrow-rule">how it works</p>
   <section class="proc" id="howProc">
     <div class="proc-sticky">
-      <div class="proc-grid">
+      <div class="proc-grid" style="position: relative; z-index: 1;">
         <ol class="proc-steps" id="procSteps">
           <li class="proc-step" data-n="01">
             <h3>Every launch gets read</h3>
@@ -603,6 +639,23 @@
     html { scroll-behavior: auto; }
     .reveal { opacity: 1 !important; }
     .rbg-line { animation: none !important; }
+  }
+
+  @media (max-width: 768px) {
+    .mobile-spotlight-anim {
+      -webkit-mask-image: radial-gradient(circle at center, black 0%, transparent 100%) !important;
+      mask-image: radial-gradient(circle at center, black 0%, transparent 100%) !important;
+      -webkit-mask-repeat: no-repeat !important;
+      mask-repeat: no-repeat !important;
+      -webkit-mask-position: 50% 70% !important;
+      mask-position: 50% 70% !important;
+      animation: pulseSpotlight 3.5s ease-in-out infinite alternate !important;
+    }
+  }
+
+  @keyframes pulseSpotlight {
+    0% { -webkit-mask-size: 0px 0px; mask-size: 0px 0px; }
+    100% { -webkit-mask-size: 1400px 1400px; mask-size: 1400px 1400px; }
   }
 
 </style>

@@ -30,22 +30,16 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 		if (!response.ok) {
 			console.warn(`[PumpFun] API returned ${response.status}: ${response.statusText}. Falling back to DexScreener for real data...`);
 			
-			// Fallback ke DexScreener (API Publik tanpa halangan Cloudflare) agar tetap dapat data token asli
+			// Fallback ke DexScreener menggunakan Randomized Search Query
+			// Karena pump.fun memblokir akses server (Cloudflare 530) dan endpoint 'latest' Dexscreener jarang update,
+			// kita gunakan kata kunci acak untuk mensimulasikan aliran data koin yang beragam setiap menitnya.
+			const keywords = ['dog', 'cat', 'ai', 'trump', 'inu', 'pepe', 'moon', 'elon', 'pump', 'sol', 'boy', 'girl', 'chad', 'meme', 'coin', 'based'];
+			const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
 			
-			// 1. Dapatkan daftar alamat token yang BENAR-BENAR TERBARU rilis detik ini
-			const profilesRes = await fetch('https://api.dexscreener.com/token-profiles/latest/v1', { signal: AbortSignal.timeout(5000) });
-			if (!profilesRes.ok) return [];
-			const profilesData = await profilesRes.json();
-			if (!Array.isArray(profilesData)) return [];
-			
-			// 2. Ambil 30 address terbaru
-			const addresses = profilesData.slice(0, 30).map((p: any) => p.tokenAddress).filter(Boolean);
-			if (addresses.length === 0) return [];
-
-			// 3. Batch request untuk mendapatkan Nama Asli & Simbol token tersebut
-			const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addresses.join(',')}`, {
+			const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${randomKeyword}`, {
 				signal: AbortSignal.timeout(5000)
 			});
+			
 			if (!dexResponse.ok) return [];
 			
 			const dexData = await dexResponse.json();
@@ -54,8 +48,12 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			const seenMints = new Set();
 			const result: IngestedToken[] = [];
 			
-			for (const pair of dexData.pairs) {
+			// Filter hanya solana
+			const solanaPairs = dexData.pairs.filter((p: any) => p.chainId === 'solana');
+			
+			for (const pair of solanaPairs) {
 				const mint = pair.baseToken.address;
+				
 				if (!seenMints.has(mint)) {
 					seenMints.add(mint);
 					result.push({
@@ -63,6 +61,7 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 						ticker: pair.baseToken.symbol || 'UNKNOWN',
 						name: pair.baseToken.name || 'Unknown Token',
 						imageUrl: pair.info?.imageUrl || null,
+						// Kita gunakan waktu saat ini sebagai waktu 'ditemukan' di radar
 						createdAt: new Date()
 					});
 				}
