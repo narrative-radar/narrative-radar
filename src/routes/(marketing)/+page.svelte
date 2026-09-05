@@ -6,6 +6,14 @@
   import { MotionPathPlugin } from 'gsap/dist/MotionPathPlugin';
   import Lenis from '@studio-freight/lenis';
 
+  let caToCopy = "example";
+  let copiedCA = false;
+  function copyCA() {
+    navigator.clipboard.writeText(caToCopy);
+    copiedCA = true;
+    setTimeout(() => copiedCA = false, 2000);
+  }
+
   // Custom ScrambleText implementation (pengganti premium plugin)
   function scrambleText(element, finalString, durationMs = 1100, delayMs = 150) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -191,14 +199,21 @@
         duration: 3.2, repeat: -1, ease: "sine.inOut", delay: 1.8
       });
 
-      // Semua section reveal in/out
-      gsap.utils.toArray(".reveal").forEach((el) => {
-        gsap.fromTo(el,
-          { opacity: 0, y: 26 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-            // play saat masuk, reverse saat keluar ke atas, play lagi saat masuk, reverse saat turun mentok
-            scrollTrigger: { trigger: el, start: "top 85%", end: "bottom top", toggleActions: "play reverse play reverse" } }
-        );
+      // Semua section reveal in/out dengan multi-arah
+      const revealElements = [
+        { selector: ".reveal-up", props: { y: 30, x: 0 } },
+        { selector: ".reveal-left", props: { x: -40, y: 0 } },
+        { selector: ".reveal-right", props: { x: 40, y: 0 } }
+      ];
+
+      revealElements.forEach(({selector, props}) => {
+        gsap.utils.toArray(selector).forEach((el) => {
+          gsap.fromTo(el,
+            { opacity: 0, ...props },
+            { opacity: 1, x: 0, y: 0, duration: 0.8, ease: "power2.out",
+              scrollTrigger: { trigger: el, start: "top 85%", end: "bottom top", toggleActions: "play reverse play reverse" } }
+          );
+        });
       });
     }
 
@@ -309,13 +324,22 @@
       <div class="meta-block mono">
         <span class="meta-label">tracking</span>
         <span class="meta-value">pump.fun · solana</span>
-        <span class="meta-value">live</span>
       </div>
       <a href="/radar" class="pill-tag mono"><i></i>narrative radar +</a>
     </div>
 
     <div class="hero-main" style="position: relative; z-index: 1;">
       <div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+          <span class="pill-tag mono" style="padding: 4px 10px; font-size: 11px; border-color: var(--accent); color: var(--text-primary); cursor: default;">
+            <i style="background: var(--state-breakout); margin-right: 6px;"></i>live
+          </span>
+          <button type="button" class="ca-copy-btn mono" onclick={copyCA}>
+            <span style="opacity: 0.5;">CA:</span>
+            <span>{caToCopy.slice(0,6)}...{caToCopy.slice(-4)}</span>
+            <span class="copy-feedback" class:active={copiedCA}>{copiedCA ? 'copied!' : 'copy'}</span>
+          </button>
+        </div>
         <p class="hero-eyebrow mono">no login required</p>
         <h1 id="heroHeadline">See the meta before it's the meta.</h1>
         <p>Every new Pump.fun launch gets read for what it means, not what it costs, then grouped with the others that mean the same thing. Most groups stay quiet. Watch for the one that doesn't.</p>
@@ -366,20 +390,20 @@
   </div>
 
   <p class="eyebrow-rule">at a glance</p>
-  <div class="stats reveal">
+  <div class="stats reveal-up">
     <div class="stat"><div class="stat-n mono">3</div><p>signals read per launch — name, ticker, image</p></div>
     <div class="stat"><div class="stat-n mono">&lt;5<span style="font-size:0.5em">min</span></div><p>from launch to grouped into a theme</p></div>
     <div class="stat"><div class="stat-n mono">0</div><p>logins required to watch the radar</p></div>
   </div>
 
-  <section class="section reveal">
+  <section class="section reveal-left">
     <p class="section-label mono"><svg viewBox="0 0 40 14" width="40" height="14"><polyline points="0,10 10,9 20,7 30,8 40,4" fill="none" stroke="currentColor" stroke-width="1"/></svg>what it reads</p>
     <div class="section-body">
       <p>Every launch is just three small signals — a name, a ticker, an image. Alone, none of them mean much. Tycho reads all of them anyway, the moment they go live, and starts asking one question: what does this look like it's part of.</p>
     </div>
   </section>
 
-  <section class="section reveal">
+  <section class="section reveal-right">
     <p class="section-label mono"><svg viewBox="0 0 40 14" width="40" height="14"><polyline points="0,12 10,10 20,11 30,5 40,3" fill="none" stroke="currentColor" stroke-width="1"/></svg>what forms</p>
     <div class="section-body">
       <p>Most groups stay small — a handful of tokens, a passing joke, gone within the hour. A few don't stop. They widen, they brighten, and by the time everyone's calling it a meta, Tycho already has an hour of its shape on record.</p>
@@ -404,34 +428,53 @@
             <p>A climbing trace means a narrative is forming, not a passing joke.</p>
           </li>
         </ol>
-        <div class="proc-stage" id="procStage">
-          <div class="proc-panel" data-panel="0">
-            <span class="proc-tag mono">reading</span>
-            <svg viewBox="0 0 220 160" width="70%">
-              <polyline id="procReadLine" points="20,90 70,88 120,91" fill="none" stroke="var(--state-quiet)" stroke-width="1.6" stroke-linecap="round"/>
-              <circle cx="120" cy="91" r="3.5" fill="var(--state-quiet)" id="procReadDot"/>
-            </svg>
+        <div class="proc-stage" id="procStage" style="position: relative; overflow: hidden; display: flex; flex-direction: column;">
+          
+          <!-- Radar Header -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--divider); font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; background: rgba(0,0,0,0.2); z-index: 2;">
+            <span>Narrative.Radar_OS</span>
+            <span style="display: flex; align-items: center; gap: 6px;"><i style="width: 6px; height: 6px; border-radius: 50%; background: var(--state-breakout); animation: pulseRadarDot 2s infinite;"></i> LIVE TRACKING</span>
           </div>
-          <div class="proc-panel" data-panel="1">
-            <span class="proc-tag mono">grouping</span>
-            <svg viewBox="0 0 220 160" width="70%">
-              <line class="proc-group-line" x1="60" y1="50" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
-              <line class="proc-group-line" x1="160" y1="55" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
-              <line class="proc-group-line" x1="55" y1="120" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
-              <line class="proc-group-line" x1="155" y1="115" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
-              <circle class="proc-group-dot" cx="60" cy="50" r="4" fill="var(--state-active)"/>
-              <circle class="proc-group-dot" cx="160" cy="55" r="4" fill="var(--state-active)"/>
-              <circle class="proc-group-dot" cx="55" cy="120" r="4" fill="var(--state-active)"/>
-              <circle class="proc-group-dot" cx="155" cy="115" r="4" fill="var(--state-active)"/>
-              <circle cx="110" cy="85" r="6" fill="var(--state-active)" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="proc-panel" data-panel="2">
-            <span class="proc-tag mono">breaking out</span>
-            <svg viewBox="0 0 220 160" width="70%">
-              <polyline id="procBreakLine" points="10,130 40,126 70,118 100,98 130,72 160,48 190,32" fill="none" stroke="var(--state-breakout)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="190" cy="32" r="4" fill="var(--state-breakout)" id="procBreakDot"/>
-            </svg>
+          
+          <!-- Background Grid & Sweep -->
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px); background-size: 24px 24px; z-index: 0; pointer-events: none;"></div>
+          <div class="radar-sweep" style="position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent, rgba(62,191,176,0.1) 100%); border-bottom: 1px solid rgba(62,191,176,0.4); z-index: 0; pointer-events: none; animation: scanRadar 4s linear infinite;"></div>
+          
+          <!-- Corner Reticles -->
+          <div style="position: absolute; top: 46px; left: 14px; width: 12px; height: 12px; border-top: 1px solid var(--text-tertiary); border-left: 1px solid var(--text-tertiary); opacity: 0.6; z-index: 2;"></div>
+          <div style="position: absolute; top: 46px; right: 14px; width: 12px; height: 12px; border-top: 1px solid var(--text-tertiary); border-right: 1px solid var(--text-tertiary); opacity: 0.6; z-index: 2;"></div>
+          <div style="position: absolute; bottom: 14px; left: 14px; width: 12px; height: 12px; border-bottom: 1px solid var(--text-tertiary); border-left: 1px solid var(--text-tertiary); opacity: 0.6; z-index: 2;"></div>
+          <div style="position: absolute; bottom: 14px; right: 14px; width: 12px; height: 12px; border-bottom: 1px solid var(--text-tertiary); border-right: 1px solid var(--text-tertiary); opacity: 0.6; z-index: 2;"></div>
+
+          <div style="position: relative; flex: 1; width: 100%; z-index: 1;">
+            <div class="proc-panel" data-panel="0">
+              <span class="proc-tag mono">reading</span>
+              <svg viewBox="0 0 220 160" width="70%">
+                <polyline id="procReadLine" points="20,90 70,88 120,91" fill="none" stroke="var(--state-quiet)" stroke-width="1.6" stroke-linecap="round"/>
+                <circle cx="120" cy="91" r="3.5" fill="var(--state-quiet)" id="procReadDot"/>
+              </svg>
+            </div>
+            <div class="proc-panel" data-panel="1">
+              <span class="proc-tag mono">grouping</span>
+              <svg viewBox="0 0 220 160" width="70%">
+                <line class="proc-group-line" x1="60" y1="50" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
+                <line class="proc-group-line" x1="160" y1="55" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
+                <line class="proc-group-line" x1="55" y1="120" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
+                <line class="proc-group-line" x1="155" y1="115" x2="110" y2="85" stroke="var(--divider)" stroke-width="1"/>
+                <circle class="proc-group-dot" cx="60" cy="50" r="4" fill="var(--state-active)"/>
+                <circle class="proc-group-dot" cx="160" cy="55" r="4" fill="var(--state-active)"/>
+                <circle class="proc-group-dot" cx="55" cy="120" r="4" fill="var(--state-active)"/>
+                <circle class="proc-group-dot" cx="155" cy="115" r="4" fill="var(--state-active)"/>
+                <circle cx="110" cy="85" r="6" fill="var(--state-active)" opacity="0.85"/>
+              </svg>
+            </div>
+            <div class="proc-panel" data-panel="2">
+              <span class="proc-tag mono">breaking out</span>
+              <svg viewBox="0 0 220 160" width="70%">
+                <polyline id="procBreakLine" points="10,130 40,126 70,118 100,98 130,72 160,48 190,32" fill="none" stroke="var(--state-breakout)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="190" cy="32" r="4" fill="var(--state-breakout)" id="procBreakDot"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -444,7 +487,7 @@
     </svg>
   </div>
 
-  <section class="section reveal">
+  <section class="section reveal-left">
     <p class="section-label mono">track record</p>
     <div class="section-body">
       <p>Not just what's forming now — what already did. Every theme Tycho ever flagged as breaking out stays on public record, cooled or not.</p>
@@ -463,14 +506,14 @@
     </svg>
   </div>
 
-  <section class="section reveal">
+  <section class="section reveal-right">
     <p class="section-label mono">who it's for</p>
     <div class="section-body">
       <p>Built for the people who'd rather catch a narrative on the way up than read about it after it's already named. No history to dig through, no wallets to track — just what's forming, right now.</p>
     </div>
   </section>
 
-  <section class="section reveal">
+  <section class="section reveal-left">
     <p class="section-label mono"><svg viewBox="0 0 40 14" width="40" height="14"><polyline points="0,7 10,8 20,4 30,6 40,2" fill="none" stroke="currentColor" stroke-width="1"/></svg>the artifact</p>
     <div class="section-body">
       <p>Every hour, the loudest shapes get compressed into one card — the themes that grew, and by how much. Posted automatically the moment something breaks out, not just when someone remembers to share it.</p>
@@ -488,7 +531,7 @@
     </div>
   </section>
 
-  <section class="final-cta reveal">
+  <section class="final-cta reveal-up">
     <a href="/radar" class="cta-primary">Open the radar</a>
     <a href="/radar" class="cta-secondary mono">tycho.xyz/radar →</a>
   </section>
@@ -633,11 +676,16 @@
 
   .final-cta { max-width: 1180px; margin: 0 auto; padding: 10px 32px 100px 62px; }
 
-  .reveal { opacity: 0; }
+  .reveal-up, .reveal-left, .reveal-right { opacity: 0; }
+
+  .ca-copy-btn { display: flex; align-items: center; gap: 8px; font-size: 11.5px; background: transparent; border: 1px solid var(--divider); padding: 4px 12px; border-radius: 20px; cursor: pointer; color: var(--text-primary); transition: all 0.2s; }
+  .ca-copy-btn:hover { border-color: var(--accent); }
+  .copy-feedback { color: var(--accent); opacity: 0.7; margin-left: 2px; }
+  .copy-feedback.active { opacity: 1; font-weight: 600; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .reveal { opacity: 1 !important; }
+    .reveal-up, .reveal-left, .reveal-right { opacity: 1 !important; }
     .rbg-line { animation: none !important; }
   }
 
@@ -656,6 +704,16 @@
   @keyframes pulseSpotlight {
     0% { -webkit-mask-size: 0px 0px; mask-size: 0px 0px; }
     100% { -webkit-mask-size: 1400px 1400px; mask-size: 1400px 1400px; }
+  }
+
+  @keyframes pulseRadarDot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes scanRadar {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(200%); }
   }
 
 </style>
