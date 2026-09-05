@@ -1,0 +1,13 @@
+node_modules/
+.svelte-kit/
+build/
+.vercel/
+.env
+*.env.local
+
+# Drizzle generated migrations can be committed (they're migration history)
+# Uncomment below if you prefer to gitignore them:
+# drizzle/
+
+# macOS
+.DS_Store
