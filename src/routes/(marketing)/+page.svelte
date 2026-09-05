@@ -241,6 +241,17 @@
 
 <svelte:head>
   <title>Tycho - Narrative Radar</title>
+  <meta name="description" content="See the meta before it's the meta. Tracking pump.fun and Solana narratives in real-time." />
+  
+  <meta property="og:title" content="Tycho Narrative Radar" />
+  <meta property="og:description" content="See the meta before it's the meta. Tracking pump.fun and Solana narratives in real-time." />
+  <meta property="og:image" content="https://tycho.xyz/images/og-image.jpg" />
+  <meta property="og:type" content="website" />
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Tycho Narrative Radar" />
+  <meta name="twitter:description" content="See the meta before it's the meta. Tracking pump.fun and Solana narratives in real-time." />
+  <meta name="twitter:image" content="https://tycho.xyz/images/og-image.jpg" />
 </svelte:head>
 
 
