@@ -1,6 +1,6 @@
 <script lang="ts">
   let mint = $state('');
-  let status = $state<'idle' | 'loading' | 'found' | 'queued' | 'not_found'>('idle');
+  let status = $state<'idle' | 'loading' | 'found' | 'processing' | 'not_found'>('idle');
   let resultMsg = $state('');
   let clusterInfo = $state<any>(null);
 
@@ -16,12 +16,12 @@
       if (data.status === 'found') {
         status = 'found';
         clusterInfo = data.cluster;
-      } else if (data.status === 'queued') {
-        status = 'queued';
+      } else if (data.status === 'processing') {
+        status = 'processing';
         resultMsg = data.message;
       } else {
         status = 'not_found';
-        resultMsg = data.message || "Not clustered yet — this token may be too new, or hasn't been grouped into a theme.";
+        resultMsg = data.message || "Not detected on radar yet. If this just launched, please check back in a few minutes.";
       }
     } catch (e) {
       status = 'not_found';
@@ -54,11 +54,11 @@
       <strong>{mint.slice(0,6)}...{mint.slice(-4)}</strong> is part of <strong>{clusterInfo.label || 'Unknown Theme'}</strong> — {Number(clusterInfo.growthRate) > 0 ? '+' : ''}{clusterInfo.growthRate}%. 
       <button class="lr-link" onclick={() => window.location.href = `/radar?cluster=${clusterInfo.id}`}>view the cluster →</button>
     </div>
-  {:else if status === 'queued'}
-    <div class="lookup-result show queued">
+  {:else if status === 'processing'}
+    <div class="lookup-result show processing">
       <span class="inline-flex items-center gap-[6px] mb-1">
         <i class="w-[7px] h-[7px] rounded-full bg-[var(--state-fast)] animate-pulse"></i>
-        <strong>Added to Priority Queue</strong>
+        <strong>On Radar Queue</strong>
       </span>
       <br />
       {resultMsg}
@@ -88,7 +88,7 @@
   .lookup-result { margin-top: 10px; max-width: 480px; padding: 11px 14px; border-radius: 4px; border: 1px solid var(--divider, rgba(255, 255, 255, 0.08)); background: var(--surface, #0a0d12); font-size: 12.5px; display: none; line-height: 1.5; }
   .lookup-result.show { display: block; animation: fadeIn 0.3s ease; }
   .lookup-result.found { border-color: var(--state-active, #3ebfb0); }
-  .lookup-result.queued { border-color: var(--state-fast, #e0a83e); }
+  .lookup-result.processing { border-color: var(--state-fast, #e0a83e); }
   .lookup-result .lr-link { color: var(--accent, #e0a83e); background: none; border: none; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
   
   @keyframes fadeIn {
