@@ -6,10 +6,8 @@
 	import SignalList from '$lib/features/radar/components/SignalList.svelte';
 	import TokenLookup from '$lib/features/radar/components/TokenLookup.svelte';
 	import gsap from 'gsap';
-	import ScrambleTextPlugin from 'gsap/dist/ScrambleTextPlugin';
-
-	gsap.registerPlugin(ScrambleTextPlugin);
-
+	
+	
 	const clustersQuery = createQuery(() => ({
 		queryKey: ['clusters_dashboard'],
 		queryFn: async () => {
@@ -19,6 +17,27 @@
 		},
 		refetchInterval: 15000 // 15s instead of 5s to be safe
 	}));
+
+	
+	function scrambleText(element, finalString, durationMs = 1100, delayMs = 150) {
+		const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		const totalFrames = Math.round((durationMs / 1000) * 60);
+		let frame = 0;
+		setTimeout(() => {
+			const animate = () => {
+				let output = "";
+				const progress = frame / totalFrames;
+				for (let i = 0; i < finalString.length; i++) {
+					if (finalString[i] === " " || finalString[i] === ".") { output += finalString[i]; continue; }
+					if (i < finalString.length * progress) { output += finalString[i]; } 
+					else { output += chars[Math.floor(Math.random() * chars.length)]; }
+				}
+				element.textContent = output;
+				if (frame < totalFrames) { frame++; requestAnimationFrame(animate); }
+			};
+			animate();
+		}, delayMs);
+	}
 
 	let isDetailOpen = $state(false);
 	let selectedThemeId = $state<string | null>(null);
@@ -62,11 +81,7 @@
 		const titleEl = document.getElementById("dashTitle");
 		if (titleEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 			const text = titleEl.innerText;
-			gsap.to(titleEl, {
-				duration: 1.1,
-				delay: 0.1,
-				scrambleText: { text, chars: "upperCase", speed: 0.5, revealDelay: 0.2 }
-			});
+			scrambleText(titleEl, text, 1100, 100);
 		}
 	});
 
