@@ -5,6 +5,7 @@
   import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
   import { MotionPathPlugin } from 'gsap/dist/MotionPathPlugin';
   import Lenis from '@studio-freight/lenis';
+  import TokenLookup from '$lib/features/radar/components/TokenLookup.svelte';
 
   let caToCopy = "example";
   let copiedCA = false;
@@ -355,20 +356,8 @@
         <h1 id="heroHeadline">See the meta before it's the meta.</h1>
         <p>Every new Pump.fun launch gets read for what it means, not what it costs, then grouped with the others that mean the same thing. Most groups stay quiet. Watch for the one that doesn't.</p>
         <div class="mt-[10px]">
-          <form onsubmit={(e) => { e.preventDefault(); window.location.href = '/radar'; }} class="flex flex-col gap-[8px]">
-            <label for="ca-scan" class="text-[11px] font-[var(--font-mono)] text-[var(--text-tertiary)] uppercase tracking-[0.1em]">Test The Radar (Paste CA)</label>
-            <div class="flex items-center gap-[12px]">
-              <input 
-                type="text" 
-                id="ca-scan" 
-                placeholder="Paste pump.fun or SOL contract address..." 
-                class="bg-[var(--bg)] border border-[var(--divider)] rounded-[4px] px-[14px] py-[11px] text-[13px] text-[var(--text-primary)] font-[var(--font-mono)] w-[320px] max-w-full focus:outline-none focus:border-[var(--accent)] transition-colors"
-                autocomplete="off"
-              />
-              <button type="submit" class="cta-primary cursor-pointer border-none m-0">Analyze</button>
-            </div>
-            <a href="/radar" class="cta-secondary mono !ml-0 mt-[12px] opacity-70 hover:opacity-100">or just open /radar →</a>
-          </form>
+          <TokenLookup />
+          <a href="/radar" class="cta-secondary mono !ml-0 opacity-70 hover:opacity-100" style="display: block; margin-top: -12px;">or just open /radar →</a>
         </div>
       </div>
 

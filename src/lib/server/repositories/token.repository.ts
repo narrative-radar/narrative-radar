@@ -147,3 +147,14 @@ export async function getRecentTokens(limit = 10): Promise<Token[]> {
 export async function setTokenStatus(id: string, status: TokenStatus): Promise<void> {
 	await db.update(tokens).set({ status }).where(eq(tokens.id, id));
 }
+
+/**
+ * Get count of tokens tracked today (since midnight UTC).
+ */
+export async function getTokensTrackedToday(): Promise<number> {
+	const [row] = await db
+		.select({ count: sql<number>`COUNT(*)::int` })
+		.from(tokens)
+		.where(sql`${tokens.createdAt} >= CURRENT_DATE`);
+	return row?.count ?? 0;
+}
