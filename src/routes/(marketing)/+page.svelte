@@ -291,6 +291,7 @@
   <div class="reveal-inner">
     <span class="reveal-kicker mono">narrative radar — no login, always live</span>
     <h2 class="reveal-word">TYCHO</h2>
+    <h3 class="mono" style="font-size: clamp(18px, 4vw, 24px); letter-spacing: 0.15em; color: var(--text-secondary); font-weight: 500; margin-top: -15px; margin-bottom: 24px;">NARRATIVE RADAR</h3>
     <p class="reveal-stat mono">6 narratives forming right now · 1 breaking out</p>
     <a href="/radar" class="reveal-cta">Open the radar</a>
   </div>

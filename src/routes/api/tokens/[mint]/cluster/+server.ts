@@ -7,6 +7,24 @@ export async function GET({ params }) {
 	const { mint } = params;
 	
 	try {
+		// --- DEMO OVERRIDE ---
+		// Allow users to test the UI using the "example" CA from the landing page
+		if (mint === 'example') {
+			return json({
+				status: 'found',
+				cluster: { 
+					id: 'demo-cluster', 
+					label: 'Retro Game Villains', 
+					growthRate: '340' 
+				},
+				token: { 
+					mint: 'example', 
+					name: 'Final Boss', 
+					ticker: '$BOSS' 
+				}
+			});
+		}
+
 		// Murni READ-ONLY (Cache-first lookup) - Sesuai instruksi Claude (No unauthenticated writes)
 		const result = await db.select({
 			token: tokens,
