@@ -134,17 +134,7 @@
 	<title>Tycho — /radar</title>
 </svelte:head>
 
-<header class="flex items-center justify-between py-[16px] px-[32px] border-b border-[var(--divider)] max-w-full">
-	<a href="/" class="text-[13px] text-[var(--text-secondary)] no-underline font-[var(--font-mono)]">← tycho</a>
-	<span class="text-[12.5px] text-[var(--text-tertiary)] font-[var(--font-mono)]">/radar</span>
-	<div class="flex items-center gap-[20px]">
-		<a href="/track-record" class="text-[13px] text-[var(--text-secondary)] no-underline font-[var(--font-mono)] hidden sm:block">track record</a>
-		<span class="inline-flex items-center gap-[7px] text-[12px] text-[var(--state-active)]">
-			<i class="w-[6px] h-[6px] rounded-full bg-[var(--state-active)] shadow-[0_0_8px_var(--state-active)] animate-pulse"></i>
-			live · no login
-		</span>
-	</div>
-</header>
+
 
 <div class="max-w-[1400px] mx-auto pt-[18px] px-[32px] 0">
 	<TokenLookup />
@@ -181,41 +171,41 @@
 	</div>
 
 	<!-- Sidebar -->
-	<aside class="flex flex-col gap-[20px]">
+	<aside class="flex flex-col gap-[40px] pl-[10px] lg:border-l lg:border-[var(--divider)] lg:pl-[30px]">
 		
 		<!-- At a glance -->
-		<div class="border border-[var(--divider)] rounded-[6px] p-[18px_20px] bg-[var(--surface)]">
-			<p class="text-[11px] tracking-[0.08em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0 mb-[14px]">at a glance</p>
-			<div class="flex items-baseline justify-between py-[11px]">
-				<span class="font-[var(--font-mono)] text-[19px] font-semibold text-[var(--text-primary)] whitespace-nowrap">{activeClusters.length}</span>
+		<div class="flex flex-col gap-[12px]">
+			<p class="text-[10.5px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0">at a glance</p>
+			<div class="flex items-baseline justify-between">
+				<span class="font-[var(--font-mono)] text-[22px] text-[var(--text-primary)] whitespace-nowrap">{activeClusters.length}</span>
 				<span class="text-[12px] text-[var(--text-secondary)] text-right">active clusters</span>
 			</div>
-			<div class="flex items-baseline justify-between py-[11px] border-t border-[var(--divider)]">
-				<span class="font-[var(--font-mono)] text-[19px] font-semibold text-[var(--text-primary)] whitespace-nowrap">{tokensTrackedToday}</span>
+			<div class="flex items-baseline justify-between border-t border-[var(--divider)] pt-[12px]">
+				<span class="font-[var(--font-mono)] text-[22px] text-[var(--text-primary)] whitespace-nowrap">{tokensTrackedToday}</span>
 				<span class="text-[12px] text-[var(--text-secondary)] text-right">tokens tracked today</span>
 			</div>
-			<div class="flex items-baseline justify-between py-[11px] border-t border-[var(--divider)]">
-				<span class="font-[var(--font-mono)] text-[19px] font-semibold text-[var(--text-primary)] whitespace-nowrap" id="scanCountdown">{formattedCountdown()}</span>
+			<div class="flex items-baseline justify-between border-t border-[var(--divider)] pt-[12px]">
+				<span class="font-[var(--font-mono)] text-[22px] text-[var(--text-primary)] whitespace-nowrap" id="scanCountdown">{formattedCountdown()}</span>
 				<span class="text-[12px] text-[var(--text-secondary)] text-right">until next scan</span>
 			</div>
 		</div>
 
 		<!-- Activity log -->
-		<div class="border border-[var(--divider)] rounded-[6px] p-[18px_20px] bg-[var(--surface)]">
-			<p class="text-[11px] tracking-[0.08em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0 mb-[14px]">activity log</p>
+		<div class="flex flex-col gap-[12px]">
+			<p class="text-[10.5px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0">activity log</p>
 			{#if clustersQuery.isLoading}
 				<p class="text-[12px] text-[var(--text-secondary)]">Loading...</p>
 			{:else if recentTokens.length === 0}
 				<p class="text-[12px] text-[var(--text-secondary)]">No recent activity.</p>
 			{:else}
-				<ul class="list-none m-0 p-0 max-h-[260px] overflow-y-auto flex flex-col">
+				<ul class="list-none m-0 p-0 max-h-[280px] overflow-y-auto flex flex-col gap-[10px]">
 					{#each recentTokens as t}
-						<li class="flex items-center gap-[9px] py-[9px] border-t border-[var(--divider)] text-[12px] first:border-none first:pt-0">
+						<li class="flex items-center gap-[10px] text-[12.5px]">
 							<span class="w-[5px] h-[5px] rounded-full shrink-0" style="background: {getDotColorForLog(t.status)}"></span>
-							<span class="font-semibold text-[var(--text-primary)] flex-1 whitespace-nowrap overflow-hidden text-ellipsis font-[var(--font-mono)]">
+							<span class="text-[var(--text-primary)] flex-1 whitespace-nowrap overflow-hidden text-ellipsis font-[var(--font-mono)]">
 								${t.ticker}
 							</span>
-							<span class="text-[var(--text-tertiary)] text-[10.5px] whitespace-nowrap font-[var(--font-mono)]">
+							<span class="text-[var(--text-tertiary)] text-[10px] whitespace-nowrap font-[var(--font-mono)]">
 								{timeAgo(t.createdAt)}
 							</span>
 						</li>
@@ -225,30 +215,33 @@
 		</div>
 
 		<!-- Shareable artifact -->
-		<div class="border border-[var(--divider)] rounded-[6px] p-[18px_20px] bg-[var(--surface)] mt-0">
-			<p class="text-[11px] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0 mb-[4px]">shareable artifact</p>
-			<p class="text-[14.5px] font-bold m-0 mb-[12px]">Meta this hour</p>
+		<div class="flex flex-col gap-[12px]">
+			<p class="text-[10.5px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0">shareable artifact</p>
 			
-			{#if activeClusters.length > 0}
-				<ul class="list-none p-0 m-0 mb-[12px] flex flex-col gap-[7px] text-[12.5px]">
-					{#each activeClusters.slice(0, 3) as c}
-						<li class="flex justify-between items-center">
-							<span>
-								<span class="w-[7px] h-[7px] rounded-full inline-block mr-[8px]" style="background: var(--state-{c.status === 'breakout' ? 'breakout' : c.status === 'fast' ? 'fast' : 'active'})"></span>
-								{c.label || c.name || 'Theme: Pending...'}
-							</span>
-							<span class="font-[var(--font-mono)] text-[var(--text-secondary)]">{c.memberCount}</span>
-						</li>
-					{/each}
-				</ul>
-			{:else}
-				<p class="text-[12px] text-[var(--text-secondary)] mb-[12px]">Awaiting signals...</p>
-			{/if}
+			<div class="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] rounded-[8px] p-[16px]">
+				<p class="text-[14px] font-medium m-0 mb-[16px] text-white">Meta this hour</p>
+				{#if activeClusters.length > 0}
+					<ul class="list-none p-0 m-0 mb-[16px] flex flex-col gap-[10px] text-[12.5px]">
+						{#each activeClusters.slice(0, 3) as c}
+							<li class="flex justify-between items-center text-[var(--text-secondary)]">
+								<span class="flex items-center gap-[8px]">
+									<span class="w-[6px] h-[6px] rounded-full shrink-0" style="background: var(--state-{c.status === 'breakout' ? 'breakout' : c.status === 'fast' ? 'fast' : 'active'})"></span>
+									{c.label || c.name || 'Theme: Pending...'}
+								</span>
+								<span class="font-[var(--font-mono)] text-white">{c.memberCount}</span>
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<p class="text-[12px] text-[var(--text-secondary)] mb-[16px]">Awaiting signals...</p>
+				{/if}
+				
+				<p class="text-[10px] text-[var(--text-tertiary)] font-[var(--font-mono)] border-t border-[rgba(255,255,255,0.05)] pt-[12px] m-0">
+					tycho.xyz/radar · {new Date().toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'})}
+				</p>
+			</div>
 			
-			<p class="text-[10.5px] text-[var(--text-tertiary)] font-[var(--font-mono)] border-t border-[var(--divider)] pt-[9px] m-0">
-				tycho.xyz/radar · generated {new Date().toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'})}
-			</p>
-			<button class="mt-[10px] text-[11.5px] font-[var(--font-mono)] bg-transparent border border-[var(--divider)] text-[var(--text-secondary)] px-[12px] py-[7px] rounded-[4px] cursor-pointer hover:border-[var(--accent)] hover:text-[var(--text-primary)] transition-colors" class:text-[var(--state-active)]={shareBtnText === 'Copied!'} class:border-[var(--state-active)]={shareBtnText === 'Copied!'} onclick={copySummary}>
+			<button class="w-full text-center mt-[4px] text-[11.5px] font-[var(--font-mono)] bg-[var(--surface)] text-[var(--text-secondary)] px-[12px] py-[10px] rounded-[6px] cursor-pointer hover:bg-[rgba(255,255,255,0.05)] hover:text-white transition-all" class:text-[var(--state-active)]={shareBtnText === 'Copied!'} onclick={copySummary}>
 				{shareBtnText}
 			</button>
 		</div>
@@ -285,10 +278,17 @@
 						in:fly={{ y: 10, duration: 300, delay: index * 40 }}
 						class="flex flex-col gap-[4px] py-[10px] border-b border-[var(--divider)] text-[12.5px]"
 					>
-						<div class="flex justify-between gap-[10px]">
-							<span class="text-[var(--accent)] font-semibold font-[var(--font-mono)] truncate max-w-[80px]">${t.ticker}</span>
-							<span class="text-[var(--text-secondary)] flex-1 px-[8px] truncate">{t.name}</span>
-							<span class="text-[var(--text-tertiary)] font-[var(--font-mono)] whitespace-nowrap" title={new Date(t.createdAt).toLocaleString()}>
+						<div class="flex justify-between items-center gap-[10px] w-full">
+							<div class="flex items-center gap-[10px] flex-1 min-w-0">
+								{#if t.imageUrl}
+									<img src={t.imageUrl} alt="{t.name} logo" class="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
+								{:else}
+									<div class="w-[20px] h-[20px] rounded-full bg-[var(--surface)] border border-[var(--divider)] shrink-0 flex items-center justify-center text-[9px] text-[var(--text-tertiary)]">?</div>
+								{/if}
+								<span class="text-[var(--accent)] font-semibold font-[var(--font-mono)] truncate max-w-[80px] shrink-0">${t.ticker}</span>
+								<span class="text-[var(--text-secondary)] truncate flex-1">{t.name}</span>
+							</div>
+							<span class="text-[var(--text-tertiary)] font-[var(--font-mono)] whitespace-nowrap shrink-0" title={new Date(t.createdAt).toLocaleString()}>
 								{timeAgo(t.createdAt)}
 							</span>
 						</div>

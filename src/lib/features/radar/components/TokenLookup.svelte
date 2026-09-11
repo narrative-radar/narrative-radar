@@ -39,10 +39,11 @@
   <div class="lookup-row">
     <input 
       type="text" 
-      placeholder="paste a Pump.fun contract address" 
+      placeholder="paste a Robinhood contract address" 
       bind:value={mint}
       onkeydown={handleKeydown}
       autocomplete="off"
+      class="w-full bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] rounded-[8px] p-[16px_20px] text-[14px] text-white font-[var(--font-mono)] outline-none transition-all focus:bg-[rgba(255,255,255,0.06)] focus:border-[rgba(255,255,255,0.2)] placeholder:text-[var(--text-tertiary)]"
     >
     <button onclick={checkToken} disabled={status === 'loading'}>
       {status === 'loading' ? '...' : 'Check'}
@@ -71,25 +72,21 @@
 </div>
 
 <style>
-  .lookup-bar { width: 100%; margin-bottom: 24px; }
-  .lookup-row { display: flex; gap: 8px; max-width: 480px; }
-  .lookup-row input {
-    flex: 1; background: var(--surface, #0a0d12); border: 1px solid var(--divider, rgba(255, 255, 255, 0.08)); border-radius: 4px;
-    padding: 9px 12px; color: var(--text-primary, #e8ebef); font-family: var(--font-mono, monospace); font-size: 12.5px;
-  }
-  .lookup-row input::placeholder { color: var(--text-tertiary, #565d6b); }
-  .lookup-row input:focus-visible { outline: 2px solid var(--accent, #e0a83e); outline-offset: 1px; }
+  .lookup-bar { width: 100%; margin-bottom: 28px; }
+  .lookup-row { display: flex; gap: 8px; max-width: 520px; }
   .lookup-row button {
-    background: var(--accent, #e0a83e); color: var(--bg, #05070a); border: none; border-radius: 4px;
-    padding: 9px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+    background: white; color: black; border: none; border-radius: 8px;
+    padding: 0 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
   }
   .lookup-row button:disabled { opacity: 0.7; cursor: not-allowed; }
-  .lookup-label { font-size: 11px; color: var(--text-tertiary, #565d6b); margin: 0 0 8px; font-family: var(--font-mono, monospace); }
-  .lookup-result { margin-top: 10px; max-width: 480px; padding: 11px 14px; border-radius: 4px; border: 1px solid var(--divider, rgba(255, 255, 255, 0.08)); background: var(--surface, #0a0d12); font-size: 12.5px; display: none; line-height: 1.5; }
+  .lookup-label { font-size: 11px; color: var(--text-tertiary, #565d6b); margin: 0 0 10px; font-family: var(--font-mono, monospace); text-transform: uppercase; letter-spacing: 0.05em; }
+  
+  .lookup-result { margin-top: 12px; max-width: 520px; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--divider, rgba(255, 255, 255, 0.08)); background: rgba(255,255,255,0.02); font-size: 13px; display: none; line-height: 1.5; color: var(--text-secondary); }
   .lookup-result.show { display: block; animation: fadeIn 0.3s ease; }
-  .lookup-result.found { border-color: var(--state-active, #3ebfb0); }
-  .lookup-result.processing { border-color: var(--state-fast, #e0a83e); }
-  .lookup-result .lr-link { color: var(--accent, #e0a83e); background: none; border: none; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+  .lookup-result.found { border-color: rgba(62,191,176, 0.3); background: rgba(62,191,176, 0.05); color: #fff;}
+  .lookup-result.processing { border-color: rgba(224,168,62, 0.3); background: rgba(224,168,62, 0.05); color: #fff;}
+  .lookup-result .lr-link { color: white; background: none; border: none; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; opacity: 0.8; }
+  .lookup-result .lr-link:hover { opacity: 1; }
   
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-5px); }

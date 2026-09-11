@@ -6,7 +6,7 @@
 
 <header class="flex items-center px-[32px] py-[24px] text-[13px] border-b border-[var(--divider)]">
 	<a href="/" class="hover:opacity-80 transition-opacity mr-6 flex items-center">
-		<img src="/images/logo.png" alt="Tycho Logo" class="h-[18px] w-auto" />
+		<img src="/images/logo.png" alt="Tycho Logo" style="height: 32px; width: auto;" />
 	</a>
 	<span class="font-[var(--font-mono)] text-[var(--text-tertiary)] flex-1">
 		{$page.url.pathname === '/track-record' ? '/track-record' : '/radar'}

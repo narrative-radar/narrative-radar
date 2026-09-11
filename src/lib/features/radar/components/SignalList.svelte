@@ -16,7 +16,7 @@
 	}
 </script>
 
-<div class="flex flex-col border-t border-[var(--divider)] max-h-[480px] overflow-y-auto">
+<div class="flex flex-col max-h-[480px] overflow-y-auto">
 	{#each clusters as cluster, i (cluster.id)}
 		<SignalRow 
 			themeId={cluster.id}

@@ -54,10 +54,41 @@ export async function GET({ params }) {
 			}
 		}
 
-		// State 3: Benar-benar tidak ketemu
+		// State 3: Token tidak ada di DB lokal. 
+		// [NEW UX FIX] Jangan langsung ditolak. Kita cari (fetch) ke DexScreener (On-Demand Ingestion).
+		try {
+			const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+			const dexData = await dexResponse.json();
+
+			if (dexData.pairs && dexData.pairs.length > 0) {
+				// Ambil data pair pertama yang cocok
+				const pair = dexData.pairs[0];
+				
+				// Masukkan ke database (Antrean Cron)
+				await db.insert(tokens).values({
+					mint: mint,
+					ticker: pair.baseToken.symbol || 'UNKNOWN',
+					name: pair.baseToken.name || 'Unknown Token',
+					imageUrl: pair.info?.imageUrl || null,
+					status: 'pending_embed',
+					createdAt: new Date()
+				}).onConflictDoNothing();
+
+				// Kasih tahu user bahwa tokennya sudah berhasil di-scan dan sedang diantrekan
+				return json({ 
+					status: 'processing', 
+					message: 'Token found on chain! It has been added to our radar queue. Please check back in 1-2 minutes for the narrative analysis.' 
+				});
+			}
+		} catch (fetchError) {
+			console.error("DexScreener fetch error:", fetchError);
+			// Fallback ke response not_found biasa jika API Dexscreener error
+		}
+
+		// State 4: Benar-benar tidak ketemu di DB dan tidak ada di Blockchain (Dexscreener)
 		return json({ 
 			status: 'not_found', 
-			message: 'Not detected on radar yet. If this just launched, please check back in a few minutes.' 
+			message: 'Invalid or extremely new contract address. We could not find this token on-chain.' 
 		}, { status: 404 });
 		
 	} catch (error) {
