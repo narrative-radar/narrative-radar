@@ -230,138 +230,129 @@
   </header>
 
   <!-- Hero Grid -->
-  <div class="hero-stacked flex flex-col items-center text-center border-b border-[var(--rule)] max-w-[1380px] mx-auto pt-16 md:pt-24 bg-[var(--ink)]">
+  <!-- Parallax Background & Logo (Wrapped to prevent overflow scroll) -->
+    <div class="fixed top-0 left-0 w-full h-screen overflow-hidden pointer-events-none z-0">
+      <div class="absolute right-[-120px] top-[10vh] w-[820px] h-[820px] flex items-center justify-center" style="transform: translateY({(scrollY || 0) * -0.15}px);">
+        <!-- Glow -->
+        <div class="absolute inset-0" style="background: radial-gradient(ellipse at 50% 50%, rgba(52,211,153,0.18), transparent 70%);"></div>
+        <!-- Logo -->
+        <img src="/images/logo.png" alt="Tycho Logo" class="absolute w-[600px] h-[600px] opacity-[0.08] object-contain rotate-[-15deg]" />
+      </div>
+    </div>
+
+    <!-- Pare-style Hero Section -->
+  <div class="max-w-[1344px] mx-auto px-6 pt-16 md:pt-24 pb-20 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
     
-    <!-- Top Center Scene -->
-    <div class="px-6 md:px-14 flex flex-col items-center w-full max-w-4xl">
-      <div class="mb-6">
-        <span class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--banana-glow)] border border-[var(--banana-lo)] text-[var(--banana-hi)] font-mono text-[10px] uppercase tracking-widest" style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);">
-          <span class="w-1.5 h-1.5 rounded-full bg-[var(--banana)] animate-pulse shadow-[0_0_8px_var(--banana)]"></span>
+    <!-- Left Copy -->
+    <div class="flex flex-col">
+      <div class="mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--live)]/10 border border-[var(--live)]/30 text-[var(--live)] font-mono text-[11px] font-medium tracking-wider uppercase rounded-md">
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--live)] animate-pulse shadow-[0_0_8px_var(--live)]"></span>
           Live Robinhood Radar
         </span>
       </div>
       
-      <h1 class="wordmark text-5xl md:text-[80px] mb-6 min-h-[120px] md:min-h-[100px] leading-[1.1]" use:scrambleText={"See the meta before it's the meta."}>
+      <h1 class="text-[44px] md:text-[64px] font-medium leading-[1.12] tracking-tight mb-5" use:scrambleText={"See the meta before it's the meta."}>
         See the meta before it's the meta.
       </h1>
       
-      <p class="text-[var(--dim)] text-lg md:text-xl max-w-2xl leading-relaxed mb-10 font-mono">
+      <p class="text-[var(--dim)] text-[18px] max-w-[520px] leading-[1.5] mb-8">
         A completely autonomous pipeline that turns raw blockchain noise into readable narrative signals. Grouped by AI, not by hand.
       </p>
-
-      <div class="flex flex-wrap justify-center gap-4 md:gap-12 mb-12">
-        <div class="flex flex-col items-center">
-          <div class="text-[10px] text-[var(--dim)] font-mono uppercase tracking-widest mb-1">Processing Delay</div>
-          <div class="text-white font-mono text-sm border-b border-[var(--rule)] pb-1">~1.2 seconds</div>
-        </div>
-        <div class="flex flex-col items-center">
-          <div class="text-[10px] text-[var(--dim)] font-mono uppercase tracking-widest mb-1">Embedding Matrix</div>
-          <div class="text-white font-mono text-sm border-b border-[var(--rule)] pb-1">768 Dimensions</div>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-center gap-6 mb-16">
-        <a href="/radar" class="glass-panel px-8 py-4 font-mono text-sm text-white hover:text-[var(--live)] hover:border-[var(--live)] transition-colors cursor-pointer shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(52,211,153,0.15)]" style="clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);">
-          Launch Dashboard →
+      
+      <div class="flex gap-3 mb-10 flex-wrap">
+        <a href="/radar" class="inline-flex items-center justify-center h-[44px] px-6 rounded-xl bg-[var(--live)] text-[#06130D] font-semibold hover:bg-[#56ECB6] transition-colors">
+          Launch Dashboard
+        </a>
+        <a href="/track-record" class="inline-flex items-center justify-center h-[44px] px-6 rounded-xl bg-[var(--panel2)] text-white font-medium hover:bg-[var(--panel)] transition-colors">
+          Track Record
         </a>
       </div>
-    </div>
-
-    <!-- Stacked Windows Scrollytelling -->
-    <div class="w-full max-w-5xl mx-auto relative h-[150vh]">
       
-      <!-- Window 1: Code Stream (Sticky) -->
-      <div class="sticky top-[15vh] pt-10">
-        <div class="w-full bg-[var(--panel)] min-h-[300px] rounded-xl border border-[var(--rule)] shadow-2xl overflow-hidden relative transition-transform duration-500">
-          <!-- Top Bar -->
-          <div class="flex items-center gap-3 px-4 py-2.5 bg-[var(--panel2)] border-b border-[var(--rule)] text-xs">
-            <div class="flex items-center gap-2">
-              <div class="w-2.5 h-2.5 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
-            </div>
-            <span class="text-[var(--dim)] font-mono ml-2">pipeline.py</span>
-            <span class="ml-auto text-[var(--dim)] font-mono text-[10px] bg-[var(--panel)] px-2 py-0.5 rounded border border-[var(--rule)]">{stage}</span>
-          </div>
-          
-          <!-- Code Content -->
-          <div class="p-6 font-mono text-sm leading-relaxed text-white text-left whitespace-pre-wrap">
-            {@html formattedCode}<span class="cur"></span>
-          </div>
+      <!-- Pare-style Stats (Bottom Aligned) -->
+      <div class="grid grid-cols-3 gap-3 pt-4">
+        <div class="bg-[var(--panel)] rounded-xl p-4 relative overflow-hidden">
+          <div class="font-mono text-2xl font-medium text-white mb-1">{liveTokensTracked > 0 ? liveTokensTracked.toLocaleString() : '14,029'}</div>
+          <div class="text-[11px] text-[var(--dim)]">Tokens ingested today</div>
+          <div class="absolute left-4 bottom-0 w-7 h-[2px] bg-[var(--live)] rounded-full"></div>
+        </div>
+        <div class="bg-[var(--panel)] rounded-xl p-4 relative overflow-hidden">
+          <div class="font-mono text-2xl font-medium text-white mb-1">{liveClusters.length > 0 ? liveClusters.length : 24}</div>
+          <div class="text-[11px] text-[var(--dim)]">Active narrative metas</div>
+          <div class="absolute left-4 bottom-0 w-7 h-[2px] bg-[var(--banana)] rounded-full"></div>
+        </div>
+        <div class="bg-[var(--panel)] rounded-xl p-4 relative overflow-hidden">
+          <div class="font-mono text-2xl font-medium text-white mb-1">&lt;2s</div>
+          <div class="text-[11px] text-[var(--dim)]">Processing delay</div>
+          <div class="absolute left-4 bottom-0 w-7 h-[2px] bg-[var(--cyan)] rounded-full"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Demo (Compact Pare-style) -->
+    <div class="relative flex flex-col bg-[var(--panel)] rounded-[16px] p-6 shadow-[0_30px_80px_rgba(0,0,0,.45),0_0_0_1px_rgba(60,227,167,.10)] border border-white/5">
+      
+      <div class="absolute right-4 top-4 flex items-center gap-2 text-[11px] text-[var(--dim)]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--live)] shadow-[0_0_10px_var(--live)]"></span>
+        reading stream...
+      </div>
+      
+      <!-- Top Input Field (Code Stream) -->
+      <div class="bg-[var(--panel2)] rounded-xl p-4 pb-5 flex justify-between items-center gap-3 mt-6">
+        <div class="flex-1 min-w-0">
+          <div class="text-[11px] text-[var(--dim)] mb-1.5">Incoming Signal</div>
+          <div class="font-mono text-xl text-white truncate">{@html formattedCode}<span class="cur"></span></div>
+        </div>
+        <span class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-[var(--ink)] text-sm font-medium whitespace-nowrap shrink-0 border border-white/5">
+          <span class="w-5 h-5 rounded-full bg-gradient-to-br from-[#CFCFCF] to-[#8E8E8E]"></span>RAW
+        </span>
+      </div>
+      
+      <!-- Cleave / Split divider -->
+      <div class="h-7 flex items-center justify-center gap-2.5 text-[11px] text-[var(--dim)] my-1">
+        <i class="block w-[120px] h-px bg-gradient-to-r from-transparent via-[var(--live)]/70 to-transparent"></i>
+        radar
+        <i class="block w-[120px] h-px bg-gradient-to-r from-transparent via-[var(--live)]/70 to-transparent"></i>
+      </div>
+      
+      <!-- Leg 1 -->
+      <div class="grid grid-cols-[auto_1fr_auto] gap-3.5 items-center p-3.5 bg-[var(--panel2)] rounded-t-xl border-b border-white/5">
+        <span class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-[var(--ink)] text-sm font-medium whitespace-nowrap border border-white/5">
+          <span class="w-5 h-5 rounded-full bg-gradient-to-br from-[#8FB3D4] to-[#4F7EA8]"></span>VEC
+        </span>
+        <div>
+          <div class="font-medium text-white text-sm">768-D Spatial Vectors</div>
+          <div class="text-[11px] text-[var(--dim)] mt-0.5">Semantic lore mapped</div>
+        </div>
+        <div class="font-mono text-right">
+          <b class="block text-white text-[15px]">1.000</b>
+          <small class="text-[11px] text-[var(--dim)]">cosine</small>
         </div>
       </div>
       
-      <!-- Window 2: Results Table (Sticky, stacks on top) -->
-      <div class="sticky top-[22vh] mt-[40vh] pb-10">
-        <div class="w-full bg-[var(--panel)] min-h-[400px] rounded-xl border border-[var(--rule)] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] overflow-hidden relative">
-          <!-- Top Bar -->
-          <div class="flex items-center gap-3 px-4 py-2.5 bg-[var(--panel2)] border-b border-[var(--rule)] text-xs">
-            <div class="flex items-center gap-2">
-              <div class="w-2.5 h-2.5 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
-            </div>
-            <span class="text-white font-mono ml-2">dbscan_results.csv</span>
-            <div class="ml-auto flex gap-4 text-[11px] text-[var(--dim)] font-mono">
-              <span>stream <b class="text-white ml-1">connected</b></span>
-              <span>embedded <b class="text-white ml-1">{tokensAnalyzed}</b></span>
-            </div>
-          </div>
-          
-          <!-- Table Content -->
-          <div class="overflow-hidden bg-[var(--ink)]">
-            <div class="max-h-[400px] overflow-y-auto">
-              {#each feed as t}
-                <div class="grid grid-cols-[22px_1.35fr_62px_74px] sm:grid-cols-[22px_1.35fr_62px_62px_74px] gap-2.5 items-center px-4.5 py-3 border-b border-[var(--rule)] text-[11.5px] font-mono hover:bg-[var(--panel2)] transition-colors">
-                  <div class="w-5 h-5 rounded-full grid place-items-center text-[8.5px] font-bold text-[#060D09]" style="background-color: hsl({t.hue} 65% 58%)">TH</div>
-                  <div class="min-w-0 text-left">
-                    <span class="text-white font-medium">{t.name}</span>
-                    <span class="text-[var(--banana)] text-[10.5px] ml-1.5 font-medium">· 1m ago</span>
-                    <div class="text-[var(--dim)] text-[10px] truncate mt-0.5">{t.lore}</div>
-                  </div>
-                  <div class="text-right text-white">{t.holders.toLocaleString()}</div>
-                  <div class="text-right text-white hidden sm:block">${(t.peak_mc / 1000).toFixed(0)}K</div>
-                  <div class="text-right">
-                    <span class={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                      t.status === 'passed' 
-                        ? 'bg-[var(--live)]/10 text-[var(--live)] border border-[var(--live)]/30 glow-live' 
-                        : 'bg-[var(--stall)]/10 text-[var(--stall)] border border-[var(--stall)]/20'
-                    }`}>
-                      {t.status === 'passed' ? '● META' : '· forming'}
-                    </span>
-                  </div>
-                </div>
-              {/each}
-            </div>
-          </div>
+      <!-- Leg 2 -->
+      <div class="grid grid-cols-[auto_1fr_auto] gap-3.5 items-center p-3.5 bg-[var(--panel2)] rounded-b-xl mb-4 border border-white/5 border-t-0">
+        <span class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-[var(--ink)] text-sm font-medium whitespace-nowrap border border-white/5">
+          <span class="w-5 h-5 rounded-full bg-gradient-to-br from-[#3CE3A7] to-[#1E9E73]"></span>META
+        </span>
+        <div>
+          <div class="font-medium text-white text-sm">Actionable Narrative</div>
+          <div class="text-[11px] text-[var(--dim)] mt-0.5">DBSCAN group formed</div>
+        </div>
+        <div class="font-mono text-right">
+          <b class="block text-white text-[15px]">14</b>
+          <small class="text-[11px] text-[var(--dim)]">members</small>
         </div>
       </div>
       
-    </div>
-  </div>
-
-  <!-- Stats Strip (Real Data) -->
-  <div class="grid grid-cols-2 md:grid-cols-4 border-b border-[var(--rule)] bg-[var(--panel2)]">
-    <div class="p-8 border-r border-[var(--rule)]">
-      <div class="text-[var(--dim)] text-[11px] uppercase tracking-widest font-mono mb-2">Live Narratives</div>
-      <div class="text-4xl font-bold text-white glow-cyan">{liveClusters.length > 0 ? liveClusters.length : 24}</div>
-    </div>
-    <div class="p-8 border-r border-[var(--rule)]">
-      <div class="text-[var(--dim)] text-[11px] uppercase tracking-widest font-mono mb-2">Tokens Analyzed</div>
-      <div class="text-4xl font-bold text-white glow-banana">{tokensAnalyzed}</div>
-    </div>
-    <div class="p-8 border-r border-[var(--rule)]">
-      <div class="text-[var(--dim)] text-[11px] uppercase tracking-widest font-mono mb-2">Vector Data Points</div>
-      <div class="text-4xl font-bold text-white glow-live">{(totalDataPoints / 1000).toFixed(1)}k</div>
-    </div>
-    <div class="p-8">
-      <div class="text-[var(--dim)] text-[11px] uppercase tracking-widest font-mono mb-2">Processing Time</div>
-      <div class="text-4xl font-bold text-[var(--violet)] text-shadow-[0_0_16px_rgba(167,139,250,0.4)]">&lt;2s</div>
+      <a href="/radar" class="mt-6 h-[44px] rounded-xl bg-[var(--live)] hover:bg-[#56ECB6] text-[#06130D] font-semibold flex items-center justify-center transition-colors">
+        View Full Terminal
+      </a>
     </div>
   </div>
 
   <!-- Technical Process Panel (Pinned Scrollytelling) -->
-  <div bind:this={howWorksRef} class="h-auto md:h-[150vh] bg-[var(--ink)] relative border-b border-[var(--rule)]">
+  <div bind:this={howWorksRef} class="h-auto md:h-[150vh] bg-[#06130D]/70 backdrop-blur-sm relative border-b border-[var(--rule)]">
     <div class="relative md:sticky top-0 h-auto md:h-screen flex flex-col md:flex-row overflow-hidden">
       
       <!-- Left: Narrative Text -->
@@ -408,7 +399,7 @@
       </div>
       
       <!-- Right: Visualizations -->
-      <div class="w-full md:w-1/2 h-full bg-[#05080C] border-l border-[var(--rule)] relative hidden md:flex items-center justify-center overflow-hidden">
+      <div class="w-full md:w-1/2 h-full bg-transparent border-l border-[var(--rule)] relative hidden md:flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0  opacity-10 mix-blend-overlay"></div>
         
         <!-- Vis 1: Ingestion Stream -->
@@ -452,148 +443,177 @@
     </div>
   </div>
 
-  <!-- Telemetry & Pipeline Status Dashboard -->
-  <section class="border-t border-[var(--rule)] bg-[var(--ink)] p-6 md:p-12 relative overflow-hidden">
-    <!-- Subtle Grid Background -->
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGVsbGlwc2UgY3g9IjIwIiBjeT0iMjAiIHJ4PSIwLjUiIHJ5PSIwLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNykiLz48L3N2Zz4=')] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)] opacity-50 pointer-events-none"></div>
+  <!-- PARE-STYLE SECTIONS -->
+  <section class="max-w-[1344px] mx-auto px-6 pt-20 relative z-10">
+    <h2 class="text-[34px] font-medium tracking-tight mb-2 text-white">Active Narratives</h2>
+    <p class="text-[var(--dim)] mb-7 max-w-[640px] text-[15px]">Live clusters detected on the Robinhood chain, mapped by spatial density.</p>
     
-    <div class="max-w-6xl mx-auto relative z-10">
-      <div class="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 border-b border-[var(--rule)] pb-6">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--live)]/10 border border-[var(--live)]/30 rounded text-[var(--live)] font-mono text-[10px] tracking-widest uppercase mb-4">
-            <span class="w-2 h-2 rounded-full bg-[var(--live)] animate-pulse"></span>
-            System Telemetry
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {#each liveClusters.slice(0, 4) as cluster, i}
+        <a href="/radar?cluster={cluster.id}" class="block bg-[var(--panel)] hover:bg-[var(--panel2)] border border-[var(--rule)] rounded-[14px] p-5 transition-colors">
+          <div class="flex justify-between items-center gap-3 mb-4">
+            <div class="flex items-center gap-2 font-medium">
+              <div class="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-[#8FB3D4] to-[#4F7EA8]"></div>
+              {cluster.label || 'New Meta'}
+            </div>
+            <div class="font-mono text-right">
+              <div class="font-medium text-white">{cluster.memberCount}</div>
+              <div class="text-[11px] text-[var(--live)]">tokens</div>
+            </div>
           </div>
-          <h2 class="text-3xl md:text-5xl font-serif font-bold text-white tracking-tight">Real-Time Aggregation</h2>
-          <p class="text-[var(--dim)] font-mono text-sm mt-3 max-w-xl">Live diagnostic feed from the DBSCAN clustering engine on the Robinhood chain.</p>
-        </div>
+          <div class="flex justify-between pt-3 border-t border-[var(--rule)] text-[11px] text-[var(--dim)]">
+            <span class="inline-flex items-center gap-1.5"><i class="w-1.5 h-1.5 rounded-full bg-[var(--live)]"></i> {cluster.status}</span>
+            <span>{(cluster.cohesionScore * 100).toFixed(0)}% cohesion</span>
+          </div>
+        </a>
+      {/each}
+      
+      {#if liveClusters.length === 0}
+        <!-- Fallback Cards if DB is empty -->
+        {#each ['AI Agents', 'Retro Games', 'Cat Derivatives', 'Politics'] as label, i}
+          <div class="block bg-[var(--panel)] border border-[var(--rule)] rounded-[14px] p-5">
+            <div class="flex justify-between items-center gap-3 mb-4">
+              <div class="flex items-center gap-2 font-medium text-white">
+                <div class="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-[#CFCFCF] to-[#8E8E8E]"></div>
+                {label}
+              </div>
+              <div class="font-mono text-right">
+                <div class="font-medium text-white">{(4 - i) * 3}</div>
+                <div class="text-[11px] text-[var(--live)]">tokens</div>
+              </div>
+            </div>
+            <div class="flex justify-between pt-3 border-t border-[var(--rule)] text-[11px] text-[var(--dim)]">
+              <span class="inline-flex items-center gap-1.5"><i class="w-1.5 h-1.5 rounded-full bg-[var(--live)]"></i> breakout</span>
+              <span>8{i}.% cohesion</span>
+            </div>
+          </div>
+        {/each}
+      {/if}
+    </div>
+  </section>
+
+  <section class="max-w-[1344px] mx-auto px-6 pt-20 relative z-10">
+    <h2 class="text-[34px] font-medium tracking-tight mb-2 text-white">One stream, pure signal.</h2>
+    <p class="text-[var(--dim)] mb-7 max-w-[640px] text-[15px]">The pipeline strips the noise and groups the remaining vectors into actionable metas.</p>
+    
+    <div class="flex h-16 rounded-[14px] overflow-hidden bg-[var(--panel)]">
+      <div class="flex-1 flex items-center justify-between px-5 gap-3 min-w-0" style="background: linear-gradient(90deg, rgba(143,179,212,.15), rgba(143,179,212,.05));">
+        <span class="text-sm text-white truncate">RAW STREAM · 14,000+ daily launches</span>
+        <b class="font-mono font-medium text-[#8FB3D4] whitespace-nowrap">NOISE</b>
+      </div>
+      <div class="flex-none min-w-[96px] flex items-center justify-center px-4" style="background: linear-gradient(90deg, rgba(60,227,167,.20), rgba(60,227,167,.08));">
+        <b class="font-mono font-medium text-[var(--live)] whitespace-nowrap">SIGNAL</b>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-8">
+      <div class="pt-4 border-t border-[var(--rule)]">
+        <div class="font-mono text-[11px] text-[#8FB3D4] mb-2">THE NOISE</div>
+        <h3 class="text-xl font-medium mb-2 text-white">Every token deployed.</h3>
+        <p class="text-[var(--dim)] text-[14px] mb-3">Raw blockchain events contain thousands of duplicate or dead-on-arrival contracts.</p>
         
-        <div class="mt-6 md:mt-0 flex gap-4 text-right">
-          <div>
-            <div class="text-[10px] font-mono text-[var(--dim)] uppercase tracking-widest mb-1">Status</div>
-            <div class="text-[var(--banana)] font-mono font-bold glow-banana">AUTONOMOUS</div>
-          </div>
-          <div class="w-[1px] bg-[var(--rule)] h-8 self-center mx-2"></div>
-          <div>
-            <div class="text-[10px] font-mono text-[var(--dim)] uppercase tracking-widest mb-1">Saturation</div>
-            <div class="text-white font-mono font-bold">80.0%</div>
-          </div>
+        <div class="mt-4 pt-3 border-t border-[var(--rule)] flex justify-between text-sm">
+          <span class="text-[var(--dim)]">Ingestion</span>
+          <span class="font-mono text-white text-right">DexScreener API</span>
+        </div>
+        <div class="pt-3 flex justify-between text-sm">
+          <span class="text-[var(--dim)]">Filter Level</span>
+          <span class="font-mono text-white text-right">None</span>
         </div>
       </div>
-      
-      <!-- Radar-themed Server Racks -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="pt-4 border-t border-[var(--rule)]">
+        <div class="font-mono text-[11px] text-[var(--live)] mb-2">THE SIGNAL</div>
+        <h3 class="text-xl font-medium mb-2 text-white">Clustered narrative metas.</h3>
+        <p class="text-[var(--dim)] text-[14px] mb-3">Only the tokens that share semantic vectors with high velocity are flagged.</p>
         
-        <!-- Rack 1: Ingestion -->
-        <div class="bg-[var(--panel)] border border-[var(--rule)] rounded-xl overflow-hidden flex flex-col hover:border-[var(--banana)]/50 transition-colors">
-          <div class="p-3 bg-[var(--panel2)] border-b border-[var(--rule)] flex justify-between items-center">
-            <span class="text-[10px] font-mono text-[var(--dim)] uppercase tracking-widest">Stage 1: Ingestion</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-[var(--banana)] shadow-[0_0_8px_var(--banana)]"></span>
-          </div>
-          <div class="p-6 flex-1 flex flex-col justify-center">
-            <div class="text-4xl font-serif text-white mb-1">{liveTokensTracked > 0 ? liveTokensTracked.toLocaleString() : '14,029'}</div>
-            <div class="text-xs font-mono text-[var(--dim)]">Total Tokens Scanned Today</div>
-            
-            <div class="mt-6 pt-4 border-t border-[var(--rule)] flex justify-between items-center text-xs font-mono">
-              <span class="text-[var(--dim)]">Velocity:</span>
-              <span class="text-white">~18 tokens/min</span>
-            </div>
-          </div>
+        <div class="mt-4 pt-3 border-t border-[var(--rule)] flex justify-between text-sm">
+          <span class="text-[var(--dim)]">Output</span>
+          <span class="font-mono text-[var(--live)] text-right">DBSCAN Clusters</span>
         </div>
-
-        <!-- Rack 2: Embedding -->
-        <div class="bg-[var(--panel)] border border-[var(--rule)] rounded-xl overflow-hidden flex flex-col hover:border-[var(--violet)]/50 transition-colors">
-          <div class="p-3 bg-[var(--panel2)] border-b border-[var(--rule)] flex justify-between items-center">
-            <span class="text-[10px] font-mono text-[var(--dim)] uppercase tracking-widest">Stage 2: Embedding</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-[var(--violet)] shadow-[0_0_8px_var(--violet)]"></span>
-          </div>
-          <div class="p-6 flex-1 flex flex-col justify-center">
-            <div class="text-4xl font-serif text-white mb-1">768-Dim</div>
-            <div class="text-xs font-mono text-[var(--dim)]">Gemini Feature Matrix</div>
-            
-            <div class="mt-6 pt-4 border-t border-[var(--rule)] flex justify-between items-center text-xs font-mono">
-              <span class="text-[var(--dim)]">Queue Sync:</span>
-              <span class="text-[var(--violet)] glow-violet">100% SUCCESS</span>
-            </div>
-          </div>
+        <div class="pt-3 flex justify-between text-sm">
+          <span class="text-[var(--dim)]">Precision</span>
+          <span class="font-mono text-white text-right">0.75 Cosine</span>
         </div>
-
-        <!-- Rack 3: Clustering -->
-        <div class="bg-[var(--panel)] border border-[var(--rule)] rounded-xl overflow-hidden flex flex-col hover:border-[var(--live)]/50 transition-colors">
-          <div class="p-3 bg-[var(--panel2)] border-b border-[var(--rule)] flex justify-between items-center">
-            <span class="text-[10px] font-mono text-[var(--dim)] uppercase tracking-widest">Stage 3: Clustering</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-[var(--live)] shadow-[0_0_8px_var(--live)] animate-pulse"></span>
-          </div>
-          <div class="p-6 flex-1 flex flex-col justify-center">
-            <div class="text-4xl font-serif text-[var(--live)] glow-live mb-1">{liveClusters.length > 0 ? liveClusters.length : 24}</div>
-            <div class="text-xs font-mono text-[var(--dim)]">Active Narrative Metas</div>
-            
-            <div class="mt-6 pt-4 border-t border-[var(--rule)] flex justify-between items-center text-xs font-mono">
-              <span class="text-[var(--dim)]">DBSCAN ε (Epsilon):</span>
-              <span class="text-white">0.75</span>
-            </div>
-          </div>
-        </div>
-        
       </div>
     </div>
   </section>
 
-  <!-- CTA / System Access -->
-  <div class="p-8 md:p-14 md:m-8 m-4 bg-[#0A1017] border border-[var(--rule)] rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden group">
-    <div class="absolute inset-0  opacity-10 mix-blend-overlay"></div>
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-[var(--live)] rounded-full mix-blend-screen filter blur-[100px] opacity-10"></div>
+  <section class="max-w-[1344px] mx-auto px-6 pt-20 relative z-10">
+    <h2 class="text-[34px] font-medium tracking-tight mb-2 text-white">Old way. New AI.</h2>
+    <p class="text-[var(--dim)] mb-7 max-w-[640px] text-[15px]">Finding metas used to mean staring at Telegram bots. Now it's fully autonomous.</p>
     
-    <div class="w-12 h-12 rounded-full border border-[var(--live)] flex items-center justify-center mb-6 relative">
-      <div class="absolute inset-0 rounded-full border border-[var(--live)] animate-ping opacity-30"></div>
-      <div class="w-3 h-3 bg-[var(--live)] rounded-full shadow-[0_0_12px_var(--live)]"></div>
-    </div>
-    
-    <h2 class="font-serif text-3xl md:text-4xl mb-4 text-[#F1F6FA] font-bold tracking-tight">System Synchronized</h2>
-    <p class="text-[var(--dim)] font-mono text-xs md:text-sm max-w-md mb-8 leading-relaxed">Tycho is actively indexing Robinhood Chain. Access the main terminal to view raw breakout vectors and real-time narrative clusters.</p>
-    
-    <a href="/radar" class="inline-flex items-center gap-3 px-8 py-4 bg-[var(--live)] text-[var(--ink)] font-mono font-bold text-sm hover:bg-[#F1F6FA] hover:text-[#06090D] transition-colors cursor-pointer" style="clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);">
-      LAUNCH TERMINAL_OS
-    </a>
-  </div>
-
-</div> <!-- End of .wrap -->
-</div> <!-- End of .site-bg -->
-
-<!-- Minimal Footer -->
-<footer class="w-full bg-[#030508] pt-16 pb-8 border-t border-[var(--rule)]">
-  <div class="max-w-[1380px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-    <div class="col-span-1 md:col-span-2">
-      <div class="flex items-center gap-3 opacity-60 mb-4">
-        <img src="/images/logo.png" alt="Tycho" class="w-8 h-8 grayscale mix-blend-screen" />
-        <span class="text-sm font-mono text-[var(--fg)] uppercase tracking-widest font-bold">TYCHO_OS</span>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pt-10 relative">
+      <div class="hidden md:block absolute left-0 right-0 top-[12px] h-[1px] bg-[var(--rule)]"></div>
+      
+      <div class="relative pl-6 md:pl-0">
+        <div class="w-[15px] h-[15px] rounded-full bg-[var(--panel)] ring-4 ring-[var(--ink)] absolute left-0 md:left-auto md:-top-[34px] top-1"></div>
+        <div class="font-mono text-[11px] text-[var(--dim)] mb-2">2021 · Manual</div>
+        <h3 class="text-[20px] font-medium mb-2 text-white">Telegram Alpha</h3>
+        <p class="text-[var(--dim)] text-[14px]">Scrolling through endless groups hoping to catch a narrative early.</p>
       </div>
-      <p class="text-[var(--dim)] text-xs font-mono max-w-sm leading-relaxed">
-        An autonomous narrative radar designed to detect emerging crypto metas on the Robinhood Chain using semantic vector embeddings and DBSCAN clustering.
-      </p>
-    </div>
-    <div>
-      <h4 class="text-white font-mono text-[10px] uppercase tracking-widest mb-4">Navigation</h4>
-      <div class="flex flex-col gap-3 text-xs font-mono">
-        <a href="/radar" class="text-[var(--dim)] hover:text-[var(--live)] transition-colors">Access Terminal</a>
-        <a href="/track-record" class="text-[var(--dim)] hover:text-white transition-colors">Track Record</a>
-        <!-- <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">Documentation</a> -->
+      
+      <div class="relative pl-6 md:pl-0">
+        <div class="w-[15px] h-[15px] rounded-full bg-[var(--panel)] ring-4 ring-[var(--ink)] absolute left-0 md:left-auto md:-top-[34px] top-1"></div>
+        <div class="font-mono text-[11px] text-[var(--dim)] mb-2">2023 · Filters</div>
+        <h3 class="text-[20px] font-medium mb-2 text-white">DEX Screener</h3>
+        <p class="text-[var(--dim)] text-[14px]">Setting volume filters and staring at new pairs for hours.</p>
+      </div>
+      
+      <div class="relative pl-6 md:pl-0">
+        <div class="w-[15px] h-[15px] rounded-full bg-[var(--panel)] ring-4 ring-[var(--ink)] absolute left-0 md:left-auto md:-top-[34px] top-1"></div>
+        <div class="font-mono text-[11px] text-[var(--dim)] mb-2">Today · AI Agents</div>
+        <h3 class="text-[20px] font-medium mb-2 text-white">LLM Twitter Bots</h3>
+        <p class="text-[var(--dim)] text-[14px]">Following specific influencers to trade based on their tweets.</p>
+      </div>
+      
+      <div class="relative pl-6 md:pl-0">
+        <div class="w-[15px] h-[15px] rounded-full bg-[var(--live)] ring-4 ring-[var(--ink)] shadow-[0_0_18px_rgba(60,227,167,.6)] absolute left-0 md:left-auto md:-top-[34px] top-1"></div>
+        <div class="font-mono text-[11px] text-[var(--live)] mb-2">Now · Tycho</div>
+        <h3 class="text-[20px] font-medium mb-2 text-white">Autonomous Radar</h3>
+        <p class="text-[var(--dim)] text-[14px]">Vectors and clustering find the metas mathematically.</p>
       </div>
     </div>
-    <div>
-      <h4 class="text-white font-mono text-[10px] uppercase tracking-widest mb-4">Network</h4>
-      <div class="flex flex-col gap-3 text-xs font-mono">
-        <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">Twitter / X</a>
-        <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">GitHub</a>
+  </section>
+
+  <section class="max-w-[1344px] mx-auto px-6 pt-20 pb-32 relative z-10">
+    <h2 class="text-[34px] font-medium tracking-tight mb-2 text-white">The pipeline compounds.</h2>
+    <p class="text-[var(--dim)] mb-7 max-w-[640px] text-[15px]">Every 5 minutes, the cron job executes the complete pipeline end-to-end.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+      <div class="bg-[var(--panel)] rounded-[14px] p-5 relative">
+        <div class="font-mono text-[24px] font-medium text-white">Ingest</div>
+        <div class="font-medium mt-2 text-[15px] text-white">Listen to chain</div>
+        <div class="text-[var(--dim)] text-[13px] mt-1">Read all new pairs on Robinhood.</div>
+      </div>
+      
+      <div class="bg-[var(--panel)] rounded-[14px] p-5 relative">
+        <div class="hidden md:block absolute -left-[14px] top-1/2 -translate-y-1/2 text-[var(--dim)] text-sm">→</div>
+        <div class="font-mono text-[24px] font-medium text-white">Embed</div>
+        <div class="font-medium mt-2 text-[15px] text-white">768-D Vectors</div>
+        <div class="text-[var(--dim)] text-[13px] mt-1">Gemini maps meaning to space.</div>
+      </div>
+      
+      <div class="bg-[var(--panel)] rounded-[14px] p-5 relative">
+        <div class="hidden md:block absolute -left-[14px] top-1/2 -translate-y-1/2 text-[var(--dim)] text-sm">→</div>
+        <div class="font-mono text-[24px] font-medium text-[var(--live)]">Cluster</div>
+        <div class="font-medium mt-2 text-[15px] text-white">DBSCAN Engine</div>
+        <div class="text-[var(--dim)] text-[13px] mt-1">Groups tokens into metas.</div>
+      </div>
+      
+      <div class="bg-[var(--panel)] rounded-[14px] p-5 relative">
+        <div class="hidden md:block absolute -left-[14px] top-1/2 -translate-y-1/2 text-[var(--dim)] text-sm">→</div>
+        <div class="font-mono text-[24px] font-medium text-[var(--live)]">Signal</div>
+        <div class="font-medium mt-2 text-[15px] text-white">Dashboard</div>
+        <div class="text-[var(--dim)] text-[13px] mt-1">Displayed instantly to the terminal.</div>
+        <div class="text-[11px] text-[var(--dim)] mt-3">↻ repeats every 5m</div>
       </div>
     </div>
-  </div>
-  <div class="max-w-[1380px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-[#0A1017]">
-    <span class="text-[10px] font-mono text-[#3D4B59]">© 2026 TYCHO_OS. All rights reserved.</span>
-    <span class="text-[10px] font-mono text-[var(--live)] animate-pulse">● V1.0.0 ONLINE</span>
-  </div>
-</footer>
+  </section>
 
+
+
+</div>
+</div>
 <style>
   :global(body) {
     margin: 0;
