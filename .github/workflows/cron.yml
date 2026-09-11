@@ -1,0 +1,23 @@
+name: Tycho Radar Pipeline Cron
+
+on:
+  schedule:
+    # Runs every 5 minutes
+    - cron: '*/5 * * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  ping-radar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Cron Endpoint
+        env:
+          # Your endpoint URL in production
+          CRON_URL: ${{ secrets.CRON_URL }}
+          # The Bearer token matching CRON_SECRET
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -X GET "$CRON_URL" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            --fail
