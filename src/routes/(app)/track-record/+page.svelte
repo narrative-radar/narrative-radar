@@ -13,13 +13,30 @@
 	}));
 
 	let records = $derived(trackRecordQuery.data?.records || []);
+
+	function generatePoints(data: number[]) {
+		if (!data || data.length < 2) {
+			data = [10, 15, 8, 20, 12, 25, 18, 30, 22, 35, 15, 40];
+		}
+		const max = Math.max(...data, 1);
+		const min = Math.min(...data, 0);
+		const range = max - min;
+		const width = 64;
+		const height = 18;
+		const step = width / (data.length - 1);
+		return data.map((val, i) => {
+			const x = i * step;
+			const y = 19 - ((val - min) / (range || 1)) * height;
+			return `${x},${y}`;
+		}).join(' ');
+	}
 </script>
 
 <svelte:head>
 	<title>Tycho - Track Record</title>
 </svelte:head>
 
-<main class="max-w-[860px] mx-auto px-[32px] pt-[48px] pb-[80px]">
+<main class="max-w-[1360px] mx-auto px-[32px] pt-[48px] pb-[80px]">
 	<p class="font-[var(--font-mono)] text-[13px] text-[var(--text-tertiary)] m-0 mb-[14px]">no login · public record</p>
 	<h1 class="font-serif font-normal text-[clamp(34px,5vw,52px)] m-0 mb-[16px]">Track record</h1>
 	<p class="text-[16px] text-[var(--text-secondary)] max-w-[56ch] m-0 mb-[32px]">
@@ -27,7 +44,7 @@
 	</p>
 
 	<!-- Model Validation Block -->
-	<div class="mb-[40px] border border-[var(--divider)] rounded-[12px] bg-[var(--surface)] overflow-hidden">
+	<div class="mb-[40px] border border-[var(--divider)] rounded-[12px] bg-[var(--bg)] overflow-hidden">
 		<div class="px-5 py-4 border-b border-[var(--divider)] flex items-center justify-between">
 			<div class="flex items-center gap-2">
 				<svg class="w-4 h-4 text-[var(--state-breakout)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -67,9 +84,10 @@
 		</div>
 	</div>
 
-	<div class="grid grid-cols-[12px_1fr_110px_90px_130px] gap-[16px] px-[6px] pb-[10px] text-[11px] text-[var(--text-tertiary)] font-[var(--font-mono)]">
+	<div class="grid grid-cols-[12px_1fr_70px_90px_90px_130px] gap-[16px] px-[6px] pb-[10px] text-[11px] text-[var(--text-tertiary)] font-[var(--font-mono)]">
 		<span></span>
 		<span>theme</span>
+		<span></span>
 		<span class="text-right">peak size</span>
 		<span class="text-right">peak growth</span>
 		<span class="text-right">first flagged</span>
@@ -84,14 +102,18 @@
 			</div>
 		{:else}
 			{#each records as r, index}
+				{@const colors = ['var(--live)', 'var(--banana)', 'var(--cyan)', 'var(--violet)']}
+				{@const glowColors = ['var(--live-glow)', 'var(--banana-glow)', 'rgba(56,189,248,0.3)', 'rgba(167,139,250,0.3)']}
+				{@const rowColor = r.status === 'archived' ? 'var(--state-quiet)' : colors[index % 4]}
+				{@const glow = r.status === 'archived' ? 'none' : `0 0 12px ${glowColors[index % 4]}`}
 				<div 
 					in:fly={{ y: 10, duration: 400, delay: index * 40 }}
-					class="grid grid-cols-[12px_1fr_110px_90px_130px] items-center gap-[16px] py-[18px] px-[6px] border-b border-[var(--divider)] hover:bg-[var(--row-hover)] transition-colors"
+					class="grid grid-cols-[12px_1fr_70px_90px_90px_130px] items-center gap-[16px] py-[18px] px-[6px] border-b border-[var(--divider)] hover:bg-[var(--row-hover)] transition-colors group"
 				>
-					<span class="w-[7px] h-[7px] rounded-full {r.status === 'archived' ? 'bg-[var(--state-quiet)]' : 'bg-[var(--state-breakout)]'}"></span>
-					<div class="text-[14.5px]">
+					<span class="w-[7px] h-[7px] rounded-full {r.status === 'archived' ? '' : 'animate-pulse'}" style="background-color: {rowColor}; box-shadow: {glow}"></span>
+					<div class="text-[14.5px]" style="color: {r.status === 'archived' ? 'var(--fg)' : rowColor};">
 						{r.label || r.name || 'Unknown Theme'}
-						<span class="block text-[11.5px] text-[var(--text-tertiary)] mt-[3px]">
+						<span class="block text-[11.5px] text-[var(--text-tertiary)] mt-[3px] group-hover:text-[var(--text-secondary)] transition-colors">
 							{#if r.status === 'archived'}
 								archived — cooled down
 							{:else}
@@ -99,10 +121,22 @@
 							{/if}
 						</span>
 					</div>
+					
+					<svg viewBox="0 0 64 20" class="w-[64px] h-[20px] overflow-visible">
+						<polyline 
+							points={generatePoints(r.sparklinePoints)} 
+							fill="none" 
+							stroke={rowColor} 
+							stroke-width="1.6" 
+							stroke-linecap="round" 
+							stroke-linejoin="round"
+						/>
+					</svg>
+
 					<span class="font-[var(--font-mono)] text-[12.5px] text-[var(--text-secondary)] text-right">
 						{r.peakMemberCount} tokens
 					</span>
-					<span class="font-[var(--font-mono)] text-[12.5px] font-semibold text-[var(--state-breakout)] text-right">
+					<span class="font-[var(--font-mono)] text-[12.5px] font-semibold text-right" style="color: {rowColor}; text-shadow: {glow}">
 						{#if r.peakGrowthRate}
 							{Number(r.peakGrowthRate) > 0 ? '+' : ''}{(Number(r.peakGrowthRate) * 100).toFixed(0)}%
 						{:else}

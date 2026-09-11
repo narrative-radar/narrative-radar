@@ -20,11 +20,15 @@
     },
     {
       stage: 'embedding',
-      src: `def process(token):\n    # Map metadata to multi-dimensional vector space\n    vector = gemini.embed(\n        name=token.name,\n        ticker=token.ticker,\n        image_lore=token.image_url\n    )\n    return vector`
+      src: `from tycho.nlp import TFIDF_Vectorizer\n\ndef process_metadata(token):\n    # Extract semantic features from token lore\n    vector = TFIDF_Vectorizer.embed(\n        name=token.name,\n        ticker=token.ticker,\n        social_graph=token.twitter_url\n    )\n    return vector`
     },
     {
       stage: 'clustering',
-      src: `from sklearn.cluster import DBSCAN\n\n# Group tokens autonomously\nclusters = DBSCAN(eps=0.85, min_samples=3).fit(vectors)\n\nfor c_id in set(clusters.labels_):\n    if c_id == -1: continue\n    log(f"New meta detected: Cluster {c_id}")\n    radar.signal(cluster_id=c_id)`
+      src: `from sklearn.cluster import DBSCAN\n\n# Group tokens autonomously via spatial density\nclusters = DBSCAN(eps=0.15, min_samples=3).fit(vectors)\n\nfor c_id in set(clusters.labels_):\n    if c_id == -1: continue\n    log(f"New meta detected: Cluster {c_id}")\n    radar.signal(cluster_id=c_id)`
+    },
+    {
+      stage: 'validation',
+      src: `def validate_narrative(cluster):\n    # Ensure meta has sustained growth\n    velocity = cluster.calculate_growth_rate()\n    if velocity > 0.05 and cluster.size >= 5:\n        cluster.status = 'breakout'\n        database.commit(cluster)\n        notify_terminal(cluster)`
     }
   ];
 
@@ -111,14 +115,14 @@
       stage = b.stage;
       
       if (charIdx < b.src.length) {
-        charIdx += 2;
+        charIdx += 1;
       } else {
         setTimeout(() => {
           blockIdx = (blockIdx + 1) % BLOCKS.length;
           charIdx = 0;
         }, 2000);
       }
-    }, 15);
+    }, 25);
 
     // Fetch REAL DATA
     try {
@@ -172,14 +176,31 @@
     <div class="flex items-center gap-6 md:gap-12">
       <a href="/" class="brand-console flex items-center gap-2">
         <img src="/images/logo.png" alt="Logo" class="w-10 h-10 opacity-80 mix-blend-screen" />
-        TYCHO<span class="hidden md:block text-[var(--accent)]">_NARRATIVE RADAR</span>
+        TYCHO<span class="hidden md:block text-[var(--live)]">_NARRATIVE RADAR</span>
       </a>
       
       <!-- TABS -->
       <nav class="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-widest mt-1">
-        <a href="/" class="text-white border-b border-[var(--live)] pb-1 font-bold">Overview</a>
-        <a href="/radar" class="text-[var(--dim)] hover:text-white transition-colors pb-1">Radar</a>
-        <a href="/track-record" class="text-[var(--dim)] hover:text-white transition-colors pb-1">Track Record</a>
+        <a href="/" class="relative pb-2 transition-colors text-white font-bold">
+          Overview
+          
+          <!-- Active Wave -->
+          <div class="absolute -bottom-[1px] left-0 w-full flex items-end justify-between gap-[1px] h-[3px]">
+            <div class="flex-1 bg-[var(--live)] animate-[wave_1s_ease-in-out_infinite_alternate] h-[40%]"></div>
+            <div class="flex-1 bg-[var(--live)] animate-[wave_1.2s_ease-in-out_infinite_alternate_0.2s] h-[100%]"></div>
+            <div class="flex-1 bg-[var(--live)] animate-[wave_0.8s_ease-in-out_infinite_alternate_0.4s] h-[60%]"></div>
+            <div class="flex-1 bg-[var(--live)] animate-[wave_1.4s_ease-in-out_infinite_alternate_0.6s] h-[80%]"></div>
+            <div class="flex-1 bg-[var(--live)] animate-[wave_1s_ease-in-out_infinite_alternate_0.3s] h-[50%]"></div>
+            <div class="flex-1 bg-[var(--live)] animate-[wave_1.1s_ease-in-out_infinite_alternate_0.1s] h-[90%]"></div>
+          </div>
+
+        </a>
+        <a href="/radar" class="relative pb-2 transition-colors text-[var(--dim)] hover:text-white">
+          Radar
+        </a>
+        <a href="/track-record" class="relative pb-2 transition-colors text-[var(--dim)] hover:text-white">
+          Track Record
+        </a>
       </nav>
     </div>
 
@@ -200,7 +221,7 @@
         </span>
       </div>
       
-      <h1 class="wordmark text-5xl md:text-7xl mb-8" use:scrambleText={"See the meta before it's the meta."}>
+      <h1 class="wordmark text-5xl md:text-7xl mb-8 min-h-[140px] md:min-h-[160px]" use:scrambleText={"See the meta before it's the meta."}>
         See the meta before it's the meta.
       </h1>
       
@@ -358,7 +379,7 @@
       
       <!-- Right: Visualizations -->
       <div class="w-full md:w-1/2 h-full bg-[#05080C] border-l border-[var(--rule)] relative hidden md:flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-[url('/images/noise.png')] opacity-10 mix-blend-overlay"></div>
+        <div class="absolute inset-0  opacity-10 mix-blend-overlay"></div>
         
         <!-- Vis 1: Ingestion Stream -->
         <div class="absolute inset-0 flex items-center justify-center transition-all duration-700 {activeStep === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}">
@@ -516,6 +537,47 @@
             </div>
           </div>
         </div>
+        <div class="p-5 rounded-xl bg-[var(--panel)] border border-[var(--rule)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-mono text-xs uppercase tracking-wider text-[#DCE6F0] font-semibold flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-[var(--cyan)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                AI Model Endpoint Status
+              </h3>
+              <span class="text-[10px] font-mono text-[var(--cyan)] bg-[rgba(56,189,248,0.1)] px-2 py-0.5 rounded border border-[var(--cyan)]/30">ONLINE</span>
+            </div>
+            <p class="text-[11.5px] text-[var(--dim)] mb-4">Core infrastructure for spatial clustering and embedding token metadata.</p>
+            <div class="space-y-3">
+              <div class="p-3 rounded-lg bg-[var(--panel2)] border border-[var(--soft)] flex items-center justify-between text-xs font-mono">
+                <div class="flex items-center gap-3">
+                  <div class="w-2 h-2 rounded-full bg-[var(--cyan)] shadow-[0_0_8px_rgba(56,189,248,0.5)]"></div>
+                  <div>
+                    <div class="text-[var(--fg)] font-medium">Semantic Feature Extraction</div>
+                    <div class="text-[10.5px] text-[var(--dim)]">768-dim embeddings</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[var(--fg)] font-bold">14ms</div>
+                  <div class="text-[10px] font-semibold text-[var(--dim)]">PING</div>
+                </div>
+              </div>
+              <div class="p-3 rounded-lg bg-[var(--panel2)] border border-[var(--soft)] flex items-center justify-between text-xs font-mono">
+                <div class="flex items-center gap-3">
+                  <div class="w-2 h-2 rounded-full bg-[var(--violet)] shadow-[0_0_8px_rgba(167,139,250,0.5)] animate-pulse"></div>
+                  <div>
+                    <div class="text-[var(--fg)] font-medium">DBSCAN Spatial Engine</div>
+                    <div class="text-[10.5px] text-[var(--dim)]">ε: 0.15 | Min Samples: 3</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[var(--fg)] font-bold">0.82</div>
+                  <div class="text-[10px] font-semibold text-[var(--violet)]">DENSITY</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
       
       <div class="lg:col-span-6 p-5 md:p-6 rounded-xl bg-[var(--panel)] border border-[var(--rule)] flex flex-col justify-between">
@@ -600,7 +662,7 @@
 
   <!-- CTA / System Access -->
   <div class="p-8 md:p-14 md:m-8 m-4 bg-[#0A1017] border border-[var(--rule)] rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden group">
-    <div class="absolute inset-0 bg-[url('/images/noise.png')] opacity-10 mix-blend-overlay"></div>
+    <div class="absolute inset-0  opacity-10 mix-blend-overlay"></div>
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-[var(--live)] rounded-full mix-blend-screen filter blur-[100px] opacity-10"></div>
     
     <div class="w-12 h-12 rounded-full border border-[var(--live)] flex items-center justify-center mb-6 relative">

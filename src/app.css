@@ -1,37 +1,130 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono:
-    ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas,
-    monospace;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Fraunces', serif;
 }
 
 @layer base {
   :root {
-    --bg: #030406;
-    --surface: #080b0f;
-    --divider: rgba(255, 255, 255, 0.05);
-    --row-hover: rgba(255, 255, 255, 0.02);
-    --text-primary: #ffffff;
-    --text-secondary: #8b93a1;
-    --text-tertiary: #565d6b;
-    --accent: #00d18b;
+    --ink: #06090D;
+    --panel: #0D131B;
+    --panel2: #090D13;
+    --panel-glass: rgba(13, 19, 27, 0.75);
+    --rule: #1B2635;
+    --soft: #141D29;
+    --crt: #050B08;
 
-    --state-quiet: #3f4753;
-    --state-active: #008f5d;
-    --state-fast: #00d18b;
-    --state-breakout: #ff3b30;
+    --fg: #D4E0EE;
+    --dim: #718497;
+    --faint: #3D4B59;
+
+    --banana: #F2C94C;
+    --banana-hi: #FFE885;
+    --banana-lo: #C49A18;
+    --banana-glow: rgba(242, 201, 76, 0.25);
+
+    --live: #34D399;
+    --live-glow: rgba(52, 211, 153, 0.3);
+    --stall: #F87171;
+    --stall-glow: rgba(248, 113, 113, 0.25);
+    --violet: #A78BFA;
+    --cyan: #38BDF8;
+
+    /* Legacy mapping for old components just in case */
+    --bg: #030508;
+    --surface: var(--panel);
+    --divider: var(--rule);
+    --row-hover: var(--panel2);
+    --text-primary: var(--fg);
+    --text-secondary: var(--dim);
+    --text-tertiary: var(--faint);
+    --state-quiet: var(--dim);
+    --state-breakout: var(--live);
   }
 
   body {
-    @apply bg-[var(--bg)] text-[var(--text-primary)] font-[var(--font-display)] antialiased min-h-screen m-0;
+    margin: 0;
+    padding: 0;
+    background: #030508;
+    color: #D4E0EE;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    @apply bg-[#030508] text-[var(--fg)] min-h-screen m-0;
   }
 
-  button:focus-visible,
-  a:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
+  /* Global Typography Utilities */
+  .wordmark {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    background: linear-gradient(135deg, #FFFFFF 0%, #C8D6E5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+
+  .brand-console {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -.02em;
+    color: #F1F6FA;
+  }
+
+  /* Global Glows */
+  .glow-live { text-shadow: 0 0 16px rgba(52, 211, 153, 0.4); }
+  .glow-cyan { text-shadow: 0 0 16px rgba(56, 189, 248, 0.4); }
+  .glow-banana { text-shadow: 0 0 16px rgba(242, 201, 76, 0.4); }
+  
+  .lamp-active {
+    animation: blip 2s ease-in-out infinite;
+  }
+
+  @keyframes blip {
+    0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--live-glow); }
+    50% { opacity: .25; box-shadow: none; }
+  }
+
+  /* Structural Global Classes */
+  .site-bg {
+    background-color: #06090D;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(167, 139, 250, 0.03) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(242, 201, 76, 0.02) 0px, transparent 50%);
+    background-attachment: fixed;
+    position: relative;
+    z-index: 10;
+    padding: 30px 20px;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 1380px;
+    margin: 0 auto;
+    border: 1px solid var(--soft);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
+    border-radius: 8px 8px 24px 24px;
+    background: var(--ink);
+    position: relative;
+    z-index: 10;
+  }
+
+  @media (max-width: 980px) {
+    body { padding: 0; }
+    .site-bg { padding: 0; }
+    .wrap {
+      border: none;
+      border-radius: 0;
+    }
   }
 }
+
+  @keyframes wave {
+    0% { height: 20%; opacity: 0.5; }
+    100% { height: 100%; opacity: 1; }
+  }
