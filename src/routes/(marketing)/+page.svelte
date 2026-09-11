@@ -690,7 +690,7 @@
         <span class="text-sm font-mono text-[var(--fg)] uppercase tracking-widest font-bold">TYCHO_OS</span>
       </div>
       <p class="text-[var(--dim)] text-xs font-mono max-w-sm leading-relaxed">
-        An autonomous narrative radar designed to detect emerging crypto metas on the Robinhood Chain using Gemini vector embeddings and DBSCAN clustering.
+        An autonomous narrative radar designed to detect emerging crypto metas on the Robinhood Chain using semantic vector embeddings and DBSCAN clustering.
       </p>
     </div>
     <div>
@@ -698,7 +698,7 @@
       <div class="flex flex-col gap-3 text-xs font-mono">
         <a href="/radar" class="text-[var(--dim)] hover:text-[var(--live)] transition-colors">Access Terminal</a>
         <a href="/track-record" class="text-[var(--dim)] hover:text-white transition-colors">Track Record</a>
-        <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">Documentation</a>
+        <!-- <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">Documentation</a> -->
       </div>
     </div>
     <div>
