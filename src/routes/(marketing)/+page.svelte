@@ -38,6 +38,55 @@
   let tokensAnalyzed = $state(0);
   let totalDataPoints = $state(0);
 
+  // Scrollytelling State
+  let howWorksRef = $state();
+  let activeStep = $state(0);
+
+  function scrambleText(node, text) {
+    const chars = '!-_[]{}—=+*^?#';
+    let frame = 0;
+    let queue = [];
+    
+    for (let i = 0; i < text.length; i++) {
+      queue.push({
+        from: chars[Math.floor(Math.random() * chars.length)],
+        to: text[i],
+        start: Math.floor(Math.random() * 40),
+        end: Math.floor(Math.random() * 40) + 40
+      });
+    }
+    
+    const update = () => {
+      let output = '';
+      let complete = 0;
+      for (let i = 0; i < queue.length; i++) {
+        let { from, to, start, end } = queue[i];
+        if (frame >= end) {
+          complete++;
+          output += to;
+        } else if (frame >= start) {
+          output += `<span class="opacity-50 text-[var(--cyan)]">${chars[Math.floor(Math.random() * chars.length)]}</span>`;
+        } else {
+          output += `<span class="opacity-0">${from}</span>`;
+        }
+      }
+      node.innerHTML = output;
+      if (complete === queue.length) return;
+      frame++;
+      requestAnimationFrame(update);
+    };
+    
+    setTimeout(() => requestAnimationFrame(update), 500);
+  }
+
+  $effect(() => {
+    if (howWorksRef && scrollY !== undefined && innerHeight !== undefined) {
+      const rect = howWorksRef.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, -rect.top / (rect.height - innerHeight)));
+      activeStep = Math.min(2, Math.floor(progress * 3));
+    }
+  });
+
   const TOK = /(#[^\n]*)|("(?:[^"\\]|\\.)*")|\b(import|from|if|else|for|in|return|def|not|and|or|as|True|False|None|sum|continue)\b|\b(\d[\d_.]*)\b/g;
 
   function hl(src) {
@@ -112,36 +161,35 @@
 
 <svelte:window bind:scrollY={scrollY} bind:innerHeight={innerHeight} />
 
+<div class="site-bg">
 <div class="wrap" bind:clientHeight={scrollHeight}>
-  <!-- Vital Rail (Scroll Battery) -->
-  <div class="fixed left-4 top-0 bottom-0 w-8 z-50 hidden xl:flex flex-col items-center py-8 pointer-events-none">
-    <div class="flex-1 w-[1px] bg-[var(--rule)] relative flex flex-col justify-start items-center">
-      <!-- Active fill -->
-      <div class="w-[1px] bg-[var(--live)] absolute top-0 left-0" style="height: {scrollProgress}%;"></div>
-      <!-- Marker dot -->
-      <div class="absolute w-2 h-2 rounded-full bg-[var(--live)] shadow-[0_0_8px_var(--live)] -translate-x-[3.5px] transition-all duration-75" style="top: {scrollProgress}%;"></div>
-    </div>
-    <div class="mt-4 font-mono text-[9px] text-[var(--live)] font-bold tracking-widest rotate-180" style="writing-mode: vertical-rl;">
-      {Math.round(scrollProgress)}%
-    </div>
-  </div>
 
   <!-- Header Bar -->
-  <header class="flex items-center justify-between px-6 py-4 border-b border-[var(--rule)] bg-[var(--ink)] relative">
+  <header class="flex items-center justify-between md:px-6 py-4 border-b border-[var(--rule)] bg-[var(--ink)] relative z-20">
     <!-- Techy decoration on header -->
     <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[var(--live)] via-[var(--rule)] to-transparent opacity-50"></div>
     
-    <a href="/" class="brand-console flex items-center gap-2">
-      <img src="/images/logo.png" alt="Logo" class="w-5 h-5 opacity-80 mix-blend-screen" />
-      TYCHO<span class="text-[var(--cyan)]">_OS</span>
-    </a>
-    <div class="text-[11px] font-mono text-[var(--faint)] uppercase tracking-widest px-4 py-1.5 bg-[#090D13] border-l-2 border-[var(--live)]" style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);">
-      system status: <span class="text-[var(--live)] font-bold">autonomous</span>
+    <div class="flex items-center gap-6 md:gap-12">
+      <a href="/" class="brand-console flex items-center gap-2">
+        <img src="/images/logo.png" alt="Logo" class="w-10 h-10 opacity-80 mix-blend-screen" />
+        TYCHO<span class="hidden md:block text-[var(--accent)]">_NARRATIVE RADAR</span>
+      </a>
+      
+      <!-- TABS -->
+      <nav class="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-widest mt-1">
+        <a href="/" class="text-white border-b border-[var(--live)] pb-1 font-bold">Overview</a>
+        <a href="/radar" class="text-[var(--dim)] hover:text-white transition-colors pb-1">Radar</a>
+        <a href="/track-record" class="text-[var(--dim)] hover:text-white transition-colors pb-1">Track Record</a>
+      </nav>
+    </div>
+
+    <div class="text-[8px] md:text-[11px] font-mono text-[var(--faint)] uppercase tracking-widest px-4 py-1.5 bg-[#090D13] border-l-2 border-[var(--live)]" style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);">
+      system status: <span class="text-[var(--live)] font-bold animate-pulse">autonomous</span>
     </div>
   </header>
 
   <!-- Hero Grid -->
-  <div class="hero-grid grid grid-cols-1 lg:grid-cols-[1.22fr_1.1fr] border-b border-[var(--rule)]">
+  <div class="hero-grid grid grid-cols-1 lg:grid-cols-[1.22fr_1.1fr] border-b border-[var(--rule)] max-w-[1380px] mx-auto">
     
     <!-- Left Scene -->
     <div class="p-8 md:p-14 relative flex flex-col justify-center min-h-[60vh] bg-[var(--ink)]">
@@ -152,13 +200,24 @@
         </span>
       </div>
       
-      <h1 class="wordmark text-5xl md:text-7xl mb-8">
+      <h1 class="wordmark text-5xl md:text-7xl mb-8" use:scrambleText={"See the meta before it's the meta."}>
         See the meta before it's the meta.
       </h1>
       
-      <p class="text-[var(--dim)] text-lg max-w-lg leading-relaxed mb-10 font-mono">
+      <p class="text-[var(--dim)] text-lg max-w-lg leading-relaxed mb-6 font-mono">
         A completely autonomous pipeline that turns raw blockchain noise into readable narrative signals. Grouped by AI, not by hand.
       </p>
+
+      <div class="grid grid-cols-2 gap-4 mt-6 mb-10">
+        <div class="border-l border-[var(--rule)] pl-4">
+          <div class="text-[10px] text-[var(--dim)] font-mono uppercase tracking-widest mb-1">Processing Delay</div>
+          <div class="text-white font-mono text-sm">~1.2 seconds</div>
+        </div>
+        <div class="border-l border-[var(--rule)] pl-4">
+          <div class="text-[10px] text-[var(--dim)] font-mono uppercase tracking-widest mb-1">Embedding Matrix</div>
+          <div class="text-white font-mono text-sm">768 Dimensions</div>
+        </div>
+      </div>
 
       <div class="flex items-center gap-6 mt-auto">
         <a href="/radar" class="glass-panel px-6 py-3 font-mono text-sm text-[var(--fg)] hover:text-white hover:border-[var(--live)] transition-colors cursor-pointer" style="clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);">
@@ -194,7 +253,7 @@
       </div>
 
       <!-- Feed Box -->
-      <div class="h-[242px] overflow-hidden relative z-10">
+      <div class="h-[292px] overflow-hidden relative z-10">
         <div class="absolute inset-0 overflow-y-auto">
           {#each feed as t}
             <div class="trow grid grid-cols-[22px_1.35fr_62px_74px] sm:grid-cols-[22px_1.35fr_62px_62px_74px] gap-2.5 items-center px-4.5 py-2 border-b border-[#0E1B15] text-[11.5px] font-mono">
@@ -250,159 +309,385 @@
     </div>
   </div>
 
-  <!-- Technical Process Panel -->
-  <div class="p-8 md:p-14 bg-[var(--ink)] border-b border-[var(--rule)]">
-    <h2 class="wordmark text-4xl mb-12">How Tycho Reads The Chain</h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="glass-panel p-8 rounded-sm hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-        <div class="text-[var(--banana)] font-mono text-sm mb-4 border border-[var(--banana-lo)] bg-[var(--banana-glow)] w-8 h-8 flex items-center justify-center rounded-sm">01</div>
-        <h3 class="text-xl font-bold text-white mb-3">Instant Ingestion</h3>
-        <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
-          Every launch is just three small signals — a name, a ticker, an image. Tycho reads all of them the moment they go live on Robinhood. No manual pasting required.
-        </p>
+  <!-- Technical Process Panel (Pinned Scrollytelling) -->
+  <div bind:this={howWorksRef} class="h-auto md:h-[150vh] bg-[var(--ink)] relative border-b border-[var(--rule)]">
+    <div class="relative md:sticky top-0 h-auto md:h-screen flex flex-col md:flex-row overflow-hidden">
+      
+      <!-- Left: Narrative Text -->
+      <div class="w-full md:w-1/2 p-8 md:p-14 lg:p-20 flex flex-col justify-center h-full">
+        <h2 class="wordmark text-4xl mb-12">How Tycho Reads The Chain</h2>
+        
+        <div class="flex flex-col gap-10 relative">
+          <!-- Connecting Line -->
+          <div class="absolute left-4 top-4 bottom-4 w-[1px] bg-[var(--rule)] -z-10"></div>
+          
+          <!-- Step 1 -->
+          <div class="flex gap-6 transition-all duration-500 {activeStep === 0 ? 'opacity-100 translate-x-0' : 'opacity-30 -translate-x-2 grayscale'}">
+            <div class="w-8 h-8 rounded-sm bg-[var(--ink)] border {activeStep === 0 ? 'border-[var(--banana)] text-[var(--banana)] shadow-[0_0_12px_var(--banana-glow)]' : 'border-[var(--dim)] text-[var(--dim)]'} flex items-center justify-center font-mono text-sm shrink-0 transition-colors duration-500 z-10">01</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-2">Instant Ingestion</h3>
+              <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
+                Every launch is just three small signals — a name, a ticker, an image. Tycho reads all of them the moment they go live on Robinhood. No manual pasting required.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="flex gap-6 transition-all duration-500 {activeStep === 1 ? 'opacity-100 translate-x-0' : 'opacity-30 -translate-x-2 grayscale'}">
+            <div class="w-8 h-8 rounded-sm bg-[var(--ink)] border {activeStep === 1 ? 'border-[var(--cyan)] text-[var(--cyan)] shadow-[0_0_12px_rgba(56,189,248,0.2)]' : 'border-[var(--dim)] text-[var(--dim)]'} flex items-center justify-center font-mono text-sm shrink-0 transition-colors duration-500 z-10">02</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-2">Vector Embedding</h3>
+              <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
+                The raw text and image metadata is fed into Google Gemini, transforming the creative lore into multi-dimensional vectors.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="flex gap-6 transition-all duration-500 {activeStep === 2 ? 'opacity-100 translate-x-0' : 'opacity-30 -translate-x-2 grayscale'}">
+            <div class="w-8 h-8 rounded-sm bg-[var(--ink)] border {activeStep === 2 ? 'border-[var(--live)] text-[var(--live)] shadow-[0_0_12px_var(--live-glow)]' : 'border-[var(--dim)] text-[var(--dim)]'} flex items-center justify-center font-mono text-sm shrink-0 transition-colors duration-500 z-10">03</div>
+            <div>
+              <h3 class="text-xl font-bold text-white mb-2">Anomaly Detection</h3>
+              <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
+                A DBSCAN clustering algorithm groups identical vectors together. When a group spikes abnormally fast, it flags it as a new narrative meta.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="glass-panel p-8 rounded-sm hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-        <div class="text-[var(--cyan)] font-mono text-sm mb-4 border border-[var(--cyan)] bg-[rgba(56,189,248,0.1)] w-8 h-8 flex items-center justify-center rounded-sm">02</div>
-        <h3 class="text-xl font-bold text-white mb-3">Vector Embedding</h3>
-        <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
-          The raw text and image metadata is fed into Google Gemini, transforming the creative lore into multi-dimensional vectors.
-        </p>
-      </div>
-      <div class="glass-panel p-8 rounded-sm hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-        <div class="text-[var(--live)] font-mono text-sm mb-4 border border-[var(--live)] bg-[var(--live-glow)] w-8 h-8 flex items-center justify-center rounded-sm">03</div>
-        <h3 class="text-xl font-bold text-white mb-3">Anomaly Detection</h3>
-        <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
-          A DBSCAN clustering algorithm groups identical vectors together. When a group spikes abnormally fast, it flags it as a new narrative meta.
-        </p>
+      
+      <!-- Right: Visualizations -->
+      <div class="w-full md:w-1/2 h-full bg-[#05080C] border-l border-[var(--rule)] relative hidden md:flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-[url('/images/noise.png')] opacity-10 mix-blend-overlay"></div>
+        
+        <!-- Vis 1: Ingestion Stream -->
+        <div class="absolute inset-0 flex items-center justify-center transition-all duration-700 {activeStep === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}">
+          <div class="flex flex-col gap-3 font-mono text-[10px] text-[var(--banana)] w-64">
+            <div class="p-2 border border-[var(--banana-lo)] bg-[var(--banana-glow)] flex justify-between animate-[pulse_1.5s_ease-in-out_infinite]">
+              <span>[RAW] DOGE_2.0</span><span>+0.01s</span>
+            </div>
+            <div class="p-2 border border-[var(--banana-lo)] bg-[var(--banana-glow)] flex justify-between animate-[pulse_2s_ease-in-out_infinite_0.2s]">
+              <span>[RAW] CAT_IN_BOX</span><span>+0.04s</span>
+            </div>
+            <div class="p-2 border border-[var(--banana-lo)] bg-[var(--banana-glow)] flex justify-between animate-[pulse_1.8s_ease-in-out_infinite_0.4s]">
+              <span>[RAW] PEPE_HAT</span><span>+0.12s</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Vis 2: Vector Matrix -->
+        <div class="absolute inset-0 flex items-center justify-center transition-all duration-700 {activeStep === 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}">
+          <div class="grid grid-cols-4 gap-2 font-mono text-[9px] text-[var(--cyan)]">
+            {#each Array(16) as _, i}
+              <div class="p-2 border border-[var(--cyan)] bg-[rgba(56,189,248,0.05)] text-center transition-all duration-300" style="transition-delay: {i * 20}ms; opacity: {activeStep === 1 ? 1 : 0}; transform: translateY({activeStep === 1 ? '0' : '10px'});">
+                {(Math.random() * 2 - 1).toFixed(3)}
+              </div>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Vis 3: Clustering -->
+        <div class="absolute inset-0 flex items-center justify-center transition-all duration-700 {activeStep === 2 ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}">
+          <div class="relative w-64 h-64 border border-[var(--rule)] rounded-full flex items-center justify-center">
+            <div class="absolute w-32 h-32 border border-[var(--live)] rounded-full bg-[var(--live-glow)] animate-ping opacity-20"></div>
+            <div class="absolute w-4 h-4 bg-[var(--live)] rounded-full shadow-[0_0_20px_var(--live)]"></div>
+            <div class="absolute top-1/4 left-1/4 w-2 h-2 bg-[var(--dim)] rounded-full"></div>
+            <div class="absolute bottom-1/3 right-1/4 w-2 h-2 bg-[var(--dim)] rounded-full"></div>
+            <div class="absolute top-1/2 right-1/3 w-2 h-2 bg-[var(--live)] rounded-full shadow-[0_0_8px_var(--live)] animate-pulse"></div>
+          </div>
+        </div>
+        
       </div>
     </div>
   </div>
 
-  <!-- Live Metrics Bento Grid -->
-  <div class="p-8 md:p-14 bg-[var(--panel2)] border-b border-[var(--rule)]">
-    <div class="mb-10">
-      <h2 class="wordmark text-3xl mb-2">System Metrics</h2>
-      <p class="text-[var(--dim)] font-mono text-[12px]">Real-time saturation and pipeline health.</p>
+  <!-- Telemetry & Pipeline Status Dashboard -->
+  <section class="learning-progress border-t border-[var(--rule)] bg-[var(--panel2)] p-6 md:p-8 rounded-b-[24px]">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[var(--soft)]">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[var(--live)] lamp-active"></span>
+          <span class="font-mono text-xs uppercase tracking-widest text-[var(--live)] font-bold">Pipeline Progress &amp; Telemetry</span>
+        </div>
+        <h2 class="font-serif text-2xl md:text-3xl font-bold text-[#F1F6FA] tracking-tight mt-1">Tycho Clustering &amp; Data Ingestion</h2>
+        <p class="text-xs md:text-sm text-[var(--dim)] mt-1 max-w-[70ch]">Real-time aggregate data collected across Robinhood Chain. DBSCAN parameters evaluate distances continuously as narrative meta thresholds are breached.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 self-start md:self-auto w-full sm:w-auto mt-4 md:mt-0">
+        <div class="px-3.5 py-1.5 rounded-lg bg-[var(--panel)] border border-[var(--rule)] font-mono text-xs text-[var(--fg)] flex items-center gap-2">
+          <span class="text-[var(--faint)]">STATUS:</span>
+          <span class="text-[var(--banana)] font-bold glow-banana">AUTONOMOUS RUN</span>
+        </div>
+        <div class="px-3.5 py-1.5 rounded-lg bg-[rgba(52,211,153,0.1)] border border-[var(--live)]/40 font-mono text-xs text-[var(--live)] font-bold">SATURATION 80.0%</div>
+      </div>
     </div>
-
-    <!-- Bento Layout (No harsh card borders, just structural blocks) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[140px]">
-      
-      <!-- Big Stat 1 -->
-      <div class="col-span-1 md:col-span-2 lg:col-span-2 row-span-1 bg-[var(--ink)] flex flex-col justify-center p-8 relative overflow-hidden group">
-        <div class="absolute right-0 top-0 w-32 h-32 bg-[var(--live)] rounded-full mix-blend-screen filter blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity duration-700"></div>
-        <div class="text-[var(--faint)] text-[10px] font-mono uppercase tracking-widest mb-2">Total Tokens Scanned</div>
-        <div class="font-serif text-5xl font-bold text-white tracking-tight">{totalDataPoints > 0 ? (totalDataPoints / 10).toLocaleString() : '14,029'}</div>
-      </div>
-
-      <!-- Big Stat 2 -->
-      <div class="col-span-1 md:col-span-1 lg:col-span-1 row-span-1 bg-[var(--ink)] flex flex-col justify-center p-8 relative overflow-hidden group">
-        <div class="text-[var(--faint)] text-[10px] font-mono uppercase tracking-widest mb-2">Active Metas</div>
-        <div class="font-serif text-5xl font-bold text-[var(--live)] tracking-tight glow-live">{realClusters.length || 0}</div>
-      </div>
-
-      <!-- Small Stat -->
-      <div class="col-span-1 md:col-span-1 lg:col-span-1 row-span-1 bg-[var(--ink)] flex flex-col justify-center p-8 border-l border-[var(--live)]">
-        <div class="text-[var(--faint)] text-[10px] font-mono uppercase tracking-widest mb-2">Peak Density</div>
-        <div class="font-serif text-3xl font-bold text-[var(--banana)] tracking-tight glow-banana">0.82</div>
-      </div>
-
-      <!-- Wide Explanation Bento -->
-      <div class="col-span-1 md:col-span-3 lg:col-span-2 row-span-1 bg-[var(--ink)] p-8 flex flex-col justify-center">
-        <div class="text-[var(--faint)] text-[10px] font-mono uppercase tracking-widest mb-3">Pipeline Status</div>
-        <div class="text-[var(--dim)] text-[12.5px] leading-relaxed max-w-md">
-          Continuous ingestion is <span class="text-[var(--live)] font-bold">ACTIVE</span>. Vectors are grouping with a minimum distance ε of 0.15. System requires a density threshold of 85% to trigger a breakout signal.
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+      <div class="p-4 rounded-xl bg-[var(--panel)] border border-[var(--rule)] hover:border-[var(--banana)]/50 transition-all duration-200">
+        <div class="flex flex-wrap justify-between items-start gap-2">
+          <span class="text-[10.5px] font-mono text-[var(--dim)] uppercase tracking-wider">Total Tokens Scanned</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--panel2)] text-[var(--banana)] border border-[var(--banana)]/30 font-semibold">LIVE SCAN</span>
+        </div>
+        <div class="text-3xl font-serif font-bold text-[#F1F6FA] mt-2 tracking-tight">{totalDataPoints > 0 ? (totalDataPoints / 10).toLocaleString() : '14,029'}</div>
+        <div class="text-[11px] font-mono text-[var(--dim)] mt-2 flex items-center justify-between border-t border-[var(--soft)] pt-2">
+          <span>Ingestion Rate:</span>
+          <span class="text-[var(--fg)] font-medium">18 tokens/m</span>
         </div>
       </div>
-
-      <!-- Live Sync Button Bento -->
-      <div class="col-span-1 md:col-span-3 lg:col-span-2 row-span-1 bg-[var(--ink)] flex items-center justify-between p-8 relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('/images/noise.png')] opacity-5 mix-blend-overlay"></div>
+      <div class="p-4 rounded-xl bg-[var(--panel)] border border-[var(--rule)] hover:border-[var(--live)]/50 transition-all duration-200">
+        <div class="flex flex-wrap justify-between items-start gap-2">
+          <span class="text-[10.5px] font-mono text-[var(--dim)] uppercase tracking-wider">Cluster Distribution</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(52,211,153,0.15)] text-[var(--live)] font-semibold">Active Metas</span>
+        </div>
+        <div class="flex items-baseline gap-3 mt-2">
+          <span class="text-3xl font-serif font-bold text-[var(--live)] tracking-tight glow-live">{realClusters.length || 0}</span>
+          <span class="text-sm font-mono text-[var(--dim)]">detected</span>
+        </div>
+        <div class="w-full bg-[var(--panel2)] h-2 rounded-full mt-3 overflow-hidden flex">
+          <div class="bg-[var(--live)] h-full transition-all duration-500" style="width: 23.7%;"></div>
+          <div class="bg-[var(--stall)] opacity-70 h-full flex-1"></div>
+        </div>
+      </div>
+      <div class="p-4 rounded-xl bg-[var(--panel)] border border-[var(--rule)] hover:border-[var(--cyan)]/50 transition-all duration-200">
+        <div class="flex flex-wrap justify-between items-start gap-2">
+          <span class="text-[10.5px] font-mono text-[var(--dim)] uppercase tracking-wider">Peak Density</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(56,189,248,0.15)] text-[var(--cyan)] font-semibold">DBSCAN</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span class="text-3xl font-serif font-bold text-[var(--cyan)] tracking-tight glow-cyan">0.82</span>
+          <span class="text-xs font-mono text-[var(--dim)]">Threshold</span>
+        </div>
+        <div class="text-[11px] font-mono text-[var(--dim)] mt-2 flex items-center justify-between border-t border-[var(--soft)] pt-2">
+          <span>Minimum Distance (ε):</span>
+          <span class="text-[var(--banana)] font-bold">0.1500</span>
+        </div>
+      </div>
+      <div class="p-4 rounded-xl bg-[var(--panel)] border border-[var(--rule)] hover:border-[var(--violet)]/50 transition-all duration-200">
+        <div class="flex flex-wrap justify-between items-start gap-2">
+          <span class="text-[10.5px] font-mono text-[var(--dim)] uppercase tracking-wider">Feature Vectors</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(167,139,250,0.15)] text-[var(--violet)] font-semibold">d = 768</span>
+        </div>
+        <div class="text-3xl font-serif font-bold text-[var(--violet)] mt-2 tracking-tight">768 Dim</div>
+        <div class="text-[11px] font-mono text-[var(--dim)] mt-2 flex items-center justify-between border-t border-[var(--soft)] pt-2">
+          <span>Embedding Engine:</span>
+          <span class="text-[var(--fg)] font-medium">Gemini 1.5</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+      <div class="lg:col-span-6 flex flex-col gap-6">
+        <div class="p-5 rounded-xl bg-[var(--panel)] border border-[var(--rule)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-mono text-xs uppercase tracking-wider text-[#DCE6F0] font-semibold flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-[var(--live)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Active Data Streams &amp; Ingestion Pipeline
+              </h3>
+              <span class="text-[10px] font-mono text-[var(--live)] bg-[rgba(52,211,153,0.1)] px-2 py-0.5 rounded border border-[var(--live)]/30">STREAMING</span>
+            </div>
+            <p class="text-[11.5px] text-[var(--dim)] mb-4">Continuous ingestion monitoring live Robinhood Chain contracts and launches.</p>
+            <div class="space-y-3">
+              <div class="p-3 rounded-lg bg-[var(--panel2)] border border-[var(--soft)] flex items-center justify-between text-xs font-mono">
+                <div class="flex items-center gap-3">
+                  <div class="w-2 h-2 rounded-full bg-[var(--live)] animate-ping"></div>
+                  <div>
+                    <div class="text-[var(--fg)] font-medium">Robinhood Contract Listener</div>
+                    <div class="text-[10.5px] text-[var(--dim)]">18 tokens/m</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[var(--fg)] font-bold">451</div>
+                  <div class="text-[10px] font-semibold text-[var(--live)]">ACTIVE</div>
+                </div>
+              </div>
+              <div class="p-3 rounded-lg bg-[var(--panel2)] border border-[var(--soft)] flex items-center justify-between text-xs font-mono">
+                <div class="flex items-center gap-3">
+                  <div class="w-2 h-2 rounded-full bg-[var(--live)] animate-ping"></div>
+                  <div>
+                    <div class="text-[var(--fg)] font-medium">Vector Embedding Queue</div>
+                    <div class="text-[10.5px] text-[var(--dim)]">3 vectors/s</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[var(--fg)] font-bold">100%</div>
+                  <div class="text-[10px] font-semibold text-[var(--cyan)]">SYNCED</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="lg:col-span-6 p-5 md:p-6 rounded-xl bg-[var(--panel)] border border-[var(--rule)] flex flex-col justify-between">
         <div>
-          <div class="font-serif text-xl font-bold text-white mb-1 tracking-tight">Sync State</div>
-          <div class="text-[var(--dim)] text-[11px] font-mono">Last poll: 2s ago</div>
-        </div>
-        <button class="inline-flex items-center justify-center gap-2 bg-[rgba(52,211,153,0.1)] border border-[rgba(52,211,153,0.4)] text-[var(--live)] font-bold text-[10px] px-5 py-2.5 rounded-sm font-mono hover:bg-[var(--live)] hover:text-[var(--ink)] transition-all">
-          <span class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-          Force Sync
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Real-time Cluster Ledger -->
-  <div class="p-8 md:p-14 bg-[var(--ink)]">
-    <div class="flex items-center justify-between mb-8">
-      <h2 class="wordmark text-3xl">Live Radar Ledger</h2>
-      <a href="/radar" class="text-[var(--violet)] text-sm font-mono hover:underline">Open Full App →</a>
-    </div>
-
-    <div class="border border-[var(--rule)] bg-[var(--panel2)] p-1 rounded-sm shadow-inner overflow-hidden">
-      <div class="grid grid-cols-[1fr_100px_100px] p-4 border-b border-[var(--rule)] text-[var(--dim)] text-[10px] uppercase tracking-widest font-mono bg-[#0A1017]">
-        <span>Meta Cluster</span>
-        <span class="text-right">Tokens</span>
-        <span class="text-right">Status</span>
-      </div>
-      
-      {#if realClusters.length > 0}
-        {#each realClusters as rc}
-          <a href="/radar" class="trow grid grid-cols-[1fr_100px_100px] p-4 border-b border-[var(--rule)] items-center cursor-pointer no-underline block bg-[var(--ink)] hover:bg-[var(--panel)]">
-            <div class="flex items-center gap-3">
-              <div class={`w-2 h-2 rounded-full ${rc.status === 'breakout' ? 'bg-[var(--live)] shadow-[0_0_8px_var(--live)]' : rc.status === 'active' ? 'bg-[var(--banana)] shadow-[0_0_8px_var(--banana)]' : 'bg-[var(--dim)]'}`}></div>
-              <span class="text-[var(--fg)] font-medium font-mono text-[12.5px]">{rc.label || (rc.tokens && rc.tokens.length > 0 ? rc.tokens[0].name : 'Pending Theme Assignment')}</span>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-mono text-xs uppercase tracking-wider text-[#DCE6F0] font-semibold flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-[var(--violet)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 30v-6m0 -6V4m0 6v-6m0 6H3m8 0h8"></path></svg>
+              Cluster Density Factors (Vector Proximity)
+            </h3>
+            <span class="text-[10.5px] font-mono text-[var(--violet)] font-semibold">768-DIM MATRIX</span>
+          </div>
+          <p class="text-[11.5px] text-[var(--dim)] mb-5">The relative impact of extracted metadata vectors calculated by DBSCAN to distinguish true narrative metas from noise.</p>
+          
+          <div class="space-y-4">
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--panel2)] text-[var(--dim)] border border-[var(--soft)]">#1</span>
+                  <span class="text-[var(--fg)] font-medium">Image Hash & Visual Lore Similarity</span>
+                </div>
+                <span class="font-bold text-[var(--fg)]">56.1%</span>
+              </div>
+              <div class="w-full bg-[var(--panel2)] h-2.5 rounded-full overflow-hidden p-0.5 border border-[var(--soft)]">
+                <div class="h-full rounded-full transition-all duration-700 ease-out shadow-sm" style="width: 56.1%; background-color: var(--banana);"></div>
+              </div>
             </div>
-            <div class="text-right text-[var(--dim)] font-mono text-[12px]">{rc.memberCount || rc.tokens?.length || 1}</div>
-            <div class="text-right">
-              <span class={`inline-block px-2 py-0.5 rounded text-[9.5px] font-bold font-mono ${
-                rc.status === 'breakout' ? 'bg-[rgba(52,211,153,0.12)] text-[var(--live)] border border-[rgba(52,211,153,0.3)]' :
-                rc.status === 'active' ? 'bg-[rgba(242,201,76,0.1)] text-[var(--banana)] border border-[rgba(242,201,76,0.3)]' :
-                'bg-[rgba(248,113,113,0.1)] text-[var(--stall)] border border-[rgba(248,113,113,0.25)]'
-              }`}>
-                {rc.status === 'breakout' ? '● META' : rc.status === 'active' ? '· active' : '· cooling'}
-              </span>
+            
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--panel2)] text-[var(--dim)] border border-[var(--soft)]">#2</span>
+                  <span class="text-[var(--fg)] font-medium">Ticker Lexical Proximity (Levenshtein)</span>
+                </div>
+                <span class="font-bold text-[var(--fg)]">22.3%</span>
+              </div>
+              <div class="w-full bg-[var(--panel2)] h-2.5 rounded-full overflow-hidden p-0.5 border border-[var(--soft)]">
+                <div class="h-full rounded-full transition-all duration-700 ease-out shadow-sm" style="width: 22.3%; background-color: var(--live);"></div>
+              </div>
             </div>
-          </a>
-        {/each}
-      {:else}
-        <div class="p-8 text-center text-[var(--dim)] font-mono text-[12px] bg-[var(--ink)]">
-          Waiting for Robinhood feed... (Or API is disconnected)
+            
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--panel2)] text-[var(--dim)] border border-[var(--soft)]">#3</span>
+                  <span class="text-[var(--fg)] font-medium">Semantic Name Grouping</span>
+                </div>
+                <span class="font-bold text-[var(--fg)]">18.1%</span>
+              </div>
+              <div class="w-full bg-[var(--panel2)] h-2.5 rounded-full overflow-hidden p-0.5 border border-[var(--soft)]">
+                <div class="h-full rounded-full transition-all duration-700 ease-out shadow-sm" style="width: 18.1%; background-color: var(--cyan);"></div>
+              </div>
+            </div>
+            
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[var(--panel2)] text-[var(--dim)] border border-[var(--soft)]">#4</span>
+                  <span class="text-[var(--fg)] font-medium">Temporal Launch Density (1H Window)</span>
+                </div>
+                <span class="font-bold text-[var(--fg)]">3.5%</span>
+              </div>
+              <div class="w-full bg-[var(--panel2)] h-2.5 rounded-full overflow-hidden p-0.5 border border-[var(--soft)]">
+                <div class="h-full rounded-full transition-all duration-700 ease-out shadow-sm" style="width: 3.5%; background-color: var(--violet);"></div>
+              </div>
+            </div>
+          </div>
         </div>
-      {/if}
+        
+        <div class="mt-6 p-4 rounded-xl bg-[var(--panel2)] border border-[var(--rule)] flex items-center justify-between gap-4">
+          <div>
+            <div class="text-[10.5px] font-mono text-[var(--banana)] uppercase tracking-wider font-bold">Network Saturation</div>
+            <div class="text-xs text-[var(--dim)] mt-0.5">High volume of launches <b class="text-[var(--fg)]">stabilized</b> at <b class="text-[var(--banana)]">80%</b></div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-xl font-mono font-bold text-[var(--banana)] glow-banana">80.0%</div>
+            <div class="text-[9.5px] font-mono text-[var(--live)] uppercase font-semibold">SCANNING</div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Footer -->
-  <footer class="p-8 border-t border-[var(--rule)] bg-[var(--ink)] flex flex-col md:flex-row items-center justify-between gap-4">
-    <div class="flex items-center gap-3 opacity-50">
-      <img src="/images/logo.png" alt="Tycho" class="w-6 h-6 grayscale mix-blend-screen" />
-      <span class="text-[11px] font-mono text-[var(--fg)] uppercase tracking-widest">TYCHO_OS // V1.0.0</span>
+  <!-- CTA / System Access -->
+  <div class="p-8 md:p-14 md:m-8 m-4 bg-[#0A1017] border border-[var(--rule)] rounded-2xl flex flex-col items-center justify-center text-center relative overflow-hidden group">
+    <div class="absolute inset-0 bg-[url('/images/noise.png')] opacity-10 mix-blend-overlay"></div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-[var(--live)] rounded-full mix-blend-screen filter blur-[100px] opacity-10"></div>
+    
+    <div class="w-12 h-12 rounded-full border border-[var(--live)] flex items-center justify-center mb-6 relative">
+      <div class="absolute inset-0 rounded-full border border-[var(--live)] animate-ping opacity-30"></div>
+      <div class="w-3 h-3 bg-[var(--live)] rounded-full shadow-[0_0_12px_var(--live)]"></div>
     </div>
     
-    <div class="flex gap-6">
-      <a href="/radar" class="text-[11px] font-mono text-[var(--dim)] hover:text-white uppercase tracking-widest">Open App</a>
-      <a href="#" class="text-[11px] font-mono text-[var(--dim)] hover:text-white uppercase tracking-widest">Documentation</a>
+    <h2 class="font-serif text-3xl md:text-4xl mb-4 text-[#F1F6FA] font-bold tracking-tight">System Synchronized</h2>
+    <p class="text-[var(--dim)] font-mono text-xs md:text-sm max-w-md mb-8 leading-relaxed">Tycho is actively indexing Robinhood Chain. Access the main terminal to view raw breakout vectors and real-time narrative clusters.</p>
+    
+    <a href="/radar" class="inline-flex items-center gap-3 px-8 py-4 bg-[var(--live)] text-[var(--ink)] font-mono font-bold text-sm hover:bg-[#F1F6FA] hover:text-[#06090D] transition-colors cursor-pointer" style="clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);">
+      LAUNCH TERMINAL_OS
+    </a>
+  </div>
+
+</div> <!-- End of .wrap -->
+</div> <!-- End of .site-bg -->
+
+<!-- Minimal Footer -->
+<footer class="w-full bg-[#030508] pt-16 pb-8 border-t border-[var(--rule)]">
+  <div class="max-w-[1380px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+    <div class="col-span-1 md:col-span-2">
+      <div class="flex items-center gap-3 opacity-60 mb-4">
+        <img src="/images/logo.png" alt="Tycho" class="w-8 h-8 grayscale mix-blend-screen" />
+        <span class="text-sm font-mono text-[var(--fg)] uppercase tracking-widest font-bold">TYCHO_OS</span>
+      </div>
+      <p class="text-[var(--dim)] text-xs font-mono max-w-sm leading-relaxed">
+        An autonomous narrative radar designed to detect emerging crypto metas on the Robinhood Chain using Gemini vector embeddings and DBSCAN clustering.
+      </p>
     </div>
-  </footer>
-</div>
+    <div>
+      <h4 class="text-white font-mono text-[10px] uppercase tracking-widest mb-4">Navigation</h4>
+      <div class="flex flex-col gap-3 text-xs font-mono">
+        <a href="/radar" class="text-[var(--dim)] hover:text-[var(--live)] transition-colors">Access Terminal</a>
+        <a href="/track-record" class="text-[var(--dim)] hover:text-white transition-colors">Track Record</a>
+        <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">Documentation</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="text-white font-mono text-[10px] uppercase tracking-widest mb-4">Network</h4>
+      <div class="flex flex-col gap-3 text-xs font-mono">
+        <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">Twitter / X</a>
+        <a href="#" class="text-[var(--dim)] hover:text-white transition-colors">GitHub</a>
+      </div>
+    </div>
+  </div>
+  <div class="max-w-[1380px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-[#0A1017]">
+    <span class="text-[10px] font-mono text-[#3D4B59]">© 2026 TYCHO_OS. All rights reserved.</span>
+    <span class="text-[10px] font-mono text-[var(--live)] animate-pulse">● V1.0.0 ONLINE</span>
+  </div>
+</footer>
 
 <style>
   :global(body) {
     margin: 0;
     padding: 0;
-    background: #06090D;
+    background: #030508;
     color: #D4E0EE;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* The site background wrapper creates a new stacking context over the fixed footer */
+  .site-bg {
+    background-color: #06090D;
     background-image: 
       radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.03) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(167, 139, 250, 0.03) 0px, transparent 50%),
       radial-gradient(at 50% 100%, rgba(242, 201, 76, 0.02) 0px, transparent 50%);
     background-attachment: fixed;
+    position: relative;
+    z-index: 10;
     padding: 30px 20px;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 1380px;
+    margin: 0 auto;
+    border: 1px solid var(--soft);
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
+    border-radius: 8px 8px 24px 24px;
+    /* Removed overflow: hidden so sticky works */
+    background: var(--ink);
+    position: relative;
   }
 
   :root {
@@ -437,7 +722,10 @@
     border: 1px solid var(--soft);
     box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
     border-radius: 8px;
-    overflow: hidden;
+    
+    background: var(--ink);
+    position: relative;
+    z-index: 10;
   }
 
   .glass-panel {

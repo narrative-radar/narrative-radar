@@ -1,33 +1,37 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
-	--font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-	--font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas,
+    monospace;
 }
 
 @layer base {
-	:root {
-		--bg: #030406;
-		--surface: #080b0f;
-		--divider: rgba(255, 255, 255, 0.05);
-		--row-hover: rgba(255, 255, 255, 0.02);
-		--text-primary: #ffffff;
-		--text-secondary: #8b93a1;
-		--text-tertiary: #565d6b;
-		--accent: #00d18b;
-		
-		--state-quiet: #3f4753;
-		--state-active: #008f5d;
-		--state-fast: #00d18b;
-		--state-breakout: #ff3b30;
-	}
+  :root {
+    --bg: #030406;
+    --surface: #080b0f;
+    --divider: rgba(255, 255, 255, 0.05);
+    --row-hover: rgba(255, 255, 255, 0.02);
+    --text-primary: #ffffff;
+    --text-secondary: #8b93a1;
+    --text-tertiary: #565d6b;
+    --accent: #00d18b;
 
-	body {
-		@apply bg-[var(--bg)] text-[var(--text-primary)] font-[var(--font-display)] antialiased min-h-screen m-0;
-	}
+    --state-quiet: #3f4753;
+    --state-active: #008f5d;
+    --state-fast: #00d18b;
+    --state-breakout: #ff3b30;
+  }
 
-	button:focus-visible, a:focus-visible { 
-		outline: 2px solid var(--accent); 
-		outline-offset: 3px; 
-	}
+  body {
+    @apply bg-[var(--bg)] text-[var(--text-primary)] font-[var(--font-display)] antialiased min-h-screen m-0;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
 }

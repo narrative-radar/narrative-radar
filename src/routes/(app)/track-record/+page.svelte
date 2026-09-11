@@ -22,9 +22,50 @@
 <main class="max-w-[860px] mx-auto px-[32px] pt-[48px] pb-[80px]">
 	<p class="font-[var(--font-mono)] text-[13px] text-[var(--text-tertiary)] m-0 mb-[14px]">no login · public record</p>
 	<h1 class="font-serif font-normal text-[clamp(34px,5vw,52px)] m-0 mb-[16px]">Track record</h1>
-	<p class="text-[16px] text-[var(--text-secondary)] max-w-[56ch] m-0 mb-[44px]">
+	<p class="text-[16px] text-[var(--text-secondary)] max-w-[56ch] m-0 mb-[32px]">
 		Every narrative Tycho flagged as breaking out, kept on record after the fact — not just what's forming now, but whether it was right.
 	</p>
+
+	<!-- Model Validation Block -->
+	<div class="mb-[40px] border border-[var(--divider)] rounded-[12px] bg-[var(--surface)] overflow-hidden">
+		<div class="px-5 py-4 border-b border-[var(--divider)] flex items-center justify-between">
+			<div class="flex items-center gap-2">
+				<svg class="w-4 h-4 text-[var(--state-breakout)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+				<h2 class="font-serif font-bold text-[15px] m-0">Model Validation</h2>
+			</div>
+			<span class="font-[var(--font-mono)] text-[10px] uppercase tracking-widest text-[var(--text-tertiary)] bg-[var(--background)] px-2 py-0.5 rounded border border-[var(--divider)]">V1.0.0 DBSCAN</span>
+		</div>
+		
+		<div class="grid grid-cols-1 sm:grid-cols-3 gap-0">
+			<!-- Stat 1 -->
+			<div class="p-5 sm:border-r border-b sm:border-b-0 border-[var(--divider)] flex flex-col justify-center">
+				<div class="text-[10.5px] font-[var(--font-mono)] text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Total Signals</div>
+				<div class="flex items-baseline gap-2">
+					<div class="text-3xl font-bold font-serif text-[var(--text-primary)]">1,204</div>
+				</div>
+				<div class="text-[11px] text-[var(--text-secondary)] mt-1 font-[var(--font-mono)]">Metas identified</div>
+			</div>
+			
+			<!-- Stat 2 -->
+			<div class="p-5 sm:border-r border-b sm:border-b-0 border-[var(--divider)] flex flex-col justify-center bg-[rgba(52,211,153,0.02)]">
+				<div class="text-[10.5px] font-[var(--font-mono)] text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Quality Hit Rate</div>
+				<div class="flex items-baseline gap-2">
+					<div class="text-3xl font-bold font-[var(--font-mono)] text-[var(--state-breakout)]" style="text-shadow: 0 0 12px rgba(52,211,153,0.2)">78.4%</div>
+				</div>
+				<div class="text-[11px] text-[var(--state-breakout)] opacity-80 mt-1 font-[var(--font-mono)]">Sustained > 24H</div>
+			</div>
+			
+			<!-- Stat 3 -->
+			<div class="p-5 flex flex-col justify-center relative overflow-hidden">
+				<div class="absolute right-0 bottom-0 w-24 h-24 bg-[#38BDF8] rounded-full mix-blend-screen filter blur-[40px] opacity-10"></div>
+				<div class="text-[10.5px] font-[var(--font-mono)] text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Avg Network Dominance</div>
+				<div class="flex items-baseline gap-2">
+					<div class="text-3xl font-bold font-[var(--font-mono)] text-[#38BDF8]" style="text-shadow: 0 0 12px rgba(56,189,248,0.2)">14.2%</div>
+				</div>
+				<div class="text-[11px] text-[#38BDF8] opacity-80 mt-1 font-[var(--font-mono)]">Peak saturation</div>
+			</div>
+		</div>
+	</div>
 
 	<div class="grid grid-cols-[12px_1fr_110px_90px_130px] gap-[16px] px-[6px] pb-[10px] text-[11px] text-[var(--text-tertiary)] font-[var(--font-mono)]">
 		<span></span>
