@@ -71,19 +71,21 @@
   </div>
   
   {#if status === 'found' && clusterInfo}
-    <div class="mt-4 p-4 border border-[var(--cyan)]/30 bg-[rgba(56,189,248,0.05)] rounded-lg flex flex-col gap-2 animate-[fadeIn_0.3s_ease]">
+    <div class="mt-4 p-5 border border-[var(--cyan)] bg-[rgba(56,189,248,0.05)] rounded-lg flex flex-col gap-3 animate-[fadeIn_0.3s_ease] shadow-[0_0_15px_rgba(56,189,248,0.1)]">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-[var(--cyan)] shadow-[0_0_8px_rgba(56,189,248,0.5)]"></span>
-        <span class="text-xs font-mono text-[var(--cyan)] uppercase tracking-wider font-bold">MATCH CONFIRMED</span>
+        <span class="text-[11px] font-mono text-[var(--cyan)] uppercase tracking-widest font-bold">MATCH CONFIRMED</span>
       </div>
-      <p class="text-[13px] text-[var(--fg)] leading-relaxed m-0">
-        Contract <strong class="font-mono bg-[var(--panel2)] px-1.5 py-0.5 rounded text-[var(--live)]">{mint.slice(0,6)}...{mint.slice(-4)}</strong> is actively mapping to cluster 
-        <strong class="text-[var(--cyan)]">"{clusterInfo.label || 'Unknown Theme'}"</strong> 
-        <span class="text-[var(--text-tertiary)]">(Velocity: {Number(clusterInfo.growthRate) > 0 ? '+' : ''}{clusterInfo.growthRate}%)</span>.
+      <p class="text-[13px] text-[var(--fg)] leading-relaxed m-0 border-l-2 border-[var(--cyan)]/30 pl-3">
+        Target <strong class="font-mono text-white">{mint.length > 12 ? mint.slice(0,6) + '...' + mint.slice(-4) : mint}</strong> is actively mapped to cluster 
+        <strong class="text-[var(--cyan)] font-bold">"{clusterInfo.label || 'Unknown Theme'}"</strong>.
       </p>
-      <button class="text-[12px] font-mono text-[var(--cyan)] text-left hover:text-white transition-colors underline decoration-[var(--cyan)]/30 underline-offset-4 mt-1" onclick={() => window.location.href = `/radar?cluster=${clusterInfo.id}`}>
-        Access Terminal View →
-      </button>
+      <div class="mt-1">
+        <button class="bg-[var(--cyan)] text-[#090D14] text-[11px] font-mono uppercase tracking-wider font-bold px-4 py-2 rounded-[4px] hover:bg-white transition-colors flex items-center gap-2" onclick={() => window.location.href = `/radar?cluster=${clusterInfo.id}`}>
+          Access Terminal View
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </button>
+      </div>
     </div>
   {:else if status === 'processing'}
     <div class="mt-4 p-4 border border-[var(--banana)]/30 bg-[rgba(250,204,21,0.05)] rounded-lg flex flex-col gap-2 animate-[fadeIn_0.3s_ease]">

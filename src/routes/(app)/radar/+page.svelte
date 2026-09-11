@@ -11,7 +11,7 @@
 	const clustersQuery = createQuery(() => ({
 		queryKey: ['clusters_dashboard'],
 		queryFn: async () => {
-			const res = await fetch('/api/clusters');
+			const res = await fetch('/api/clusters?t=' + Date.now());
 			if (!res.ok) throw new Error('Failed to fetch dashboard data');
 			return res.json();
 		},
@@ -82,6 +82,13 @@
 		if (titleEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 			const text = titleEl.innerText;
 			scrambleText(titleEl, text, 1100, 100);
+		}
+		
+		// Auto-open detail panel if ?cluster= query parameter is present
+		const urlParams = new URLSearchParams(window.location.search);
+		const clusterParam = urlParams.get('cluster');
+		if (clusterParam) {
+			openDetail(clusterParam);
 		}
 	});
 
