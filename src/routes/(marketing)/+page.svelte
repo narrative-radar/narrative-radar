@@ -63,6 +63,8 @@
   
   let howWorksRef = $state();
   let activeStep = $state(0);
+  let cosineValue = $state('0.984');
+
 
   $effect(() => {
     if (howWorksRef && scrollY !== undefined && innerHeight !== undefined) {
@@ -333,7 +335,7 @@
           <div class="text-[11px] text-[var(--dim)] mt-0.5">Semantic lore mapped</div>
         </div>
         <div class="font-mono text-right">
-          <b class="block text-white text-[15px]">1.000</b>
+          <b class="block text-white text-[15px]">{cosineValue}</b>
           <small class="text-[11px] text-[var(--dim)]">cosine</small>
         </div>
       </div>
