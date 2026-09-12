@@ -63,6 +63,10 @@
   
   let howWorksRef = $state();
   let activeStep = $state(0);
+  
+  let totalSignals = $state(1204);
+  let qualityHit = $state(78.4);
+  let networkDom = $state(14.2);
   let cosineValue = $state('0.984');
 
 
@@ -132,7 +136,14 @@
 
   onMount(async () => {
     // Typewriter effect
-    const typeInterval = setInterval(() => {
+    const typeInterval = 
+    setInterval(() => {
+      if (Math.random() > 0.7) totalSignals += Math.floor(Math.random() * 3);
+      if (Math.random() > 0.5) qualityHit = parseFloat((78.0 + Math.random() * 1.5).toFixed(1));
+      if (Math.random() > 0.5) networkDom = parseFloat((14.0 + Math.random() * 0.8).toFixed(1));
+    }, 2000);
+
+    setInterval(() => {
       const b = BLOCKS[blockIdx];
       stage = b.stage;
       
