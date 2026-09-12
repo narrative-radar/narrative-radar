@@ -10,6 +10,6 @@ if (!dbUrl) {
 
 // postgres-js client — used by drizzle-orm/postgres-js
 // `max: 1` is safe for serverless/edge — prevents connection pool exhaustion.
-const client = postgres(dbUrl, { max: 1 });
+const client = postgres(dbUrl, { max: 1, prepare: false });
 
 export const db = drizzle(client, { schema });
