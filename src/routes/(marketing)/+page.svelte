@@ -345,9 +345,7 @@
         </div>
       </div>
       
-      <a href="/radar" class="mt-6 h-[44px] rounded-xl bg-[var(--live)] hover:bg-[#56ECB6] text-[#06130D] font-semibold flex items-center justify-center transition-colors">
-        View Full Terminal
-      </a>
+
     </div>
   </div>
 

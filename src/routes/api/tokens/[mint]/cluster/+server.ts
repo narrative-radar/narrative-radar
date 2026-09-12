@@ -1,9 +1,10 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db/client.js';
+import { env } from '$env/dynamic/private';
 import { tokens, clusters } from '$lib/server/db/schema/index.js';
 import { eq } from 'drizzle-orm';
 
-export async function GET({ params }) {
+export async function GET({ params, request }) {
 	const { mint } = params;
 	
 	try {
@@ -47,9 +48,31 @@ export async function GET({ params }) {
 				});
 			} else {
 				// State 2: Ketemu + pending_embed / pending_cluster
+				// FORCE PIPELINE NOW
+				try {
+					await fetch(new URL('/api/cron', request.url).toString(), { headers: { 'Authorization': `Bearer ${env.CRON_SECRET}` } });
+					
+					const recheck = await db.select({
+						token: tokens,
+						cluster: clusters
+					})
+					.from(tokens)
+					.leftJoin(clusters, eq(tokens.clusterId, clusters.id))
+					.where(eq(tokens.mint, mint))
+					.limit(1);
+
+					if (recheck.length > 0 && recheck[0].token.status === 'clustered' && recheck[0].cluster) {
+						return json({
+							status: 'found',
+							cluster: recheck[0].cluster,
+							token: recheck[0].token
+						});
+					}
+				} catch (e) {}
+
 				return json({ 
 					status: 'processing', 
-					message: 'Token detected on radar and is currently being processed. Please check back in a few minutes.' 
+					message: 'Token detected on radar and is currently being processed by our AI. Due to high load, please check back soon.' 
 				});
 			}
 		}
@@ -74,10 +97,35 @@ export async function GET({ params }) {
 					createdAt: new Date()
 				}).onConflictDoNothing();
 
-				// Kasih tahu user bahwa tokennya sudah berhasil di-scan dan sedang diantrekan
+				// [REAL-TIME PROCESSING] Instead of waiting for cron, force the pipeline immediately!
+				try {
+					await fetch(new URL('/api/cron', request.url).toString(), { headers: { 'Authorization': `Bearer ${env.CRON_SECRET}` } });
+					
+					// Re-check the database after processing
+					const recheck = await db.select({
+						token: tokens,
+						cluster: clusters
+					})
+					.from(tokens)
+					.leftJoin(clusters, eq(tokens.clusterId, clusters.id))
+					.where(eq(tokens.mint, mint))
+					.limit(1);
+
+					if (recheck.length > 0 && recheck[0].token.status === 'clustered' && recheck[0].cluster) {
+						return json({
+							status: 'found',
+							cluster: recheck[0].cluster,
+							token: recheck[0].token
+						});
+					}
+				} catch (pipelineErr) {
+					console.error("Pipeline forced execution error:", pipelineErr);
+				}
+
+				// Fallback if real-time pipeline fails or still pending
 				return json({ 
 					status: 'processing', 
-					message: 'Token found on chain! It has been added to our radar queue. Please check back in 1-2 minutes for the narrative analysis.' 
+					message: 'Token found on chain! It has been added to our radar queue. Our AI is overwhelmed right now, please check back soon.' 
 				});
 			}
 		} catch (fetchError) {

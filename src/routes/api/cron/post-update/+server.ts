@@ -19,7 +19,7 @@ export async function POST({ request }) {
 			const memberCount = cluster.memberCount;
 			
 			// Format the tweet as specified
-			const text = `⚠️ NARRATIVE BREAKOUT: ${label} (${memberCount} tokens) - tycho.xyz/radar`;
+			const text = `⚠️ NARRATIVE BREAKOUT: ${label} (${memberCount} tokens)\n\n[ID: ${cluster.id.slice(-6)}] - tycho.xyz/radar`;
 
 			const success = await postTweet(text);
 			if (success) {

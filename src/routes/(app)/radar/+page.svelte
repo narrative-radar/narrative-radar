@@ -133,7 +133,9 @@
 		const min = Math.floor(diff / 60);
 		if (min < 60) return `${min}m ago`;
 		const h = Math.floor(min / 60);
-		return `${h}h ago`;
+		if (h < 24) return `${h}h ago`;
+		const d = Math.floor(h / 24);
+		return `${d}d ago`;
 	}
 </script>
 
