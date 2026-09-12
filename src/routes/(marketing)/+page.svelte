@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { createQuery } from '@tanstack/svelte-query';
   import { fade } from 'svelte/transition';
@@ -40,7 +40,7 @@
   let feed = $state([
     { symbol: 'AWAIT', name: 'Connecting to DB...', lore: 'fetching real clusters...', holders: 0, peak_mc: 0, status: 'stalled', hue: 120 }
   ]);
-  let realClusters = $state([]);
+  let realClusters: any[] = $state([]);
   let tokensAnalyzed = $state(0);
   let totalDataPoints = $state(0);
 
@@ -61,7 +61,7 @@
   let liveRecentTokens = $derived(dashboardQuery.data?.recentTokens || []);
 
   
-  let howWorksRef = $state();
+  let howWorksRef: HTMLElement | undefined = $state();
   let activeStep = $state(0);
   
   let totalSignals = $state(1204);
@@ -78,7 +78,7 @@
     }
   });
 
-  function scrambleText(node, text) {
+  function scrambleText(node: HTMLElement, text: string) {
     const chars = '!-_[]{}—=+*^?#';
     let frame = 0;
     let queue = [];
@@ -119,8 +119,8 @@
 
   const TOK = /(#[^\n]*)|("(?:[^"\\]|\\.)*")|\b(import|from|if|else|for|in|return|def|not|and|or|as|True|False|None|sum|continue)\b|\b(\d[\d_.]*)\b/g;
 
-  function hl(src) {
-    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function hl(src: string) {
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     let out = '', last = 0, m;
     TOK.lastIndex = 0;
     while ((m = TOK.exec(src)) !== null) {
@@ -134,7 +134,7 @@
     return out + esc(src.slice(last));
   }
 
-  onMount(async () => {
+  onMount(() => {
     // Typewriter effect
     const typeInterval = 
     setInterval(() => {
@@ -158,29 +158,32 @@
     }, 25);
 
     // Fetch REAL DATA
-    try {
-      const res = await fetch('/api/clusters');
-      if (res.ok) {
-        const data = await res.json();
-        realClusters = data.clusters || [];
-        
-        // Map clusters into the terminal feed
-        feed = realClusters.map((c, i) => ({
-          symbol: 'META',
-          name: c.label || 'Unnamed Narrative',
-          lore: 'Detected ' + (c.tokens ? c.tokens.length : c.memberCount) + ' narrative fragments.',
-          holders: (c.memberCount || 1) * 342,
-          peak_mc: (c.memberCount || 1) * 85000,
-          status: c.status === 'breakout' ? 'passed' : c.status === 'active' ? 'passed' : 'stalled',
-          hue: 45 + (i * 30)
-        }));
-        
-        tokensAnalyzed = realClusters.reduce((acc, c) => acc + (c.memberCount || 1), 0) * 14;
-        totalDataPoints = tokensAnalyzed * 2350;
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/clusters');
+        if (res.ok) {
+          const data = await res.json();
+          realClusters = data.clusters || [];
+          
+          // Map clusters into the terminal feed
+          feed = realClusters.map((c: any, i: number) => ({
+            symbol: 'META',
+            name: c.label || 'Unnamed Narrative',
+            lore: 'Detected ' + (c.tokens ? c.tokens.length : c.memberCount) + ' narrative fragments.',
+            holders: (c.memberCount || 1) * 342,
+            peak_mc: (c.memberCount || 1) * 85000,
+            status: c.status === 'breakout' ? 'passed' : c.status === 'active' ? 'passed' : 'stalled',
+            hue: 45 + (i * 30)
+          }));
+          
+          tokensAnalyzed = realClusters.reduce((acc: number, c: any) => acc + (c.memberCount || 1), 0) * 14;
+          totalDataPoints = tokensAnalyzed * 2350;
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-    }
+    };
+    fetchData();
 
     return () => {
       clearInterval(typeInterval);

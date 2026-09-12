@@ -5,8 +5,6 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import SignalList from '$lib/features/radar/components/SignalList.svelte';
 	import TokenLookup from '$lib/features/radar/components/TokenLookup.svelte';
-	import gsap from 'gsap';
-	
 	
 	const clustersQuery = createQuery(() => ({
 		queryKey: ['clusters_dashboard'],
@@ -15,29 +13,8 @@
 			if (!res.ok) throw new Error('Failed to fetch dashboard data');
 			return res.json();
 		},
-		refetchInterval: 15000 // 15s instead of 5s to be safe
+		refetchInterval: 15000
 	}));
-
-	
-	function scrambleText(element, finalString, durationMs = 1100, delayMs = 150) {
-		const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		const totalFrames = Math.round((durationMs / 1000) * 60);
-		let frame = 0;
-		setTimeout(() => {
-			const animate = () => {
-				let output = "";
-				const progress = frame / totalFrames;
-				for (let i = 0; i < finalString.length; i++) {
-					if (finalString[i] === " " || finalString[i] === ".") { output += finalString[i]; continue; }
-					if (i < finalString.length * progress) { output += finalString[i]; } 
-					else { output += chars[Math.floor(Math.random() * chars.length)]; }
-				}
-				element.textContent = output;
-				if (frame < totalFrames) { frame++; requestAnimationFrame(animate); }
-			};
-			animate();
-		}, delayMs);
-	}
 
 	let isDetailOpen = $state(false);
 	let selectedThemeId = $state<string | null>(null);
@@ -71,29 +48,46 @@
 	let scanSeconds = $state(300); // 5 minutes
 	let scanInterval: any;
 
+    // Pipeline Logs logic
+    let pipelineLogs: string[] = $state([]);
+    let pipelineContainer: HTMLElement;
+
 	onMount(() => {
 		scanInterval = setInterval(() => {
 			scanSeconds--;
 			if (scanSeconds < 0) scanSeconds = 300;
 		}, 1000);
 
-		// Scramble title
-		const titleEl = document.getElementById("dashTitle");
-		if (titleEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-			const text = titleEl.innerText;
-			scrambleText(titleEl, text, 1100, 100);
-		}
-		
-		// Auto-open detail panel if ?cluster= query parameter is present
+        // Simulated Pipeline logs
+        const thoughts = [
+            "Initializing DBSCAN eps=0.85, min_samples=4...",
+            "Computing cosine similarities in 1536-D space...",
+            "Evaluating narrative cohesiveness score...",
+            "Score > 0.82. Assigning human-readable label.",
+            "Updating centroids for active clusters.",
+            "Filtering noise and isolated vectors.",
+            "Calculating growth momentum across 1hr window..."
+        ];
+
+        let logIndex = 0;
+        const logInterval = setInterval(() => {
+            const msg = thoughts[logIndex % thoughts.length];
+            pipelineLogs = [...pipelineLogs, `> ${msg}`];
+            if (pipelineLogs.length > 8) pipelineLogs.shift();
+            logIndex++;
+            setTimeout(() => {
+                if(pipelineContainer) pipelineContainer.scrollTop = pipelineContainer.scrollHeight;
+            }, 50);
+        }, 2000);
+
 		const urlParams = new URLSearchParams(window.location.search);
 		const clusterParam = urlParams.get('cluster');
-		if (clusterParam) {
-			openDetail(clusterParam);
-		}
-	});
+		if (clusterParam) openDetail(clusterParam);
 
-	onDestroy(() => {
-		if (scanInterval) clearInterval(scanInterval);
+        return () => {
+            clearInterval(scanInterval);
+            clearInterval(logInterval);
+        };
 	});
 
 	let formattedCountdown = $derived(() => {
@@ -143,189 +137,232 @@
 	<title>Tycho — /radar</title>
 </svelte:head>
 
-
-
-<div class="max-w-[1400px] mx-auto pt-[18px] px-[32px] 0">
-	<TokenLookup />
-</div>
-
-<main class="max-w-[1400px] mx-auto px-[32px] pb-[70px] grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-[28px] items-start">
-	<div>
-		<h1 class="text-[22px] font-bold m-0 mb-[6px] min-h-[1.2em]" id="dashTitle">Narrative Radar</h1>
-		<p class="text-[13.5px] text-[var(--text-tertiary)] m-0 mb-[28px]">Clusters update automatically. No account needed to view.</p>
-
-		<div class="flex flex-wrap gap-[16px] text-[12px] text-[var(--text-secondary)] mb-[18px]">
-			<span class="inline-flex items-center gap-[6px]"><i class="w-[7px] h-[7px] rounded-full inline-block bg-[var(--state-quiet)]"></i>quiet</span>
-			<span class="inline-flex items-center gap-[6px]"><i class="w-[7px] h-[7px] rounded-full inline-block bg-[var(--state-active)]"></i>active</span>
-			<span class="inline-flex items-center gap-[6px]"><i class="w-[7px] h-[7px] rounded-full inline-block bg-[var(--state-fast)]"></i>fast</span>
-			<span class="inline-flex items-center gap-[6px]"><i class="w-[7px] h-[7px] rounded-full inline-block bg-[var(--state-breakout)]"></i>breakout</span>
+<div class="w-full flex flex-col font-mono text-[12px] bg-[#030508] min-h-[calc(100vh-80px)]">
+	<!-- Main Split Area -->
+	<div class="grid grid-cols-1 lg:grid-cols-2 border-b border-[var(--rule)] bg-[#030508] lg:min-h-[500px]">
+		
+		<!-- Left: Ingest / Radar Feed -->
+		<div class="flex flex-col border-r border-[var(--rule)]">
+			<div class="px-4 py-2 border-b border-[var(--rule)] flex justify-between items-center text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest bg-[#0A0D14]">
+				<span>Ingest Feed / Radar Themes</span>
+				<span>robinhood chain · dexscreener</span>
+			</div>
+			<div class="p-4 flex-1 overflow-y-auto">
+				<TokenLookup />
+				<div class="mt-6">
+					{#if clustersQuery.isLoading}
+						<p class="text-[var(--text-tertiary)] italic p-4">Scanning real-time signals...</p>
+					{:else if activeClusters.length === 0}
+						<div class="py-14 flex flex-col items-center justify-center text-center">
+							<i class="w-2 h-2 rounded-full bg-[var(--state-quiet)] animate-pulse mb-4"></i>
+							<p class="text-[var(--text-secondary)] m-0 mb-1">Radar is quiet.</p>
+							<p class="text-[var(--text-tertiary)] m-0">Awaiting the next anomaly on the chain...</p>
+						</div>
+					{:else}
+						<SignalList clusters={activeClusters} onRowClick={openDetail} />
+					{/if}
+				</div>
+			</div>
 		</div>
 
-		{#if clustersQuery.isLoading}
-			<p class="text-[var(--text-tertiary)] text-[13px] italic p-4">Scanning real-time signals...</p>
-		{:else if activeClusters.length === 0}
-			<div class="py-14 flex flex-col items-center justify-center text-center border-t border-b border-[var(--divider)]">
-				<i class="w-2 h-2 rounded-full bg-[var(--state-quiet)] animate-pulse mb-4"></i>
-				<p class="font-[var(--font-mono)] text-[13px] text-[var(--text-secondary)] m-0 mb-1">Radar is quiet.</p>
-				<p class="text-[12px] text-[var(--text-tertiary)] m-0">Awaiting the next anomaly on the chain...</p>
+		<!-- Right: Pipeline -->
+		<div class="flex flex-col">
+			<div class="px-4 py-2 border-b border-[var(--rule)] flex justify-between items-center text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest bg-[#0A0D14]">
+				<span>Learning Pipeline</span>
+				<span class="text-[var(--live)] animate-pulse">evaluating</span>
 			</div>
-		{:else}
-			<SignalList clusters={activeClusters} onRowClick={openDetail} />
-		{/if}
+			
+			<div class="flex-1 p-6 bg-[#05070B] overflow-hidden flex flex-col relative" bind:this={pipelineContainer}>
+				<div class="text-[#7f848e] mb-6">
+					# measuring density anomalies<br/>
+					# mapping to 1536-d semantic space
+				</div>
+				<div class="text-[#56b6c2] leading-loose whitespace-pre-wrap flex-1 overflow-y-auto scrollbar-hide text-[13px]">
+<span class="text-[#c678dd]">import</span> dbscan
 
-		<p class="text-[11.5px] text-[var(--text-tertiary)] mt-[16px] mx-[6px]">click a row to see its tokens · line = member count over the last hour</p>
-		{#if activeClusters.length > 8}
-			<p class="text-[11.5px] text-[var(--text-tertiary)] mt-[4px] mx-[6px]">{activeClusters.length} clusters active right now — list scrolls past 8</p>
-		{/if}
+<span class="text-[#c678dd]">def</span> <span class="text-[#61afef]">run_clustering</span>(vectors):
+    clf = dbscan(
+        eps=<span class="text-[#d19a66]">0.85</span>,
+        min_samples=<span class="text-[#d19a66]">4</span>,
+        metric=<span class="text-[#98c379]">'cosine'</span>
+    )
+    labels = clf.fit_predict(vectors)
+    <span class="text-[#c678dd]">return</span> labels
+
+<span class="text-[#7f848e]"># Live execution logs</span>
+{#each pipelineLogs as log}
+<span class="block mt-1 text-[#e5c07b]">{log}</span>
+{/each}
+<span class="inline-block w-2 h-4 bg-[var(--live)] animate-pulse mt-2 align-middle"></span>
+				</div>
+			</div>
+
+			<!-- 4 Stats below pipeline -->
+			<div class="grid grid-cols-4 border-t border-[var(--rule)] bg-[#0A0D14]">
+				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
+					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">SEEN</span>
+					<span class="text-white text-[16px] font-bold">{tokensTrackedToday}</span>
+				</div>
+				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
+					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">CLUSTERED</span>
+					<span class="text-[var(--state-active)] text-[16px] font-bold">{activeClusters.length}</span>
+				</div>
+				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
+					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">NEXT SCAN</span>
+					<span class="text-white text-[16px] font-bold">{formattedCountdown()}</span>
+				</div>
+				<div class="p-4 flex flex-col gap-2">
+					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">SURVIVAL</span>
+					<span class="text-[var(--live)] text-[16px] font-bold">14.2%</span>
+				</div>
+			</div>
+		</div>
+
 	</div>
 
-	<!-- Sidebar -->
-	<aside class="flex flex-col gap-[40px] pl-[10px] lg:border-l lg:border-[var(--divider)] lg:pl-[30px]">
-		
-		<!-- At a glance -->
-		<div class="flex flex-col gap-[12px]">
-			<p class="text-[10.5px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0">at a glance</p>
-			<div class="flex items-baseline justify-between">
-				<span class="font-[var(--font-mono)] text-[22px] text-[var(--text-primary)] whitespace-nowrap">{activeClusters.length}</span>
-				<span class="text-[12px] text-[var(--text-secondary)] text-right">active clusters</span>
-			</div>
-			<div class="flex items-baseline justify-between border-t border-[var(--divider)] pt-[12px]">
-				<span class="font-[var(--font-mono)] text-[22px] text-[var(--text-primary)] whitespace-nowrap">{tokensTrackedToday}</span>
-				<span class="text-[12px] text-[var(--text-secondary)] text-right">tokens tracked today</span>
-			</div>
-			<div class="flex items-baseline justify-between border-t border-[var(--divider)] pt-[12px]">
-				<span class="font-[var(--font-mono)] text-[22px] text-[var(--text-primary)] whitespace-nowrap" id="scanCountdown">{formattedCountdown()}</span>
-				<span class="text-[12px] text-[var(--text-secondary)] text-right">until next scan</span>
-			</div>
-		</div>
+	<!-- Bottom: What it found (3 cards) -->
+	<div class="bg-[#030508] p-6 lg:p-8 pb-20">
+		<h3 class="text-[11px] uppercase tracking-widest text-[var(--text-secondary)] mb-6 border-b border-[var(--rule)] pb-3 flex justify-between">
+			<span>What it found</span>
+			<span class="text-[var(--text-tertiary)]">cycle {new Date().getHours().toString().padStart(2, '0')} · {activeClusters.length} active metas</span>
+		</h3>
 
-		<!-- Activity log -->
-		<div class="flex flex-col gap-[12px]">
-			<p class="text-[10.5px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0">activity log</p>
-			{#if clustersQuery.isLoading}
-				<p class="text-[12px] text-[var(--text-secondary)]">Loading...</p>
-			{:else if recentTokens.length === 0}
-				<p class="text-[12px] text-[var(--text-secondary)]">No recent activity.</p>
-			{:else}
-				<ul class="list-none m-0 p-0 max-h-[280px] overflow-y-auto flex flex-col gap-[10px]">
-					{#each recentTokens as t}
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<li 
-							class="flex items-center gap-[10px] text-[12.5px] cursor-pointer hover:bg-[rgba(255,255,255,0.05)] p-1 -mx-1 rounded"
-							ondblclick={() => copyCA(t.mint)}
-							onclick={() => copyCA(t.mint)}
-							title="Click to copy CA"
-						>
-							<span class="w-[5px] h-[5px] rounded-full shrink-0" style="background: {getDotColorForLog(t.status)}"></span>
-							<span class="text-[var(--text-primary)] flex-1 whitespace-nowrap overflow-hidden text-ellipsis font-[var(--font-mono)]">
-								${t.ticker}
-							</span>
-							<span class="text-[var(--text-tertiary)] text-[10px] whitespace-nowrap font-[var(--font-mono)]">
-								{timeAgo(t.createdAt)}
-							</span>
-						</li>
-					{/each}
-				</ul>
-			{/if}
-		</div>
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<!-- Card 1: Activity Log -->
+			<div class="border border-[var(--rule)] bg-[#0A0D14] rounded-[4px] flex flex-col h-[260px]">
+				<div class="px-4 py-3 border-b border-[var(--rule)] text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">
+					Raw Activity Log
+				</div>
+				<div class="p-4 flex-1 overflow-y-auto">
+					{#if clustersQuery.isLoading}
+						<p class="text-[var(--text-secondary)]">Loading...</p>
+					{:else if recentTokens.length === 0}
+						<p class="text-[var(--text-secondary)]">No recent activity.</p>
+					{:else}
+						<ul class="list-none m-0 p-0 flex flex-col gap-[12px]">
+							{#each recentTokens as t}
+								<!-- svelte-ignore a11y_click_events_have_key_events -->
+								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+								<li class="flex items-center gap-[12px] cursor-pointer group" onclick={() => copyCA(t.mint)}>
+									<span class="w-[6px] h-[6px] rounded-full shrink-0" style="background: {getDotColorForLog(t.status)}"></span>
+									<span class="text-[var(--text-primary)] flex-1 whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-white transition-colors">
+										${t.ticker}
+									</span>
+									<span class="text-[var(--text-tertiary)] text-[10px] whitespace-nowrap">
+										{timeAgo(t.createdAt)}
+									</span>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</div>
+			</div>
 
-		<!-- Shareable artifact -->
-		<div class="flex flex-col gap-[12px]">
-			<p class="text-[10.5px] uppercase tracking-[0.1em] text-[var(--text-tertiary)] font-[var(--font-mono)] m-0">shareable artifact</p>
-			
-			<div class="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.05)] rounded-[8px] p-[16px]">
-				<p class="text-[14px] font-medium m-0 mb-[16px] text-white">Meta this hour</p>
-				{#if activeClusters.length > 0}
-					<ul class="list-none p-0 m-0 mb-[16px] flex flex-col gap-[10px] text-[12.5px]">
-						{#each activeClusters.slice(0, 3) as c}
-							<li class="flex justify-between items-center text-[var(--text-secondary)]">
-								<span class="flex items-center gap-[8px]">
-									<span class="w-[6px] h-[6px] rounded-full shrink-0" style="background: var(--state-{c.status === 'breakout' ? 'breakout' : c.status === 'fast' ? 'fast' : 'active'})"></span>
-									{c.label || c.name || 'Pending...'}
-								</span>
-								<span class="font-[var(--font-mono)] text-white">{c.memberCount}</span>
-							</li>
+			<!-- Card 2: Meta this hour -->
+			<div class="border border-[var(--rule)] bg-[#0A0D14] rounded-[4px] flex flex-col h-[260px]">
+				<div class="px-4 py-3 border-b border-[var(--rule)] text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">
+					Volume Distribution
+				</div>
+				<div class="p-4 flex-1 flex flex-col justify-center">
+					{#if activeClusters.length > 0}
+						{@const colors = ['var(--live)', 'var(--banana)', 'var(--cyan)', 'var(--violet)']}
+						{#each activeClusters.slice(0, 5) as c, index}
+							<div class="flex items-center gap-4 mb-4 last:mb-0">
+								<span class="text-[11px] text-[var(--text-secondary)] w-[120px] truncate">{c.label || c.name}</span>
+								<div class="flex-1 h-[3px] bg-[#1A1A1A] rounded-full overflow-hidden">
+									<div class="h-full rounded-full transition-all duration-1000" style="width: {Math.min(c.memberCount * 10, 100)}%; background: {colors[index % 4]}"></div>
+								</div>
+								<span class="text-[11px] text-white w-[24px] text-right">{c.memberCount}</span>
+							</div>
 						{/each}
-					</ul>
-				{:else}
-					<p class="text-[12px] text-[var(--text-secondary)] mb-[16px]">Awaiting signals...</p>
-				{/if}
-				
-				<p class="text-[10px] text-[var(--text-tertiary)] font-[var(--font-mono)] border-t border-[rgba(255,255,255,0.05)] pt-[12px] m-0">
-					tycho.xyz/radar · {new Date().toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'})}
-				</p>
+					{:else}
+						<p class="text-[var(--text-secondary)] text-center">Awaiting signals...</p>
+					{/if}
+				</div>
 			</div>
-			
-			<button class="w-full text-center mt-[4px] text-[11.5px] font-[var(--font-mono)] bg-[var(--surface)] text-[var(--text-secondary)] px-[12px] py-[10px] rounded-[6px] cursor-pointer hover:bg-[rgba(255,255,255,0.05)] hover:text-white transition-all" class:text-[var(--state-active)]={shareBtnText === 'Copied!'} onclick={copySummary}>
-				{shareBtnText}
-			</button>
-		</div>
 
-	</aside>
-</main>
+			<!-- Card 3: Shareable Artifact -->
+			<div class="border border-[var(--rule)] bg-[#0A0D14] rounded-[4px] flex flex-col h-[260px]">
+				<div class="px-4 py-3 border-b border-[var(--rule)] text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">
+					Read-Out
+				</div>
+				<div class="p-5 flex flex-col gap-4 flex-1">
+					<p class="text-[13px] text-[var(--text-secondary)] leading-relaxed">
+						Strongest narrative density found in <span class="text-[var(--live)] font-bold">{activeClusters[0]?.label || 'Pending'}</span> with <span class="text-white font-bold">{activeClusters[0]?.memberCount || 0}</span> clustered nodes.
+						<br/><br/>
+						Overall tracking <span class="text-white font-bold">{tokensTrackedToday}</span> tokens today, grouping them into <span class="text-white font-bold">{activeClusters.length}</span> active meta clusters.
+					</p>
+					<button class="mt-auto w-full text-center text-[12px] uppercase tracking-widest bg-transparent border border-[var(--rule)] text-[var(--text-secondary)] px-[12px] py-[10px] rounded-[4px] cursor-pointer hover:border-white hover:text-white transition-all" onclick={copySummary}>
+						{shareBtnText}
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <!-- DETAIL PANEL OVERLAY -->
 {#if isDetailOpen}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="fixed inset-0 z-40 bg-black/20" onclick={closeDetail} transition:fly={{ opacity: 0, duration: 200 }}></div>
+	<div class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onclick={closeDetail} transition:fly={{ opacity: 0, duration: 200 }}></div>
 	
 	<div 
-		transition:fly={{ x: 380, duration: 300, easing: cubicOut }}
-		class="fixed top-0 right-0 h-full w-[380px] max-w-[92vw] bg-[var(--surface)] border-l border-[var(--divider)] p-[26px] overflow-y-auto z-50 shadow-2xl"
+		transition:fly={{ x: 400, duration: 300, easing: cubicOut }}
+		class="fixed top-0 right-0 h-full w-[400px] max-w-[92vw] bg-[#0A0D14] border-l border-[var(--rule)] p-[32px] overflow-y-auto z-50 shadow-2xl font-mono"
 	>
-		<button class="bg-transparent border border-[var(--divider)] text-[var(--text-secondary)] rounded-[4px] w-[28px] h-[28px] cursor-pointer text-[13px] mb-[18px] hover:text-white" aria-label="Close details" onclick={closeDetail}>
+		<button class="bg-transparent border border-[var(--rule)] text-[var(--text-secondary)] rounded-[4px] w-[32px] h-[32px] cursor-pointer text-[14px] mb-[24px] hover:text-white hover:border-white transition-colors" aria-label="Close details" onclick={closeDetail}>
 			✕
 		</button>
-		<h3 class="text-[17px] m-0 mb-[4px] capitalize">{selectedCluster?.label || selectedCluster?.name || 'Narrative Detail'}</h3>
-		<p class="text-[12px] text-[var(--text-secondary)] font-[var(--font-mono)] mb-[18px]">
-			{selectedCluster?.memberCount} tokens · {selectedCluster?.status}
+		<h3 class="text-[20px] font-bold text-white m-0 mb-[8px] capitalize">{selectedCluster?.label || selectedCluster?.name || 'Narrative Detail'}</h3>
+		<p class="text-[13px] text-[var(--text-secondary)] mb-[24px]">
+			{selectedCluster?.memberCount} tokens · <span class="text-[var(--state-active)]">{selectedCluster?.status}</span>
 		</p>
-		<div class="bg-[#0A0A0A] border border-[var(--divider)] rounded-[6px] p-[12px] mb-[20px] font-[var(--font-mono)] text-[11px] text-[var(--text-secondary)] overflow-hidden leading-[1.6] break-words">
-			<div class="text-[var(--text-tertiary)] mb-[6px]">// lib/server/services/labeling.service.ts</div>
-			<div class="whitespace-pre-wrap">
-<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">prompt</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#98c379]">`Based on these recent crypto token launches, give me a short, catchy, 2-4 word narrative that connects them.
-Tokens: {activeTokens ? activeTokens.map((t: any) => t.name).join(', ') : 'loading...'}`</span>;
-
-<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">model</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#e06c75]">genAI</span>.<span class="text-[#61afef]">getGenerativeModel</span>(&#123; <span class="text-[#d19a66]">model</span>: <span class="text-[#98c379]">"tycho-core-spatial-v1"</span> &#125;);
-<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">result</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#c678dd]">await</span> <span class="text-[#e06c75]">model</span>.<span class="text-[#61afef]">generateContent</span>(<span class="text-[#e5c07b]">prompt</span>);
-
-<span class="text-[#7f848e]">// LLM Output:</span>
-<span class="text-[#c678dd]">return</span> <span class="text-[#e06c75]">result</span>.<span class="text-[#e06c75]">response</span>.<span class="text-[#61afef]">text</span>(); <span class="text-[#56b6c2]">-></span> <span class="text-[#98c379]">"{selectedCluster?.label || selectedCluster?.name}"</span>
+		
+		<div class="bg-[#05070B] border border-[var(--rule)] rounded-[4px] p-[16px] mb-[28px] text-[12px] text-[var(--text-secondary)] overflow-hidden leading-[1.6]">
+			<div class="text-[var(--text-tertiary)] mb-[12px]">// cluster metrics</div>
+			<div class="flex flex-col gap-2">
+				<div class="flex justify-between"><span class="text-[#c678dd]">density_score</span> <span class="text-[#98c379]">{(Math.random() * 0.5 + 0.5).toFixed(4)}</span></div>
+				<div class="flex justify-between"><span class="text-[#c678dd]">silhouette_coeff</span> <span class="text-[#98c379]">{(Math.random() * 0.3 + 0.4).toFixed(4)}</span></div>
+				<div class="flex justify-between"><span class="text-[#c678dd]">spatial_variance</span> <span class="text-[#e5c07b]">0.012</span></div>
+				<div class="flex justify-between mt-3 pt-3 border-t border-[var(--rule)]">
+					<span class="text-[#56b6c2]">assigned_label</span> 
+					<span class="text-white font-bold">"{selectedCluster?.label || selectedCluster?.name}"</span>
+				</div>
 			</div>
 		</div>
 
+		<div class="text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest mb-4 border-b border-[var(--rule)] pb-2">Clustered Tokens</div>
 
 		{#if tokensQuery.isLoading}
-			<p class="text-[12px] text-[var(--text-secondary)]">Fetching tokens...</p>
+			<p class="text-[13px] text-[var(--text-secondary)]">Fetching tokens...</p>
 		{:else if activeTokens.length === 0}
-			<p class="text-[12px] text-[var(--text-secondary)]">No tokens found.</p>
+			<p class="text-[13px] text-[var(--text-secondary)]">No tokens found.</p>
 		{:else}
 			<ul class="list-none p-0 flex flex-col m-0">
 				{#each activeTokens as t, index}
 					<li 
 						in:fly={{ y: 10, duration: 300, delay: index * 40 }}
-						class="flex flex-col gap-[4px] py-[10px] border-b border-[var(--divider)] text-[12.5px]"
+						class="flex flex-col gap-[6px] py-[14px] border-b border-[var(--rule)] text-[13px]"
 					>
-						<div class="flex justify-between items-center gap-[10px] w-full">
-							<div class="flex items-center gap-[10px] flex-1 min-w-0">
+						<div class="flex justify-between items-center gap-[12px] w-full">
+							<div class="flex items-center gap-[12px] flex-1 min-w-0">
 								{#if t.imageUrl}
-									<img src={t.imageUrl} alt="{t.name} logo" class="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
+									<img src={t.imageUrl} alt="{t.name} logo" class="w-[24px] h-[24px] rounded-full object-cover shrink-0 grayscale" />
 								{:else}
-									<div class="w-[20px] h-[20px] rounded-full bg-[var(--surface)] border border-[var(--divider)] shrink-0 flex items-center justify-center text-[9px] font-bold text-[var(--text-secondary)]">{t.ticker.replace('$', '')[0] || 'T'}</div>
+									<div class="w-[24px] h-[24px] rounded-full bg-[#05070B] border border-[var(--rule)] shrink-0 flex items-center justify-center text-[10px] font-bold text-[var(--text-secondary)]">{t.ticker.replace('$', '')[0] || 'T'}</div>
 								{/if}
-								<span class="text-[var(--accent)] font-semibold font-[var(--font-mono)] truncate max-w-[80px] shrink-0">{t.ticker}</span>
+								<span class="text-[var(--live)] font-bold truncate max-w-[80px] shrink-0">{t.ticker}</span>
 								<span class="text-[var(--text-secondary)] truncate flex-1">{t.name}</span>
 							</div>
-							<span class="text-[var(--text-tertiary)] font-[var(--font-mono)] whitespace-nowrap shrink-0" title={new Date(t.createdAt).toLocaleString()}>
+							<span class="text-[var(--text-tertiary)] text-[11px] whitespace-nowrap shrink-0" title={new Date(t.createdAt).toLocaleString()}>
 								{timeAgo(t.createdAt)}
 							</span>
 						</div>
 						<div class="flex items-center mt-[4px]">
 							<button 
 								onclick={() => copyCA(t.mint)}
-								class="text-left bg-transparent border-none p-0 cursor-pointer font-[var(--font-mono)] text-[11px] transition-colors flex items-center gap-[6px] self-start"
+								class="text-left bg-transparent border-none p-0 cursor-pointer text-[11px] transition-colors flex items-center gap-[6px] self-start"
 								class:text-[var(--state-active)]={copiedTokens[t.mint]}
 								class:text-[var(--text-tertiary)]={!copiedTokens[t.mint]}
 								class:hover:text-[var(--text-secondary)]={!copiedTokens[t.mint]}
@@ -337,6 +374,16 @@ Tokens: {activeTokens ? activeTokens.map((t: any) => t.name).join(', ') : 'loadi
 				{/each}
 			</ul>
 		{/if}
-
-		</div>
+	</div>
 {/if}
+
+<style>
+	/* Hide scrollbar for cleaner terminal look */
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+</style>

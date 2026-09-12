@@ -1,4 +1,4 @@
-import { fetchRecentTokens, getMockRecentTokens } from '../services/dex.service.js';
+import { fetchRecentTokens } from '../services/dex.service.js';
 import { generateEmbeddingsBatch } from '../services/embedding.service.js';
 
 async function runTest() {
@@ -9,8 +9,8 @@ async function runTest() {
 	let tokens = await fetchRecentTokens();
 	
 	if (tokens.length === 0) {
-		console.log('⚠️ DexScreener API limit / tidak merespon. Menggunakan data MOCK sebagai fallback.');
-		tokens = getMockRecentTokens();
+		console.log('⚠️ DexScreener API limit / tidak merespon. Tidak ada token untuk diproses.');
+		return;
 	}
 	
 	// Ambil 3 token saja untuk testing

@@ -106,24 +106,3 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 	}
 }
 
-/**
- * Standalone mock for testing if the real API blocks us.
- */
-export function getMockRecentTokens(): IngestedToken[] {
-	return [
-		{
-			mint: crypto.randomUUID().replace(/-/g, '') + 'mock1',
-			ticker: '$RETRO',
-			name: 'Retro Game Villain',
-			imageUrl: null,
-			createdAt: new Date()
-		},
-		{
-			mint: crypto.randomUUID().replace(/-/g, '') + 'mock2',
-			ticker: '$AI',
-			name: 'AI Poker Bot',
-			imageUrl: null,
-			createdAt: new Date()
-		}
-	];
-}

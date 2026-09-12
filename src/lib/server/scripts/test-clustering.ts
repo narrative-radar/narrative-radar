@@ -2,6 +2,7 @@ import { insertToken, setTokenEmbeddingsBatch, getTokensByClusterId } from '../r
 import { getActiveClusters, getClusterById } from '../repositories/cluster.repository.js';
 import { runClusteringAssignment } from '../services/clustering.service.js';
 
+
 // --- Data Uji (Mock) ---
 // Kita akan simulasi 3 token yang berdekatan temanya, dan 1 yang beda jauh
 const mockTokens = [
@@ -68,6 +69,7 @@ async function runTest() {
 		members.forEach(m => console.log(`  - ${m.ticker} (${m.name})`));
 	}
 	
+	// @ts-ignore
 	process.exit(0);
 }
 
