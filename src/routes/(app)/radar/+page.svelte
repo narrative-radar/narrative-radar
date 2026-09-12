@@ -207,7 +207,14 @@
 			{:else}
 				<ul class="list-none m-0 p-0 max-h-[280px] overflow-y-auto flex flex-col gap-[10px]">
 					{#each recentTokens as t}
-						<li class="flex items-center gap-[10px] text-[12.5px]">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+						<li 
+							class="flex items-center gap-[10px] text-[12.5px] cursor-pointer hover:bg-[rgba(255,255,255,0.05)] p-1 -mx-1 rounded"
+							ondblclick={() => copyCA(t.mint)}
+							onclick={() => copyCA(t.mint)}
+							title="Click to copy CA"
+						>
 							<span class="w-[5px] h-[5px] rounded-full shrink-0" style="background: {getDotColorForLog(t.status)}"></span>
 							<span class="text-[var(--text-primary)] flex-1 whitespace-nowrap overflow-hidden text-ellipsis font-[var(--font-mono)]">
 								${t.ticker}
