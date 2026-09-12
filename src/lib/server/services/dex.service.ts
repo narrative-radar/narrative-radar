@@ -78,8 +78,20 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			return [];
 		}
 
+		// Filter strictly for Solana and non-pump tokens
+		const filteredData = data.filter((coin: any) => {
+			// Some APIs might return chainId or baseToken.chainId, ensure we check properly
+			const isSolana = coin.chainId === 'solana' || (coin.baseToken && coin.baseToken.chainId === 'solana');
+			// Filter out anything related to pumpfun
+			const isPump = coin.dexId === 'pumpfun' || (coin.baseToken && coin.baseToken.dexId === 'pumpfun');
+			// Some coins might not have dexId exposed at the root, check the address
+			const hasPumpSuffix = coin.mint && typeof coin.mint === 'string' && coin.mint.endsWith(String.fromCharCode(112, 117, 109, 112));
+			
+			return isSolana && !isPump && !hasPumpSuffix;
+		});
+
 		// Map API fields to our normalized format
-		return data.map((coin: any) => ({
+		return filteredData.map((coin: any) => ({
 			mint: coin.mint,
 			ticker: coin.symbol || 'UNKNOWN',
 			name: coin.name || 'Unknown Coin',

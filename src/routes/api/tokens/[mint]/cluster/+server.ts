@@ -87,8 +87,17 @@ export async function GET({ params, fetch, url }) {
 			const dexData = await dexResponse.json();
 
 			if (dexData.pairs && dexData.pairs.length > 0) {
-				// Ambil data pair pertama yang cocok
-				const pair = dexData.pairs[0];
+				// Ambil data pair pertama yang cocok (TAPI FILTER HANYA SOLANA & BUKAN PUMPFUN)
+				const validPairs = dexData.pairs.filter((p: any) => p.chainId === 'solana' && p.dexId !== 'pumpfun');
+				
+				if (validPairs.length === 0) {
+					return json({ 
+						status: 'not_found', 
+						message: 'Token detected, but it is either not on Solana or is a pre-migration bonding curve token. Ponsfamily Radar only supports established liquidity pools.' 
+					}, { status: 403 });
+				}
+				
+				const pair = validPairs[0];
 				
 				// Masukkan ke database (Antrean Cron)
 				await db.insert(tokens).values({
