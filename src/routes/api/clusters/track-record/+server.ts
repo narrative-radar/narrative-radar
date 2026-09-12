@@ -1,9 +1,8 @@
-export const prerender = false;
-
 import { json } from '@sveltejs/kit';
 import { getBreakoutClusters } from '$lib/server/repositories/cluster.repository.js';
 
-export async function GET() {
+export async function GET({ setHeaders }) {
+	setHeaders({ 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' });
 	try {
 		const records = await getBreakoutClusters();
 		return json({ records });

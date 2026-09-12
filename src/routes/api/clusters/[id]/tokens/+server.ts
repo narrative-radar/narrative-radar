@@ -1,5 +1,3 @@
-export const prerender = false;
-
 import { json } from '@sveltejs/kit';
 import { getTokensByClusterId } from '$lib/server/repositories/token.repository.js';
 

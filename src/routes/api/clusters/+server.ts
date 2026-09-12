@@ -1,10 +1,9 @@
-export const prerender = false;
-
 import { json } from '@sveltejs/kit';
 import { getActiveClusters } from '$lib/server/repositories/cluster.repository.js';
 import { getRecentTokens, getTokensTrackedToday } from '$lib/server/repositories/token.repository.js';
 
-export async function GET() {
+export async function GET({ setHeaders }) {
+	setHeaders({ 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0' });
 	try {
 		// Mengambil daftar cluster yang 'active' atau 'cooling'
 		const clusters = await getActiveClusters();
