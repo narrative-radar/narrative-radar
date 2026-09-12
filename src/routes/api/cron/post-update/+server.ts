@@ -15,7 +15,7 @@ export async function POST({ request }) {
 		let successCount = 0;
 
 		for (const cluster of untweeted) {
-			const label = cluster.label || cluster.label || 'Unknown Theme';
+			const label = cluster.label || cluster.label || 'Unknown Narrative';
 			const memberCount = cluster.memberCount;
 			
 			// Format the tweet as specified

@@ -154,7 +154,7 @@
         // Map clusters into the terminal feed
         feed = realClusters.map((c, i) => ({
           symbol: 'META',
-          name: c.label || 'Unnamed Theme',
+          name: c.label || 'Unnamed Narrative',
           lore: 'Detected ' + (c.tokens ? c.tokens.length : c.memberCount) + ' narrative fragments.',
           holders: (c.memberCount || 1) * 342,
           peak_mc: (c.memberCount || 1) * 85000,

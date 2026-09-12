@@ -242,7 +242,7 @@
 							<li class="flex justify-between items-center text-[var(--text-secondary)]">
 								<span class="flex items-center gap-[8px]">
 									<span class="w-[6px] h-[6px] rounded-full shrink-0" style="background: var(--state-{c.status === 'breakout' ? 'breakout' : c.status === 'fast' ? 'fast' : 'active'})"></span>
-									{c.label || c.name || 'Theme: Pending...'}
+									{c.label || c.name || 'Pending...'}
 								</span>
 								<span class="font-[var(--font-mono)] text-white">{c.memberCount}</span>
 							</li>
@@ -278,14 +278,14 @@
 		<button class="bg-transparent border border-[var(--divider)] text-[var(--text-secondary)] rounded-[4px] w-[28px] h-[28px] cursor-pointer text-[13px] mb-[18px] hover:text-white" aria-label="Close details" onclick={closeDetail}>
 			✕
 		</button>
-		<h3 class="text-[17px] m-0 mb-[4px] capitalize">{selectedCluster?.label || selectedCluster?.name || 'Theme Detail'}</h3>
+		<h3 class="text-[17px] m-0 mb-[4px] capitalize">{selectedCluster?.label || selectedCluster?.name || 'Narrative Detail'}</h3>
 		<p class="text-[12px] text-[var(--text-secondary)] font-[var(--font-mono)] mb-[18px]">
 			{selectedCluster?.memberCount} tokens · {selectedCluster?.status}
 		</p>
 		<div class="bg-[#0A0A0A] border border-[var(--divider)] rounded-[6px] p-[12px] mb-[20px] font-[var(--font-mono)] text-[11px] text-[var(--text-secondary)] overflow-hidden leading-[1.6] break-words">
 			<div class="text-[var(--text-tertiary)] mb-[6px]">// lib/server/services/labeling.service.ts</div>
 			<div class="whitespace-pre-wrap">
-<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">prompt</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#98c379]">`Based on these recent crypto token launches, give me a short, catchy, 2-4 word narrative theme that connects them.
+<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">prompt</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#98c379]">`Based on these recent crypto token launches, give me a short, catchy, 2-4 word narrative that connects them.
 Tokens: {activeTokens ? activeTokens.map((t: any) => t.name).join(', ') : 'loading...'}`</span>;
 
 <span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">model</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#e06c75]">genAI</span>.<span class="text-[#61afef]">getGenerativeModel</span>(&#123; <span class="text-[#d19a66]">model</span>: <span class="text-[#98c379]">"tycho-core-spatial-v1"</span> &#125;);

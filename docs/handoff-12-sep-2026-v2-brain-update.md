@@ -35,3 +35,20 @@ Adhering to the "no aggregation, no summary layer" philosophy:
 2.  **Verify the Brain**: Navigate to `/brain` and watch the terminal auto-scroll. Click the CSV link to test the download.
 3.  **Record the Hype Videos**: The UI is now perfectly polished for Twitter showcases. Capture the `/radar` narrative code box, and the `/brain` ingestion stream.
 4.  **Production Deployment**: Remember to run `bunx vercel --prod` to push these aesthetic and serverless fixes to the live domain.
+
+---
+
+## [UPDATE: LATE NIGHT 12 SEP 2026 - MIGRATION & SECURITY AUDIT]
+
+### 1. Ingestion Security Hardening (Anti-Pump)
+Following strict PM directives, the system has been permanently locked down against non-migrated and non-Solana tokens:
+- **Cron Job Filter**: The main ingestion pipeline now aggressively filters DexScreener responses. `chainId === 'solana'` AND `dexId !== 'pumpfun'` are strictly enforced.
+- **Manual Search Bar**: Backdoor injection via the `/radar` search bar has been sealed. Attempting to ingest a Pump.fun CA now explicitly returns a `403 Forbidden` error with the message: *"Token detected, but it is either not on Solana or is a pre-migration bonding curve token."*
+
+### 2. Robinhood Chain & Pons Launchpad Migration Readiness
+The system is officially audited and ready for the phase transition from Solana/DexScreener to Robinhood Chain/Pons:
+- **Database Abstraction**: Verified. The `mint` column uses standard `text` and natively supports `0x...` EVM addresses.
+- **AI Abstraction**: Verified. The `tychoAI` Gemini prompt requires zero changes. It successfully clustered "Robinhood", "CASHCAT", and "TENDIES" in our controlled mock test.
+- **Next Steps**: Awaiting PM decision on data source (Option A: EVM RPC Listener vs Option C: Pons Subgraph) before rewriting `dex.service.ts`.
+
+*System is clean, fully seeded with pure Raydium tokens, and completely handoff-ready.*

@@ -127,7 +127,7 @@
 				>
 					<span class="w-[7px] h-[7px] rounded-full {r.status === 'archived' ? '' : 'animate-pulse'}" style="background-color: {rowColor}; box-shadow: {glow}"></span>
 					<div class="text-[14.5px]" style="color: {r.status === 'archived' ? 'var(--fg)' : rowColor};">
-						{r.label || r.name || 'Unknown Theme'}
+						{r.label || r.name || 'Unknown'}
 						<span class="block text-[11.5px] text-[var(--text-tertiary)] mt-[3px] group-hover:text-[var(--text-secondary)] transition-colors">
 							{#if r.status === 'archived'}
 								archived — cooled down
