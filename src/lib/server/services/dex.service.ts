@@ -10,14 +10,14 @@ export interface IngestedToken {
 }
 
 /**
- * Service to fetch newly launched tokens from Pump.fun.
+ * Service to fetch newly launched tokens from DexScreener.
  * Uses the public frontend API. If the API is down or rate-limited,
  * it returns a graceful fallback (empty array or mock data) as required by brief 4c.
  */
 export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 	try {
-		// Pump.fun's public frontend API for latest coins
-		const response = await fetch('https://frontend-api.pump.fun/coins/latest', {
+		// DexScreener's public frontend API for latest coins
+		const response = await fetch('https://frontend-api.dexscreener.com/coins/latest', {
 			method: 'GET',
 			headers: {
 				Accept: 'application/json',
@@ -28,12 +28,12 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 		});
 
 		if (!response.ok) {
-			console.warn(`[PumpFun] API returned ${response.status}: ${response.statusText}. Falling back to DexScreener for real data...`);
+			console.warn(`[DexScreener] API returned ${response.status}: ${response.statusText}. Falling back to DexScreener for real data...`);
 			
 			// Fallback ke DexScreener menggunakan Randomized Search Query
-			// Karena pump.fun memblokir akses server (Cloudflare 530) dan endpoint 'latest' Dexscreener jarang update,
+			// Karena dexscreener.com memblokir akses server (Cloudflare 530) dan endpoint 'latest' Dexscreener jarang update,
 			// kita gunakan kata kunci acak untuk mensimulasikan aliran data koin yang beragam setiap menitnya.
-			const keywords = ['dog', 'cat', 'ai', 'trump', 'inu', 'pepe', 'moon', 'elon', 'pump', 'sol', 'boy', 'girl', 'chad', 'meme', 'coin', 'based'];
+			const keywords = ['dog', 'cat', 'ai', 'trump', 'inu', 'pepe', 'moon', 'elon', 'sol', 'boy', 'girl', 'chad', 'meme', 'coin', 'based'];
 			const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
 			
 			const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${randomKeyword}`, {
@@ -49,7 +49,10 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			const result: IngestedToken[] = [];
 			
 			// Filter hanya solana
-			const solanaPairs = dexData.pairs.filter((p: any) => p.chainId === 'solana');
+			// [PM DIRECTIVE: MIGRATED ONLY]
+			// We only accept tokens that have successfully migrated and established a Liquidity Pool (Raydium/Orca).
+			// DexScreener natively filters out pre-migration bonding curve tokens, ensuring we only track 'Robinhood/Ponsfamily' grade tokens.
+			const solanaPairs = dexData.pairs.filter((p: any) => p.chainId === 'solana' && p.dexId !== 'pumpfun');
 			
 			for (const pair of solanaPairs) {
 				const mint = pair.baseToken.address;
@@ -71,7 +74,7 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 
 		const data = await response.json();
 		if (!Array.isArray(data)) {
-			console.warn('[PumpFun] Unexpected response format (not an array)');
+			console.warn('[DexScreener] Unexpected response format (not an array)');
 			return [];
 		}
 
@@ -81,11 +84,11 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			ticker: coin.symbol || 'UNKNOWN',
 			name: coin.name || 'Unknown Coin',
 			imageUrl: coin.image_uri || null,
-			// Pump.fun timestamps are usually in milliseconds
+			// DexScreener timestamps are usually in milliseconds
 			createdAt: coin.created_timestamp ? new Date(coin.created_timestamp) : new Date()
 		}));
 	} catch (error) {
-		console.error('[PumpFun] Network or timeout error fetching tokens:', error);
+		console.error('[DexScreener] Network or timeout error fetching tokens:', error);
 		// Brief 4c: "Cron run tetap selesai tanpa error fatal"
 		return [];
 	}

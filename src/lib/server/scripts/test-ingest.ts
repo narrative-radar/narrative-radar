@@ -1,15 +1,15 @@
-import { fetchRecentTokens, getMockRecentTokens } from '../services/pumpfun.service.js';
+import { fetchRecentTokens, getMockRecentTokens } from '../services/dex.service.js';
 import { generateEmbeddingsBatch } from '../services/embedding.service.js';
 
 async function runTest() {
 	console.log('🚀 Memulai Test Integrasi [Langkah 2]');
 	
-	// 1. Uji penarikan data dari Pump.fun
-	console.log('\n--- 1. Fetching from Pump.fun ---');
+	// 1. Uji penarikan data dari DexScreener
+	console.log('\n--- 1. Fetching from DexScreener ---');
 	let tokens = await fetchRecentTokens();
 	
 	if (tokens.length === 0) {
-		console.log('⚠️ Pump.fun API limit / tidak merespon. Menggunakan data MOCK sebagai fallback.');
+		console.log('⚠️ DexScreener API limit / tidak merespon. Menggunakan data MOCK sebagai fallback.');
 		tokens = getMockRecentTokens();
 	}
 	
@@ -32,7 +32,7 @@ async function runTest() {
 		console.error('❌ Gagal meng-generate embedding:', err);
 	}
 
-	console.log('\n🎉 Selesai! Integrasi Pump.fun dan Embedding jalan.');
+	console.log('\n🎉 Selesai! Integrasi DexScreener dan Embedding jalan.');
 }
 
 runTest().catch(console.error);

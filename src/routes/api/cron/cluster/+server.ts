@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { fetchRecentTokens } from '$lib/server/services/pumpfun.service.js';
+import { fetchRecentTokens } from '$lib/server/services/dex.service.js';
 import { insertTokensBatch, getTokensPendingEmbed, setTokenEmbeddingsBatch } from '$lib/server/repositories/token.repository.js';
 import { generateEmbeddingsBatch } from '$lib/server/services/embedding.service.js';
 import { runClusteringAssignment } from '$lib/server/services/clustering.service.js';

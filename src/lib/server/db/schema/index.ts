@@ -24,7 +24,7 @@ export const clusterStatusEnum = pgEnum('cluster_status', [
 // ---------------------------------------------------------------------------
 
 /**
- * One row per Pump.fun token launch.
+ * One row per DexScreener token launch.
  *
  * The `embedding` column stores a vector as a Postgres float array (real[]).
  * To use pgvector operators, run: CREATE EXTENSION IF NOT EXISTS vector;
@@ -46,13 +46,13 @@ export const tokens = pgTable(
 		name: text('name').notNull(),
 
 		/**
-		 * URL to token image from Pump.fun.
-		 * Nullable in case Pump.fun doesn't provide one.
+		 * URL to token image from DexScreener.
+		 * Nullable in case DexScreener doesn't provide one.
 		 * DISPLAY as thumbnail in V1 — similarity use deferred to phase 2.
 		 */
 		imageUrl: text('image_url'),
 
-		/** UTC timestamp when this token launched on Pump.fun. */
+		/** UTC timestamp when this token launched on DexScreener. */
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
 
 		/**

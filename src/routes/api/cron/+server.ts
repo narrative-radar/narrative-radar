@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { fetchRecentTokens } from '$lib/server/services/pumpfun.service.js';
+import { fetchRecentTokens } from '$lib/server/services/dex.service.js';
 import { generateEmbeddingsBatch } from '$lib/server/services/embedding.service.js';
 import { runClusteringAssignment } from '$lib/server/services/clustering.service.js';
 import * as tokenRepo from '$lib/server/repositories/token.repository.js';
@@ -25,7 +25,7 @@ export async function GET({ request }) {
 	};
 
 	// -------------------------------------------------------------------------
-	// [1] INGEST: Fetch from Pump.fun and insert to DB as pending_embed
+	// [1] INGEST: Fetch from DexScreener and insert to DB as pending_embed
 	// -------------------------------------------------------------------------
 	try {
 		console.log('[Cron] Stage 1: Ingestion');

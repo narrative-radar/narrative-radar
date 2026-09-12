@@ -18,7 +18,7 @@
   const BLOCKS = [
     {
       stage: 'ingestion',
-      src: `import radar from 'tycho'\n\n# Listen to real-time events on Robinhood\ndef listen_to_launches():\n    feed = radar.connect(chain="robinhood")\n    for token in feed.stream():\n        log(f"ingesting {token.ticker}")\n        yield token`
+      src: `import radar from 'tycho'\n\n# Listen to real-time events on Robinhood\ndef listen_to_launches():\n    feed = radar.connect(chain="ponsfamily")\n    for token in feed.stream():\n        log(f"ingesting {token.ticker}")\n        yield token`
     },
     {
       stage: 'embedding',
@@ -256,7 +256,7 @@
       <div class="mb-4">
         <span class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--live)]/10 border border-[var(--live)]/30 text-[var(--live)] font-mono text-[11px] font-medium tracking-wider uppercase rounded-md">
           <span class="w-1.5 h-1.5 rounded-full bg-[var(--live)] animate-pulse shadow-[0_0_8px_var(--live)]"></span>
-          Live Robinhood Radar
+          Live Ponsfamily Radar
         </span>
       </div>
       
@@ -375,7 +375,7 @@
             <div>
               <h3 class="text-xl font-bold text-white mb-2">Instant Ingestion</h3>
               <p class="text-[var(--dim)] text-[13px] font-mono leading-relaxed">
-                Every launch is just three small signals — a name, a ticker, an image. Tycho reads all of them the moment they go live on Robinhood. No manual pasting required.
+                Every launch is just three small signals — a name, a ticker, an image. Tycho reads all of them the moment they go live on Ponsfamily. No manual pasting required.
               </p>
             </div>
           </div>
@@ -452,7 +452,7 @@
   <!-- PARE-STYLE SECTIONS -->
   <section class="max-w-[1344px] mx-auto px-6 pt-20 relative z-10">
     <h2 class="text-[34px] font-medium tracking-tight mb-2 text-white">Active Narratives</h2>
-    <p class="text-[var(--dim)] mb-7 max-w-[640px] text-[15px]">Live clusters detected on the Robinhood chain, mapped by spatial density.</p>
+    <p class="text-[var(--dim)] mb-7 max-w-[640px] text-[15px]">Live clusters detected on the Ponsfamily ecosystem, mapped by spatial density.</p>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {#each liveClusters.slice(0, 4) as cluster, i}
@@ -589,7 +589,7 @@
       <div class="bg-[var(--panel)] rounded-[14px] p-5 relative">
         <div class="font-mono text-[24px] font-medium text-white">Ingest</div>
         <div class="font-medium mt-2 text-[15px] text-white">Listen to chain</div>
-        <div class="text-[var(--dim)] text-[13px] mt-1">Read all new pairs on Robinhood.</div>
+        <div class="text-[var(--dim)] text-[13px] mt-1">Read all new pairs on Ponsfamily.</div>
       </div>
       
       <div class="bg-[var(--panel)] rounded-[14px] p-5 relative">
