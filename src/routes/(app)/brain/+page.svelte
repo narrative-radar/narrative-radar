@@ -127,12 +127,12 @@
 							{#if t.imageUrl}
 								<img src={t.imageUrl} alt="" class="w-[24px] h-[24px] rounded-full object-cover shrink-0 grayscale group-hover:grayscale-0 transition-all opacity-70 group-hover:opacity-100" />
 							{:else}
-								<div class="w-[24px] h-[24px] rounded-full bg-[var(--rule)] shrink-0 flex items-center justify-center text-[8px] text-[var(--text-tertiary)]">?</div>
+								<div class="w-[24px] h-[24px] rounded-full bg-[var(--rule)] shrink-0 flex items-center justify-center text-[10px] font-bold text-[var(--text-secondary)]">{t.ticker.replace('$', '')[0] || 'T'}</div>
 							{/if}
 							<div class="flex flex-col flex-1 min-w-0">
 								<div class="flex items-center gap-2">
 									<span class="text-[13px] text-[var(--fg)] truncate font-medium">{t.name}</span>
-									<span class="text-[10px] text-[var(--live)] font-[var(--font-mono)] px-1.5 py-0.5 bg-[var(--live)]/10 rounded">${t.ticker}</span>
+									<span class="text-[10px] text-[var(--live)] font-[var(--font-mono)] px-1.5 py-0.5 bg-[var(--live)]/10 rounded">{t.ticker}</span>
 								</div>
 								<span class="text-[10px] text-[var(--text-tertiary)] font-[var(--font-mono)] truncate opacity-50">{t.mint}</span>
 							</div>

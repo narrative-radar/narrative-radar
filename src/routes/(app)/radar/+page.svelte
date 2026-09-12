@@ -313,9 +313,9 @@ Tokens: {activeTokens ? activeTokens.map((t: any) => t.name).join(', ') : 'loadi
 								{#if t.imageUrl}
 									<img src={t.imageUrl} alt="{t.name} logo" class="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
 								{:else}
-									<div class="w-[20px] h-[20px] rounded-full bg-[var(--surface)] border border-[var(--divider)] shrink-0 flex items-center justify-center text-[9px] text-[var(--text-tertiary)]">?</div>
+									<div class="w-[20px] h-[20px] rounded-full bg-[var(--surface)] border border-[var(--divider)] shrink-0 flex items-center justify-center text-[9px] font-bold text-[var(--text-secondary)]">{t.ticker.replace('$', '')[0] || 'T'}</div>
 								{/if}
-								<span class="text-[var(--accent)] font-semibold font-[var(--font-mono)] truncate max-w-[80px] shrink-0">${t.ticker}</span>
+								<span class="text-[var(--accent)] font-semibold font-[var(--font-mono)] truncate max-w-[80px] shrink-0">{t.ticker}</span>
 								<span class="text-[var(--text-secondary)] truncate flex-1">{t.name}</span>
 							</div>
 							<span class="text-[var(--text-tertiary)] font-[var(--font-mono)] whitespace-nowrap shrink-0" title={new Date(t.createdAt).toLocaleString()}>
