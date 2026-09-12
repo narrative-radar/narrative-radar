@@ -1,5 +1,5 @@
-import { db } from '$lib/server/db/client.js';
-import { tokens } from '$lib/server/db/schema/index.js';
+import { db } from '$lib/server/db/client';
+import { tokens } from '$lib/server/db/schema';
 import { desc } from 'drizzle-orm';
 
 export const prerender = false;
@@ -13,6 +13,7 @@ export async function load() {
 		
 		return { recentTokens };
 	} catch (e) {
+		console.error('DB Fetch Error on Brain:', e);
 		return { recentTokens: [] };
 	}
 }

@@ -1,5 +1,5 @@
-import { db } from '$lib/server/db/client.js';
-import { tokens, clusters } from '$lib/server/db/schema/index.js';
+import { db } from '$lib/server/db/client';
+import { tokens, clusters } from '$lib/server/db/schema';
 import { eq, isNotNull, desc } from 'drizzle-orm';
 
 export const prerender = false;
@@ -37,16 +37,17 @@ export async function GET({ setHeaders }) {
 			const timestamp = row.timestamp ? row.timestamp.toISOString() : new Date().toISOString();
 			const launchHourUtc = row.timestamp ? row.timestamp.getUTCHours() : 0;
 			
-			// Mocking metrics we don't track yet to match Emile's rigorous CSV structure exactly
-			const mockPeakMc = Math.floor(Math.random() * 500000) + 10000;
-			const mockHolders = Math.floor(Math.random() * 800) + 50;
+			// Murni data asli, tidak ada yang dikarang.
+			// Mengikuti tweet Emile: "Holder counts are reading zero... being fixed at the source".
+			const peakMc = 0; 
+			const holders = 0;
 			
-			csv += `${row.mint},${safeName},${safeTicker},${timestamp},${launchHourUtc},${mockPeakMc},${mockHolders},mapped,${safeNarrative}\n`;
+			csv += `${row.mint},${safeName},${safeTicker},${timestamp},${launchHourUtc},${peakMc},${holders},mapped,${safeNarrative}\n`;
 		}
 
 		// Fallback empty data if DB is empty (Seeded rows just like Emile mentioned)
 		if (dataset.length === 0) {
-			csv += "seed_001_synthetic_node,"Seed Token",$SEED,2026-09-12T00:00:00.000Z,0,0,0,synthetic,"Validation Seed"\n";
+			csv += 'seed_001_synthetic_node,"Seed Token",$SEED,2026-09-12T00:00:00.000Z,0,0,0,synthetic,"Validation Seed"\n';
 		}
 
 		return new Response(csv);

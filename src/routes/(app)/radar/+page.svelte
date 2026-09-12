@@ -275,7 +275,7 @@
 		transition:fly={{ x: 380, duration: 300, easing: cubicOut }}
 		class="fixed top-0 right-0 h-full w-[380px] max-w-[92vw] bg-[var(--surface)] border-l border-[var(--divider)] p-[26px] overflow-y-auto z-50 shadow-2xl"
 	>
-		<button class="bg-transparent border border-[var(--divider)] text-[var(--text-secondary)] rounded-[4px] w-[28px] h-[28px] cursor-pointer text-[13px] mb-[18px] hover:text-white" onclick={closeDetail}>
+		<button class="bg-transparent border border-[var(--divider)] text-[var(--text-secondary)] rounded-[4px] w-[28px] h-[28px] cursor-pointer text-[13px] mb-[18px] hover:text-white" aria-label="Close details" onclick={closeDetail}>
 			✕
 		</button>
 		<h3 class="text-[17px] m-0 mb-[4px] capitalize">{selectedCluster?.label || selectedCluster?.name || 'Theme Detail'}</h3>

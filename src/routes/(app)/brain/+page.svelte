@@ -115,11 +115,11 @@
 			<div class="absolute top-0 left-0 w-full h-[1px] bg-[var(--live)] opacity-20"></div>
 			<div class="bg-[#0A0D14] border-b border-[var(--rule)] px-4 py-2 flex justify-between items-center z-10">
 				<span class="text-[10px] font-[var(--font-mono)] text-[var(--text-secondary)] tracking-widest uppercase">PONSFAMILY_INGESTION_STREAM</span>
-				<span class="text-[9px] font-[var(--font-mono)] text-[var(--text-tertiary)]">{data.recentTokens.length} NODES</span>
+				<span class="text-[9px] font-[var(--font-mono)] text-[var(--text-tertiary)]">{(data?.recentTokens || []).length} NODES</span>
 			</div>
 			<div class="flex-1 p-0 overflow-y-auto scrollbar-hide">
 				<ul class="list-none m-0 p-0 flex flex-col">
-					{#each data.recentTokens as t, i}
+					{#each (data?.recentTokens || []) as t, i}
 						<li class="flex items-center gap-4 px-4 py-3 border-b border-[var(--divider)] hover:bg-[#0A0D14] transition-colors cursor-default group">
 							<span class="text-[10px] text-[var(--text-tertiary)] font-[var(--font-mono)] min-w-[60px]">
 								{t.createdAt ? new Date(t.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : 'LIVE'}
