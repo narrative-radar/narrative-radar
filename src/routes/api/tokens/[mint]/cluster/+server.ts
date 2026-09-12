@@ -88,7 +88,7 @@ export async function GET({ params, fetch, url }) {
 
 			if (dexData.pairs && dexData.pairs.length > 0) {
 				// Ambil data pair pertama yang cocok (TAPI FILTER HANYA SOLANA & BUKAN PUMPFUN)
-				const validPairs = dexData.pairs.filter((p: any) => p.chainId === 'solana' && p.dexId !== 'pumpfun');
+				const validPairs = dexData.pairs.filter((p: any) => p.chainId === 'robinhood');
 				
 				if (validPairs.length === 0) {
 					return json({ 

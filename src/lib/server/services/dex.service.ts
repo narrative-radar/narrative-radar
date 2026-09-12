@@ -48,13 +48,13 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			const seenMints = new Set();
 			const result: IngestedToken[] = [];
 			
-			// Filter hanya solana
+			// Filter hanya robinhood chain (Ponsfamily)
 			// [PM DIRECTIVE: MIGRATED ONLY]
 			// We only accept tokens that have successfully migrated and established a Liquidity Pool (Raydium/Orca).
 			// DexScreener natively filters out pre-migration bonding curve tokens, ensuring we only track 'Robinhood/Ponsfamily' grade tokens.
-			const solanaPairs = dexData.pairs.filter((p: any) => p.chainId === 'solana' && p.dexId !== 'pumpfun');
+			const robinhoodPairs = dexData.pairs.filter((p: any) => p.chainId === 'robinhood');
 			
-			for (const pair of solanaPairs) {
+			for (const pair of robinhoodPairs) {
 				const mint = pair.baseToken.address;
 				
 				if (!seenMints.has(mint)) {
@@ -81,7 +81,7 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 		// Filter strictly for Solana and non-pump tokens
 		const filteredData = data.filter((coin: any) => {
 			// Some APIs might return chainId or baseToken.chainId, ensure we check properly
-			const isSolana = coin.chainId === 'solana' || (coin.baseToken && coin.baseToken.chainId === 'solana');
+			const isSolana = coin.chainId === 'robinhood' || (coin.baseToken && coin.baseToken.chainId === 'robinhood');
 			// Filter out anything related to pumpfun
 			const isPump = coin.dexId === 'pumpfun' || (coin.baseToken && coin.baseToken.dexId === 'pumpfun');
 			// Some coins might not have dexId exposed at the root, check the address
