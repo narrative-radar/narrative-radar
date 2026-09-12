@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import { json } from '@sveltejs/kit';
 import { getActiveClusters } from '$lib/server/repositories/cluster.repository.js';
 import { getRecentTokens, getTokensTrackedToday } from '$lib/server/repositories/token.repository.js';

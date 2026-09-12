@@ -1,3 +1,5 @@
+export const prerender = false;
+
 import { json } from '@sveltejs/kit';
 import { getBreakoutClusters } from '$lib/server/repositories/cluster.repository.js';
 
