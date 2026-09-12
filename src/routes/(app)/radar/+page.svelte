@@ -282,6 +282,20 @@
 		<p class="text-[12px] text-[var(--text-secondary)] font-[var(--font-mono)] mb-[18px]">
 			{selectedCluster?.memberCount} tokens · {selectedCluster?.status}
 		</p>
+		<div class="bg-[#0A0A0A] border border-[var(--divider)] rounded-[6px] p-[12px] mb-[20px] font-[var(--font-mono)] text-[11px] text-[var(--text-secondary)] overflow-hidden leading-[1.6] break-words">
+			<div class="text-[var(--text-tertiary)] mb-[6px]">// lib/server/services/labeling.service.ts</div>
+			<div class="whitespace-pre-wrap">
+<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">prompt</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#98c379]">`Based on these recent crypto token launches, give me a short, catchy, 2-4 word narrative theme that connects them.
+Tokens: {activeTokens ? activeTokens.map((t: any) => t.name).join(', ') : 'loading...'}`</span>;
+
+<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">model</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#e06c75]">genAI</span>.<span class="text-[#61afef]">getGenerativeModel</span>(&#123; <span class="text-[#d19a66]">model</span>: <span class="text-[#98c379]">"tycho-core-spatial-v1"</span> &#125;);
+<span class="text-[#c678dd]">const</span> <span class="text-[#e5c07b]">result</span> <span class="text-[#56b6c2]">=</span> <span class="text-[#c678dd]">await</span> <span class="text-[#e06c75]">model</span>.<span class="text-[#61afef]">generateContent</span>(<span class="text-[#e5c07b]">prompt</span>);
+
+<span class="text-[#7f848e]">// LLM Output:</span>
+<span class="text-[#c678dd]">return</span> <span class="text-[#e06c75]">result</span>.<span class="text-[#e06c75]">response</span>.<span class="text-[#61afef]">text</span>(); <span class="text-[#56b6c2]">-></span> <span class="text-[#98c379]">"{selectedCluster?.label || selectedCluster?.name}"</span>
+			</div>
+		</div>
+
 
 		{#if tokensQuery.isLoading}
 			<p class="text-[12px] text-[var(--text-secondary)]">Fetching tokens...</p>

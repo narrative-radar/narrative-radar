@@ -4,7 +4,7 @@ import { env } from '$env/dynamic/private';
 import { tokens, clusters } from '$lib/server/db/schema/index.js';
 import { eq } from 'drizzle-orm';
 
-export async function GET({ params, fetch }) {
+export async function GET({ params, fetch, url }) {
 	const { mint } = params;
 	
 	
@@ -52,7 +52,8 @@ export async function GET({ params, fetch }) {
 				// State 2: Ketemu + pending_embed / pending_cluster
 				// FORCE PIPELINE NOW
 				try {
-					await fetch('/api/cron', { headers: { 'Authorization': `Bearer ${env.CRON_SECRET}` } });
+					// FIRE AND FORGET: Do not await this, otherwise Vercel Serverless will timeout (10s limit) waiting for Gemini!
+					fetch(url.origin + '/api/cron', { headers: { 'Authorization': `Bearer ${env.CRON_SECRET}` } }).catch(()=>console.log('Background cron started'));
 					
 					const recheck = await db.select({
 						token: tokens,
@@ -101,7 +102,8 @@ export async function GET({ params, fetch }) {
 
 				// [REAL-TIME PROCESSING] Instead of waiting for cron, force the pipeline immediately!
 				try {
-					await fetch('/api/cron', { headers: { 'Authorization': `Bearer ${env.CRON_SECRET}` } });
+					// FIRE AND FORGET: Do not await this, otherwise Vercel Serverless will timeout (10s limit) waiting for Gemini!
+					fetch(url.origin + '/api/cron', { headers: { 'Authorization': `Bearer ${env.CRON_SECRET}` } }).catch(()=>console.log('Background cron started'));
 					
 					// Re-check the database after processing
 					const recheck = await db.select({
