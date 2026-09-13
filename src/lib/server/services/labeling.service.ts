@@ -112,22 +112,7 @@ export async function generateClusterLabel(tokenNames: string[], tokenTickers: s
 	
 	Label (just the text, no quotes):`;
 
-	// 1. Try Gemini
-	if (env.GEMINI_API_KEY) {
-		try {
-			const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
-			const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-			const result = await model.generateContent(prompt);
-			let label = result.response.text().trim().toLowerCase();
-			label = label.replace(/^\"|\"$/g, '').replace(/\*/g, '').trim(); 
-			label = label.replace(/^narrative:\s*/i, '').replace(/^tema:\s*/i, '').trim();
-			return label;
-		} catch (error) { 
-			console.error("[Labeling] Gemini failed:", error); 
-		}
-	}
-
-	// 2. Try Claude
+	// 1. Try Claude (Primary)
 	if (env.ANTHROPIC_API_KEY) {
 		try {
 			const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
@@ -150,6 +135,21 @@ export async function generateClusterLabel(tokenNames: string[], tokenTickers: s
 			}
 		} catch(error) {
 			console.error("[Labeling] Claude failed:", error); 
+		}
+	}
+
+	// 2. Try Gemini (Fallback 1)
+	if (env.GEMINI_API_KEY) {
+		try {
+			const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+			const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+			const result = await model.generateContent(prompt);
+			let label = result.response.text().trim().toLowerCase();
+			label = label.replace(/^\"|\"$/g, '').replace(/\*/g, '').trim(); 
+			label = label.replace(/^narrative:\s*/i, '').replace(/^tema:\s*/i, '').trim();
+			return label;
+		} catch (error) { 
+			console.error("[Labeling] Gemini failed:", error); 
 		}
 	}
 
