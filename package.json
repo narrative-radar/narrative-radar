@@ -12,6 +12,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@google/generative-ai": "^0.24.1",
     "@studio-freight/lenis": "^1.0.42",
     "@sveltejs/kit": "^2.0.0",

@@ -80,7 +80,7 @@
 		{#if Number(growthRate) === 999999} <!-- not used anymore but keep syntax -->
 			new
 		{:else if Number(growthRate) > 0}
-			+{Math.round(Number(growthRate))} new
+			+{Math.round(Number(growthRate))} in 24h
 		{:else if Number(growthRate) < 0}
 			{Math.round(Number(growthRate))}
 		{:else}

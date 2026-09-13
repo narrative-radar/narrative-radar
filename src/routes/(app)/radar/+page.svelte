@@ -123,6 +123,17 @@
 		}
 	}
 	
+	
+	function formatClusterAge(ms) {
+		const h = Math.floor(ms / (1000 * 60 * 60));
+		if (h < 1) return '<1h';
+		if (h < 24) return `${h}h`;
+		const d = Math.floor(h / 24);
+		if (d <= 30) return `${d}d`;
+		const mo = Math.floor(d / 30);
+		return `${mo}mo`;
+	}
+
 	function timeAgo(dateString: string) {
 		const diff = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
 		if (diff < 60) return `${diff}s ago`;
@@ -231,7 +242,7 @@
 				</div>
 				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
 					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">NEXT SCAN</span>
-					<span class="text-white text-[16px] font-bold">pending</span>
+					<span class="text-[var(--text-secondary)] text-[13px] font-mono mt-1">scheduler: off</span>
 				</div>
 
 			</div>
@@ -347,7 +358,7 @@
 				</div>
 				<div class="flex justify-between">
 					<span class="text-[#56b6c2]">age</span> 
-					<span>{selectedCluster?.createdAt ? Math.floor((Date.now() - new Date(selectedCluster.createdAt).getTime()) / (1000 * 60 * 60)) : 0} hours</span>
+					<span>{activeTokens.length > 0 ? formatClusterAge(Date.now() - Math.min(...activeTokens.map(t => new Date(t.createdAt).getTime()))) : (selectedCluster?.createdAt ? formatClusterAge(Date.now() - new Date(selectedCluster.createdAt).getTime()) : formatClusterAge(0))}</span>
 				</div>
 				<div class="flex justify-between">
 					<span class="text-[#56b6c2]">peak_size</span>  
@@ -359,7 +370,7 @@
 						{#if Number(selectedCluster?.peakGrowthRate) === 999999} <!-- not used anymore but keep syntax -->
 							new
 						{:else if Number(selectedCluster?.peakGrowthRate) > 0}
-							+{Math.round(Number(selectedCluster?.peakGrowthRate))} new
+							+{Math.round(Number(selectedCluster?.peakGrowthRate))} in 24h
 						{:else if Number(selectedCluster?.peakGrowthRate) < 0}
 							{Math.round(Number(selectedCluster?.peakGrowthRate))}
 						{:else}

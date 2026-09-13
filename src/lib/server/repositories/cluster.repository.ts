@@ -150,7 +150,7 @@ export async function getBreakoutClusters(): Promise<Cluster[]> {
 		.from(clusters)
 		.where(
 			and(
-				eq(clusters.everReachedBreakout, true),
+				sql`${clusters.status} IN ('cooling', 'archived')`,
 				isNotNull(clusters.label),
 				sql`${clusters.label} != ''`
 			)

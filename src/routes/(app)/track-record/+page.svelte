@@ -93,7 +93,7 @@
 					<p class="py-16 text-center text-[var(--text-tertiary)] text-[12px] italic">Fetching historical ledger...</p>
 				{:else if records.length === 0}
 					<div in:fly={{ y: 5, duration: 400 }} class="p-8 text-center text-[12px] text-[var(--text-secondary)]">
-						No verified breakouts yet — this page fills as clusters prove out.
+						No narratives have cooled down yet — check the radar for active clusters.
 					</div>
 				{:else}
 					{#each records as r, index}
@@ -146,7 +146,7 @@
 								{#if Number(r.peakGrowthRate) === 999999} <!-- not used anymore but keep syntax -->
 									new
 								{:else if Number(r.peakGrowthRate) > 0}
-									+{Math.round(Number(r.peakGrowthRate))} new
+									+{Math.round(Number(r.peakGrowthRate))} in 24h
 								{:else if Number(r.peakGrowthRate) < 0}
 									{Math.round(Number(r.peakGrowthRate))}
 								{:else}
