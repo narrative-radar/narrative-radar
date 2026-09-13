@@ -45,7 +45,7 @@
 	let activeTokens = $derived(tokensQuery.data?.tokens || []);
 
 	// Countdown logic
-	let scanSeconds = $state(300); // 5 minutes
+	let nextScanText = $state("scheduler: off");
 	let scanInterval: any;
 
     // Pipeline Logs logic
@@ -54,8 +54,26 @@
 
 	onMount(() => {
 		scanInterval = setInterval(() => {
-			scanSeconds--;
-			if (scanSeconds < 0) scanSeconds = 300;
+			const latestCronLog = clustersQuery.data?.latestCronLog;
+			if (!latestCronLog || !latestCronLog.timestamp) {
+				nextScanText = 'scheduler: off';
+				return;
+			}
+			const lastRunMs = new Date(latestCronLog.timestamp).getTime();
+			const nowMs = Date.now();
+			if (nowMs - lastRunMs > 10 * 60 * 1000) {
+				nextScanText = 'scheduler: off';
+			} else {
+				const nextRunMs = lastRunMs + 5 * 60 * 1000;
+				const diffMs = nextRunMs - nowMs;
+				if (diffMs <= 0) {
+					nextScanText = 'scanning...';
+				} else {
+					const m = Math.floor(diffMs / 60000);
+					const s = Math.floor((diffMs % 60000) / 1000);
+					nextScanText = `0${m}:${s.toString().padStart(2, '0')}`;
+				}
+			}
 		}, 1000);
 
         // Simulated Pipeline logs
@@ -85,11 +103,7 @@
         };
 	});
 
-	let formattedCountdown = $derived(() => {
-		const m = Math.floor(scanSeconds / 60);
-		const s = scanSeconds % 60;
-		return `${m}:${s < 10 ? '0' : ''}${s}`;
-	});
+	
 
 	let lastScanMins = $derived(() => {
 		const log = clustersQuery.data?.latestCronLog;
@@ -242,7 +256,11 @@
 				</div>
 				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
 					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">NEXT SCAN</span>
-					<span class="text-[var(--text-secondary)] text-[13px] font-mono mt-1">scheduler: off</span>
+					{#if nextScanText === 'scheduler: off'}
+						<span class="text-[var(--text-secondary)] text-[13px] font-mono mt-1">{nextScanText}</span>
+					{:else}
+						<span class="text-white text-[16px] font-bold">{nextScanText}</span>
+					{/if}
 				</div>
 
 			</div>
