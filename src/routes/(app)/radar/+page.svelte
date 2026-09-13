@@ -13,7 +13,8 @@
 			if (!res.ok) throw new Error('Failed to fetch dashboard data');
 			return res.json();
 		},
-		refetchInterval: 15000
+		refetchInterval: 15000,
+		refetchIntervalInBackground: true
 	}));
 
 	let isDetailOpen = $state(false);
@@ -61,18 +62,21 @@
 			}
 			const lastRunMs = new Date(latestCronLog.timestamp).getTime();
 			const nowMs = Date.now();
-			if (nowMs - lastRunMs > 10 * 60 * 1000) {
-				nextScanText = 'scheduler: off';
+			
+			const nextRunMs = lastRunMs + 15 * 60 * 1000;
+			const diffMs = nextRunMs - nowMs;
+
+			if (diffMs > 0 && nowMs - lastRunMs <= 20 * 60 * 1000) {
+				// Counting down (only if within 20 mins)
+				const m = Math.floor(diffMs / 60000);
+				const s = Math.floor((diffMs % 60000) / 1000);
+				nextScanText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+			} else if (diffMs <= 0 && diffMs > -60000) {
+				// Passed 0 but within 60s -> scanning...
+				nextScanText = 'scanning...';
 			} else {
-				const nextRunMs = lastRunMs + 5 * 60 * 1000;
-				const diffMs = nextRunMs - nowMs;
-				if (diffMs <= 0) {
-					nextScanText = 'scanning...';
-				} else {
-					const m = Math.floor(diffMs / 60000);
-					const s = Math.floor((diffMs % 60000) / 1000);
-					nextScanText = `0${m}:${s.toString().padStart(2, '0')}`;
-				}
+				// Past 60s of expected run, OR past 20 minutes entirely -> scheduler: off
+				nextScanText = 'scheduler: off';
 			}
 		}, 1000);
 
