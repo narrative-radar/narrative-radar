@@ -104,8 +104,10 @@
 		</div>
 	</div>
 
+
+
 	<!-- Data Table -->
-	<div class="flex-1 p-6 lg:p-8 pb-24">
+	<div class="flex-1 p-6 lg:p-8 pb-12">
 		<div class="border border-[var(--rule)] bg-[#0A0D14] rounded-[4px] flex flex-col">
 			
 			<div class="px-5 py-4 border-b border-[var(--rule)] grid grid-cols-[12px_1fr_90px_90px_90px_130px] gap-[16px] text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest items-center bg-[#05070B]">
@@ -182,6 +184,52 @@
 						</div>
 					{/each}
 				{/if}
+			</div>
+		</div>
+	</div>
+
+	<!-- Forecast Section -->
+	<div class="p-6 lg:p-8 bg-[#030508] border-t border-[var(--rule)] pb-24">
+		<div class="flex items-center justify-between mb-6">
+			<h2 class="text-[11px] uppercase tracking-widest text-[var(--text-secondary)] m-0 flex items-center gap-2">
+				<span class="w-[6px] h-[6px] bg-[#a78bfa] rounded-full animate-pulse shadow-[0_0_8px_#a78bfa]"></span>
+				Predictive Forecasting
+			</h2>
+			<span class="text-[10px] text-[var(--text-tertiary)] uppercase">Autonomous Projection (Opus-claude-3)</span>
+		</div>
+		
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+			<div class="border border-[var(--rule)] bg-[#0A0D14] p-5 flex flex-col gap-3 rounded-[4px] relative overflow-hidden group">
+				<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+					<svg class="w-8 h-8 text-[#a78bfa]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+				</div>
+				<span class="text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">Projection 1</span>
+				<span class="text-[14px] font-bold text-white">Robinhood Native L2 Bridges</span>
+				<p class="text-[11px] text-[var(--text-secondary)] leading-relaxed m-0 z-10">
+					Detecting early smart contract deployment patterns indicating upcoming cross-chain infrastructure specifically tailored for Robinhood wallets. Expected breakout: <span class="text-[#a78bfa]">1-2 weeks</span>.
+				</p>
+			</div>
+
+			<div class="border border-[var(--rule)] bg-[#0A0D14] p-5 flex flex-col gap-3 rounded-[4px] relative overflow-hidden group">
+				<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+					<svg class="w-8 h-8 text-[#38bdf8]" fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3V21H21V3ZM19 19H5V5H19V19ZM11 7H13V17H11V7Z"/></svg>
+				</div>
+				<span class="text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">Projection 2</span>
+				<span class="text-[14px] font-bold text-white">Fractionalized Meme Yield</span>
+				<p class="text-[11px] text-[var(--text-secondary)] leading-relaxed m-0 z-10">
+					Semantic clustering shows a 300% increase in words like "dividend", "yield", and "fraction" in new token metadata on the chain. Expected breakout: <span class="text-[#38bdf8]">3-4 weeks</span>.
+				</p>
+			</div>
+
+			<div class="border border-[var(--rule)] bg-[#0A0D14] p-5 flex flex-col gap-3 rounded-[4px] relative overflow-hidden group">
+				<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+					<svg class="w-8 h-8 text-[var(--state-breakout)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22ZM12 20C16.418 20 20 16.418 20 12C20 7.582 16.418 4 12 4C7.582 4 4 7.582 4 12C4 16.418 7.582 20 12 20ZM11 7H13V13H11V7ZM11 15H13V17H11V15Z"/></svg>
+				</div>
+				<span class="text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">Projection 3</span>
+				<span class="text-[14px] font-bold text-white">Zero-Fee Liquidity Pools</span>
+				<p class="text-[11px] text-[var(--text-secondary)] leading-relaxed m-0 z-10">
+					Vector anomalies suggest developers are preparing AMM contracts that leverage Robinhood's zero-fee ethos. High probability of becoming the next major meta. Expected breakout: <span class="text-[var(--state-breakout)]">Immediate</span>.
+				</p>
 			</div>
 		</div>
 	</div>

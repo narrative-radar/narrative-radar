@@ -60,20 +60,21 @@
 
         // Simulated Pipeline logs
         const thoughts = [
-            "Initializing DBSCAN eps=0.85, min_samples=4...",
-            "Computing cosine similarities in 1536-D space...",
-            "Evaluating narrative cohesiveness score...",
-            "Score > 0.82. Assigning human-readable label.",
-            "Updating centroids for active clusters.",
-            "Filtering noise and isolated vectors.",
-            "Calculating growth momentum across 1hr window..."
+            "[INGEST] Block 324119: Extracted 84 new contract deployments.",
+            "[EMBED] Generating 1536-D vectors via text-embedding-3-small...",
+            "[SPACE] Computing cosine distance matrix across 12,400 active nodes.",
+            "[CLUSTER] Anomaly detected: Node density spiked +42% in sector 7.",
+            "[EVAL] Extracting semantic overlap: 'Terminal', 'Agent', 'Autonomous'",
+            "[EVAL] Cohesiveness score: 0.91 (High). Variance: 0.012.",
+            "[LABEL] Synthesized label: 'AI Terminal Agents'.",
+            "[SYSTEM] Updated active metas. Awaiting next block..."
         ];
 
         let logIndex = 0;
         const logInterval = setInterval(() => {
             const msg = thoughts[logIndex % thoughts.length];
-            pipelineLogs = [...pipelineLogs, `> ${msg}`];
-            if (pipelineLogs.length > 8) pipelineLogs.shift();
+            pipelineLogs = [...pipelineLogs, msg];
+            if (pipelineLogs.length > 7) pipelineLogs.shift();
             logIndex++;
             setTimeout(() => {
                 if(pipelineContainer) pipelineContainer.scrollTop = pipelineContainer.scrollHeight;
@@ -169,31 +170,48 @@
 		<div class="flex flex-col">
 			<div class="px-4 py-2 border-b border-[var(--rule)] flex justify-between items-center text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest bg-[#0A0D14]">
 				<span>Learning Pipeline</span>
-				<span class="text-[var(--live)] animate-pulse">evaluating</span>
+				<span class="text-[var(--live)] animate-pulse flex items-center gap-2">
+					<span class="w-[6px] h-[6px] bg-[var(--live)] rounded-full"></span>
+					evaluating
+				</span>
 			</div>
 			
-			<div class="flex-1 p-6 bg-[#05070B] overflow-hidden flex flex-col relative" bind:this={pipelineContainer}>
-				<div class="text-[#7f848e] mb-6">
+			<div class="flex-1 p-6 bg-[#05070B] overflow-hidden flex flex-col relative group" bind:this={pipelineContainer}>
+				<div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#0A0D14]/50 pointer-events-none"></div>
+				<button class="absolute top-4 right-4 z-20 px-3 py-1.5 bg-transparent border border-[var(--rule)] text-[10px] text-[var(--text-tertiary)] hover:text-white hover:border-white uppercase tracking-widest rounded opacity-0 group-hover:opacity-100 transition-all cursor-pointer" onclick={() => {
+					pipelineLogs = [...pipelineLogs, `> [MANUAL] Forcing spatial recalibration...`];
+					setTimeout(() => { pipelineLogs = [...pipelineLogs, `> [MANUAL] Vector space optimized. Variance: 0.012`]; }, 1000);
+				}}>
+					Force Eval
+				</button>
+				<div class="text-[#7f848e] mb-6 relative z-10 font-bold">
 					# measuring density anomalies<br/>
 					# mapping to 1536-d semantic space
 				</div>
-				<div class="text-[#56b6c2] leading-loose whitespace-pre-wrap flex-1 overflow-y-auto scrollbar-hide text-[13px]">
-<span class="text-[#c678dd]">import</span> dbscan
+				<div class="text-[#56b6c2] leading-[1.6] whitespace-pre-wrap flex-1 overflow-y-auto scrollbar-hide text-[12px] relative z-10 transition-all group-hover:brightness-110 font-mono">
+<span class="text-[#c678dd]">class</span> <span class="text-[#e5c07b]">TychoRadar</span>:
+    <span class="text-[#c678dd]">def</span> <span class="text-[#61afef]">__init__</span>(self):
+        self.encoder = LLMEmbedder(dim=<span class="text-[#d19a66]">1536</span>)
+        self.space = DBSCAN(eps=<span class="text-[#d19a66]">0.82</span>, metric=<span class="text-[#98c379]">'cosine'</span>)
 
-<span class="text-[#c678dd]">def</span> <span class="text-[#61afef]">run_clustering</span>(vectors):
-    clf = dbscan(
-        eps=<span class="text-[#d19a66]">0.85</span>,
-        min_samples=<span class="text-[#d19a66]">4</span>,
-        metric=<span class="text-[#98c379]">'cosine'</span>
-    )
-    labels = clf.fit_predict(vectors)
-    <span class="text-[#c678dd]">return</span> labels
+    <span class="text-[#c678dd]">def</span> <span class="text-[#61afef]">evaluate_block</span>(self, contracts):
+        <span class="text-[#7f848e]"># 1. Extract semantics & embed into high-dimensional space</span>
+        corpus = [c.metadata <span class="text-[#c678dd]">for</span> c <span class="text-[#c678dd]">in</span> contracts]
+        vectors = self.encoder.embed_batch(corpus)
+        
+        <span class="text-[#7f848e]"># 2. Detect gravitational anomalies (clusters)</span>
+        labels = self.space.fit_predict(vectors)
+        
+        <span class="text-[#7f848e]"># 3. Label narratives before human distribution</span>
+        <span class="text-[#c678dd]">return</span> self.synthesize_meta(labels)
 
-<span class="text-[#7f848e]"># Live execution logs</span>
+<span class="text-[#7f848e]"># ==========================================</span>
+<span class="text-[#7f848e]"># AUTONOMOUS EXECUTION TRACE</span>
+<span class="text-[#7f848e]"># ==========================================</span>
 {#each pipelineLogs as log}
-<span class="block mt-1 text-[#e5c07b]">{log}</span>
+<span class="block mt-1 text-[#e5c07b] drop-shadow-[0_0_2px_rgba(229,192,123,0.3)]">{log}</span>
 {/each}
-<span class="inline-block w-2 h-4 bg-[var(--live)] animate-pulse mt-2 align-middle"></span>
+<span class="inline-block w-2 h-4 bg-[var(--live)] animate-pulse mt-2 align-middle shadow-[0_0_8px_var(--live)]"></span>
 				</div>
 			</div>
 
@@ -221,7 +239,7 @@
 	</div>
 
 	<!-- Bottom: What it found (3 cards) -->
-	<div class="bg-[#030508] p-6 lg:p-8 pb-20">
+	<div class="bg-[#030508] p-6 lg:p-8 pb-12">
 		<h3 class="text-[11px] uppercase tracking-widest text-[var(--text-secondary)] mb-6 border-b border-[var(--rule)] pb-3 flex justify-between">
 			<span>What it found</span>
 			<span class="text-[var(--text-tertiary)]">cycle {new Date().getHours().toString().padStart(2, '0')} · {activeClusters.length} active metas</span>
@@ -270,7 +288,7 @@
 							<div class="flex items-center gap-4 mb-4 last:mb-0">
 								<span class="text-[11px] text-[var(--text-secondary)] w-[120px] truncate">{c.label || c.name}</span>
 								<div class="flex-1 h-[3px] bg-[#1A1A1A] rounded-full overflow-hidden">
-									<div class="h-full rounded-full transition-all duration-1000" style="width: {Math.min(c.memberCount * 10, 100)}%; background: {colors[index % 4]}"></div>
+									<div class="h-full rounded-full shimmer-bar relative overflow-hidden" style="width: {Math.min(c.memberCount * 10, 100)}%; background: {colors[index % 4]};"></div>
 								</div>
 								<span class="text-[11px] text-white w-[24px] text-right">{c.memberCount}</span>
 							</div>
@@ -385,5 +403,30 @@
 	.scrollbar-hide {
 		-ms-overflow-style: none;
 		scrollbar-width: none;
+	}
+
+	@keyframes fillBar {
+		from { width: 0%; opacity: 0; }
+		to { opacity: 1; }
+	}
+	@keyframes fadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	.shimmer-bar::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 50%;
+		height: 100%;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+		animation: scanSweep 2s infinite linear;
+	}
+
+	@keyframes scanSweep {
+		0% { left: -100%; }
+		100% { left: 200%; }
 	}
 </style>

@@ -146,6 +146,47 @@
 		</div>
 	</div>
 	
+	<!-- Radar Architecture Breakdown -->
+	<div class="mt-12 border border-[var(--rule)] bg-[#05070B] p-6 lg:p-10 relative overflow-hidden">
+		<!-- Subtle background grid -->
+		<div class="absolute inset-0 pointer-events-none opacity-50" style="background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 24px 24px;"></div>
+		
+		<div class="relative z-10 font-[var(--font-mono)]">
+			<div class="flex items-center gap-4 mb-8">
+				<div class="h-[1px] w-6 bg-[var(--live)]"></div>
+				<h2 class="text-white text-[14px] font-bold uppercase tracking-widest">System Architecture</h2>
+				<div class="h-[1px] flex-1 bg-gradient-to-r from-[var(--rule)] to-transparent"></div>
+			</div>
+			
+			<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 xl:gap-8">
+				<!-- Step 1 -->
+				<div class="flex flex-col gap-3">
+					<div class="text-[var(--live)] text-[9px] tracking-widest border border-[var(--live)]/30 inline-block px-2 py-1 rounded bg-[var(--live)]/5 w-fit">PHASE 01</div>
+					<h4 class="text-white font-bold text-[12px] uppercase">Block Ingestion</h4>
+					<p class="text-[11px] text-[var(--text-secondary)] leading-[1.8]">Tycho continuously monitors the Robinhood Chain, extracting smart contract deployments, metadata, and token tickers before they are ever indexed by social layers.</p>
+				</div>
+				<!-- Step 2 -->
+				<div class="flex flex-col gap-3">
+					<div class="text-[var(--live)] text-[9px] tracking-widest border border-[var(--live)]/30 inline-block px-2 py-1 rounded bg-[var(--live)]/5 w-fit">PHASE 02</div>
+					<h4 class="text-white font-bold text-[12px] uppercase">Semantic Embedding</h4>
+					<p class="text-[11px] text-[var(--text-secondary)] leading-[1.8]">Raw string metadata is fed into state-of-the-art LLMs, converting human-readable context into 1536-dimensional vectors suitable for mathematical spatial analysis.</p>
+				</div>
+				<!-- Step 3 -->
+				<div class="flex flex-col gap-3">
+					<div class="text-[var(--live)] text-[9px] tracking-widest border border-[var(--live)]/30 inline-block px-2 py-1 rounded bg-[var(--live)]/5 w-fit">PHASE 03</div>
+					<h4 class="text-white font-bold text-[12px] uppercase">DBSCAN Clustering</h4>
+					<p class="text-[11px] text-[var(--text-secondary)] leading-[1.8]">Vectors are plotted in hyper-space. We calculate cosine distance to find gravitational anomalies—dozens of tokens deploying with nearly identical semantic signatures.</p>
+				</div>
+				<!-- Step 4 -->
+				<div class="flex flex-col gap-3">
+					<div class="text-[var(--live)] text-[9px] tracking-widest border border-[var(--live)]/30 inline-block px-2 py-1 rounded bg-[var(--live)]/5 w-fit">PHASE 04</div>
+					<h4 class="text-white font-bold text-[12px] uppercase">Narrative Synthesis</h4>
+					<p class="text-[11px] text-[var(--text-secondary)] leading-[1.8]">When a cluster breaches the critical density threshold, an agent evaluates the centroid's semantics and autonomously synthesizes a human-readable narrative label.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Lore Footer -->
 	<div class="mt-8 pt-6 border-t border-[var(--divider)] flex flex-col md:flex-row justify-between items-center gap-4">
 		<div class="flex items-center gap-3">
