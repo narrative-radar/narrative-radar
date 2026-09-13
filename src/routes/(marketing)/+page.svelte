@@ -288,7 +288,7 @@
       <div class="mb-4">
         <span class="inline-flex items-center gap-2 px-3 py-1 bg-[var(--live)]/10 border border-[var(--live)]/30 text-[var(--live)] font-mono text-[11px] font-medium tracking-wider uppercase rounded-md">
           <span class="w-1.5 h-1.5 rounded-full bg-[var(--live)] animate-pulse shadow-[0_0_8px_var(--live)]"></span>
-          Live Ponsfamily Radar
+          LIVE ROBINHOOD RADAR
         </span>
       </div>
       

@@ -125,7 +125,7 @@
 	}
 	
 	
-	function formatClusterAge(ms) {
+	function formatClusterAge(ms: number) {
 		const h = Math.floor(ms / (1000 * 60 * 60));
 		if (h < 1) return '<1h';
 		if (h < 24) return `${h}h`;
@@ -359,11 +359,11 @@
 				</div>
 				<div class="flex justify-between">
 					<span class="text-[#56b6c2]">age</span> 
-					<span>{activeTokens.length > 0 ? formatClusterAge(Date.now() - Math.min(...activeTokens.map(t => new Date(t.createdAt).getTime()))) : (selectedCluster?.createdAt ? formatClusterAge(Date.now() - new Date(selectedCluster.createdAt).getTime()) : formatClusterAge(0))}</span>
+					<span>{activeTokens.length > 0 ? formatClusterAge(Date.now() - Math.min(...activeTokens.map((t: any) => new Date(t.createdAt).getTime()))) : (selectedCluster?.createdAt ? formatClusterAge(Date.now() - new Date(selectedCluster.createdAt).getTime()) : formatClusterAge(0))}</span>
 				</div>
 				<div class="flex justify-between">
 					<span class="text-[#56b6c2]">peak_size</span>  
-					<span>{selectedCluster?.peakMemberCount || selectedCluster?.memberCount} members (_{[...new Set(activeTokens.map(t => t.name.toLowerCase().replace(/\s+/g, '')))].length}_ unique)</span>
+					<span>{selectedCluster?.peakMemberCount || selectedCluster?.memberCount} members (_{[...new Set(activeTokens.map((t: any) => t.name.toLowerCase().replace(/\s+/g, '')))].length}_ unique)</span>
 				</div>
 				<div class="flex justify-between">
 					<span class="text-[#56b6c2]">peak_growth</span> 
@@ -398,6 +398,7 @@
 			</div>
 		</div>
 
+		<div class="text-[10px] text-[var(--text-tertiary)] italic mb-6">historical tokens sourced via on-chain backfill</div>
 		<div class="text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest mb-4 border-b border-[var(--rule)] pb-2">Clustered Tokens</div>
 
 		{#if tokensQuery.isLoading}

@@ -28,6 +28,16 @@
 	}>();
 
 	// Generate SVG points based on a 64x20 grid
+	let momentum = $derived.by(() => {
+		if (!sparklinePoints || sparklinePoints.length < 3) return null;
+		const len = sparklinePoints.length;
+		const lastGrowth = sparklinePoints[len - 1] - sparklinePoints[len - 2];
+		const prevGrowth = sparklinePoints[len - 2] - sparklinePoints[len - 3];
+		if (lastGrowth > prevGrowth) return 'accelerating';
+		if (lastGrowth < prevGrowth) return 'slowing';
+		return null;
+	});
+
 	function generatePoints(data: number[], idx: number) {
 		if (!data || data.length < 3) {
 			return "";
@@ -72,9 +82,14 @@
 		<div class="w-[64px] text-center text-[var(--text-tertiary)] font-[var(--font-mono)]">--</div>
 	{/if}
 	
-	<span class="font-[var(--font-mono)] text-[12.5px] text-[var(--text-secondary)] text-right group-hover:text-[var(--fg)] transition-colors">
-		{memberCount}
-	</span>
+	<div class="flex flex-col items-end justify-center">
+		<span class="font-[var(--font-mono)] text-[12.5px] text-[var(--text-secondary)] group-hover:text-[var(--fg)] transition-colors">
+			{memberCount}
+		</span>
+		{#if momentum}
+			<span class="text-[9px] uppercase font-[var(--font-mono)] tracking-wider mt-0.5" style="color: {momentum === 'accelerating' ? 'var(--live)' : 'var(--text-tertiary)'}">{momentum}</span>
+		{/if}
+	</div>
 	
 	<span class="font-[var(--font-mono)] text-[12.5px] font-semibold text-right" style="color: {statusColor}; text-shadow: {statusGlow || 'none'}">
 		{#if Number(growthRate) === 999999} <!-- not used anymore but keep syntax -->
