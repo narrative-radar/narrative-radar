@@ -148,7 +148,13 @@ export async function getBreakoutClusters(): Promise<Cluster[]> {
 	return db
 		.select()
 		.from(clusters)
-		.where(eq(clusters.everReachedBreakout, true))
+		.where(
+			and(
+				eq(clusters.everReachedBreakout, true),
+				isNotNull(clusters.label),
+				sql`${clusters.label} != ''`
+			)
+		)
 		.orderBy(desc(clusters.archivedAt));
 }
 

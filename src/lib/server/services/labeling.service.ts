@@ -10,7 +10,7 @@ export async function generateClusterLabel(tokenNames: string[], tokenTickers: s
 	
 	if (!apiKey) {
 		console.warn('[Labeling] GEMINI_API_KEY is not set. Using fallback label.');
-		return `${tokenNames[0].split(' ')[0].toLowerCase()} cluster`;
+		return `${tokenNames[0].split(' ')[0].toLowerCase()}`;
 	}
 
 	const prompt = `
@@ -36,6 +36,6 @@ export async function generateClusterLabel(tokenNames: string[], tokenTickers: s
 		return label;
 	} catch (error) {
 		console.error('[Labeling] Error generating label with Gemini:', error);
-		return `${tokenNames[0].split(' ')[0].toLowerCase()} tokens`;
+		return `${tokenNames[0].split(' ')[0].toLowerCase()}`;
 	}
 }
