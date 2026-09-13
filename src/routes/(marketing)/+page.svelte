@@ -205,21 +205,26 @@
 <div class="wrap" bind:clientHeight={scrollHeight}>
 
   <!-- Header Bar -->
-  <header class="flex items-center justify-between md:px-6 py-4 border-b border-[var(--rule)] bg-[var(--ink)] relative z-20">
-    <!-- Techy decoration on header -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-[var(--rule)] bg-[var(--ink)] relative z-20 gap-3 md:gap-0">
     <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[var(--live)] via-[var(--rule)] to-transparent opacity-50"></div>
     
-    <div class="flex items-center gap-6 md:gap-12">
-      <a href="/" class="brand-console flex items-center gap-2">
-        <img src="/images/logo.png" alt="Logo" class="w-10 h-10 opacity-80 mix-blend-screen" />
-        TYCHO<span class="hidden md:block text-[var(--live)]">_NARRATIVE RADAR</span>
+    <div class="flex items-center justify-between w-full md:w-auto">
+      <a href="/" class="brand-console flex items-center gap-2 shrink-0">
+        <img src="/images/logo.png" alt="Logo" class="w-8 h-8 md:w-10 md:h-10 opacity-80 mix-blend-screen" />
+        <span class="text-[14px] md:text-[16px]">TYCHO<span class="hidden md:inline text-[var(--live)]">_NARRATIVE RADAR</span></span>
       </a>
       
+      <!-- Mobile X Icon (visible only on mobile) -->
+      <a href="https://x.com/TychoRadar" target="_blank" rel="noopener noreferrer" class="md:hidden text-[var(--dim)] hover:text-white transition-colors">
+        <svg class="w-[16px] h-[16px]" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+    </div>
+
+    <div class="w-full md:w-auto mt-2 md:mt-0">
       <!-- TABS -->
-      <nav class="hidden md:flex items-center gap-8 font-mono text-[11px] uppercase tracking-widest mt-1">
-        <a href="/" class="relative pb-2 transition-colors text-white font-bold">
+      <nav class="flex items-center gap-5 md:gap-8 font-mono text-[10px] md:text-[11px] uppercase tracking-widest overflow-x-auto scrollbar-hide whitespace-nowrap pb-2 md:pb-0 w-full">
+        <a href="/" class="relative pb-2 transition-colors shrink-0 text-white font-bold">
           Overview
-          
           <!-- Active Wave -->
           <div class="absolute -bottom-[1px] left-0 w-full flex items-end justify-between gap-[1px] h-[3px]">
             <div class="flex-1 bg-[var(--live)] animate-[wave_1s_ease-in-out_infinite_alternate] h-[40%]"></div>
@@ -229,25 +234,28 @@
             <div class="flex-1 bg-[var(--live)] animate-[wave_1s_ease-in-out_infinite_alternate_0.3s] h-[50%]"></div>
             <div class="flex-1 bg-[var(--live)] animate-[wave_1.1s_ease-in-out_infinite_alternate_0.1s] h-[90%]"></div>
           </div>
-
         </a>
-        <a href="/radar" class="relative pb-2 transition-colors text-[var(--dim)] hover:text-white">
+        <a href="/radar" class="relative pb-2 transition-colors shrink-0 text-[var(--dim)] hover:text-white">
           Radar
         </a>
-        <a href="/track-record" class="relative pb-2 transition-colors text-[var(--dim)] hover:text-white">
+        <a href="/track-record" class="relative pb-2 transition-colors shrink-0 text-[var(--dim)] hover:text-white">
           Track Record
         </a>
-        <a href="/manifesto" class="relative pb-2 transition-colors text-[var(--dim)] hover:text-white">
+        <a href="/brain" class="relative pb-2 transition-colors shrink-0 text-[var(--dim)] hover:text-white">
+          Brain
+        </a>
+        <a href="/manifesto" class="relative pb-2 transition-colors shrink-0 text-[var(--dim)] hover:text-white">
           Manifesto
         </a>
       </nav>
     </div>
 
-    <div class="flex items-center gap-4">
+    <!-- Desktop only right side status -->
+    <div class="hidden md:flex items-center gap-4 shrink-0">
       <a href="https://x.com/TychoRadar" target="_blank" rel="noopener noreferrer" class="text-[var(--dim)] hover:text-white transition-colors">
         <svg class="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       </a>
-      <div class="hidden sm:block text-[8px] md:text-[11px] font-mono text-[var(--faint)] uppercase tracking-widest px-4 py-1.5 bg-[#090D13] border-l-2 border-[var(--live)]" style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);">
+      <div class="text-[11px] font-mono text-[var(--faint)] uppercase tracking-widest px-4 py-1.5 bg-[#090D13] border-l-2 border-[var(--live)]" style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);">
         system status: <span class="text-[var(--live)] font-bold animate-pulse">autonomous</span>
       </div>
     </div>
