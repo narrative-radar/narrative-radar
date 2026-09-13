@@ -132,7 +132,7 @@ export async function generateClusterLabel(tokenNames: string[], tokenTickers: s
 		try {
 			const anthropic = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 			const msg = await anthropic.messages.create({
-				model: "claude-3-haiku-20240307",
+				model: "claude-haiku-4-5-20251001",
 				max_tokens: 20,
 				temperature: 0.1,
 				messages: [
