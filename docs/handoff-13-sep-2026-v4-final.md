@@ -37,6 +37,7 @@
 3. **Update Stopwords**: Masukkan kata `just` ke dalam `STOP_WORDS` karena saat ini lolos menjadi label tema.
 
 ## Status Cron & Infrastruktur
-- **Cron**: Saat ini **MATI** (scheduler: off di UI). Belum ada cron runner otomatis.
-- **Persiapan Cron Besok**: Perlu setup GitHub Actions yang hit `/api/cron`. Butuh menyiapkan `CRON_URL` dan `CRON_SECRET` di GitHub Secrets.
-- **Limit API**: Harap diperhatikan bahwa model `gemini-2.5-flash` dari Google AI Studio mentok di batas **20 request/hari** pada free tier. Claude akan jadi bumper utamanya besok.
+- **Cron UI Diubah**: Menghapus hitung mundur "next scan" yang menyesatkan. UI sekarang hanya menampilkan kapan scan terakhir terjadi (contoh: "last scan: 21m ago") karena lebih jujur dan akurat.
+- **GitHub Actions Tidak Reliabel**: Ditemukan bahwa GitHub Actions sering mengabaikan interval pendek (misalnya, melompat 2-5 jam walaupun diset 5 menit atau 15 menit), serta mengalami timeout (5-8 detik) yang diduga karena limitasi/kesibukan *runner* gratis dari GitHub, bukan dari *codebase* kita.
+- **TODO Cron Besok**: Sangat disarankan untuk memindahkan *scheduler* dari GitHub Actions ke layanan eksternal yang jauh lebih konsisten untuk interval pendek, seperti **cron-job.org** atau **Upstash QStash**.
+- **Limit API**: Model `gemini-2.5-flash` Google AI Studio dibatasi **20 request/hari**. Kita sudah mengganti urutan *fallback* di kode agar Claude Haiku menjadi model utama.

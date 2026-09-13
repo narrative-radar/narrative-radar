@@ -45,8 +45,8 @@
 	let selectedCluster = $derived(activeClusters.find((c: any) => c.id === selectedThemeId));
 	let activeTokens = $derived(tokensQuery.data?.tokens || []);
 
-	// Countdown logic
-	let nextScanText = $state("scheduler: off");
+	// Scan text logic
+	let lastScanText = $state("pending...");
 	let scanInterval: any;
 
     // Pipeline Logs logic
@@ -57,27 +57,10 @@
 		scanInterval = setInterval(() => {
 			const latestCronLog = clustersQuery.data?.latestCronLog;
 			if (!latestCronLog || !latestCronLog.timestamp) {
-				nextScanText = 'scheduler: off';
+				lastScanText = 'pending...';
 				return;
 			}
-			const lastRunMs = new Date(latestCronLog.timestamp).getTime();
-			const nowMs = Date.now();
-			
-			const nextRunMs = lastRunMs + 15 * 60 * 1000;
-			const diffMs = nextRunMs - nowMs;
-
-			if (diffMs > 0 && nowMs - lastRunMs <= 20 * 60 * 1000) {
-				// Counting down (only if within 20 mins)
-				const m = Math.floor(diffMs / 60000);
-				const s = Math.floor((diffMs % 60000) / 1000);
-				nextScanText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-			} else if (diffMs <= 0 && diffMs > -60000) {
-				// Passed 0 but within 60s -> scanning...
-				nextScanText = 'scanning...';
-			} else {
-				// Past 60s of expected run, OR past 20 minutes entirely -> scheduler: off
-				nextScanText = 'scheduler: off';
-			}
+			lastScanText = timeAgo(latestCronLog.timestamp);
 		}, 1000);
 
         // Simulated Pipeline logs
@@ -259,12 +242,8 @@
 					<span class="text-[var(--state-active)] text-[16px] font-bold">{activeClusters.length}</span>
 				</div>
 				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
-					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">NEXT SCAN</span>
-					{#if nextScanText === 'scheduler: off'}
-						<span class="text-[var(--text-secondary)] text-[13px] font-mono mt-1">{nextScanText}</span>
-					{:else}
-						<span class="text-white text-[16px] font-bold">{nextScanText}</span>
-					{/if}
+					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">LAST SCAN</span>
+					<span class="text-[var(--text-secondary)] text-[13px] font-mono mt-1">{lastScanText}</span>
 				</div>
 
 			</div>
