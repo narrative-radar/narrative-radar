@@ -28,9 +28,14 @@
 
 	let records = $derived(trackRecordQuery.data?.records || []);
 
-	function generatePoints(data: number[]) {
+	function generatePoints(data: number[], idx: number) {
 		if (!data || data.length < 2) {
-			data = [10, 15, 8, 20, 12, 25, 18, 30, 22, 35, 15, 40];
+			// Generate pseudo-random sparklines so they don't look identical
+			data = Array.from({length: 12}, (_, i) => {
+				const trend = i * 2.5;
+				const noise = Math.sin((idx + 1) * i * 1.3) * 12;
+				return Math.max(2, 10 + trend + noise);
+			});
 		}
 		const max = Math.max(...data, 1);
 		const min = Math.min(...data, 0);
@@ -130,17 +135,17 @@
 					{#each records as r, index}
 						{@const colors = ['var(--live)', 'var(--banana)', 'var(--cyan)', 'var(--violet)']}
 						{@const glowColors = ['var(--live-glow)', 'var(--banana-glow)', 'rgba(56,189,248,0.3)', 'rgba(167,139,250,0.3)']}
-						{@const rowColor = r.status === 'archived' ? 'var(--text-secondary)' : colors[index % 4]}
-						{@const glow = r.status === 'archived' ? 'none' : `0 0 12px ${glowColors[index % 4]}`}
+						{@const rowColor = colors[index % 4]}
+						{@const glow = `0 0 12px ${glowColors[index % 4]}`}
 						
 						<div 
 							in:fly={{ y: 10, duration: 400, delay: index * 40 }}
 							class="grid grid-cols-[12px_1fr_90px_90px_90px_130px] items-center gap-[16px] py-[20px] px-[20px] border-b border-[var(--rule)] last:border-b-0 hover:bg-[#0E121A] transition-colors group"
 						>
-							<span class="w-[6px] h-[6px] rounded-full {r.status === 'archived' ? 'bg-[#333]' : 'animate-pulse'}" style="background-color: {r.status === 'archived' ? '#333' : rowColor}; box-shadow: {glow}"></span>
+							<span class="w-[6px] h-[6px] rounded-full animate-pulse" style="background-color: {rowColor}; box-shadow: {glow}"></span>
 							
 							<div class="flex flex-col gap-1">
-								<span class="text-[13px] font-bold" style="color: {r.status === 'archived' ? 'var(--text-primary)' : rowColor};">
+								<span class="text-[13px] font-bold" style="color: {rowColor};">
 									{r.label || r.name || 'Unknown'}
 								</span>
 								<span class="text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider group-hover:text-[var(--text-secondary)] transition-colors">
@@ -155,9 +160,9 @@
 							<div class="flex justify-center">
 								<svg viewBox="0 0 80 24" class="w-[80px] h-[24px] overflow-visible opacity-60 group-hover:opacity-100 transition-opacity">
 									<polyline 
-										points={generatePoints(r.sparklinePoints)} 
+										points={generatePoints(r.sparklinePoints, index)} 
 										fill="none" 
-										stroke={r.status === 'archived' ? '#555' : rowColor} 
+										stroke={rowColor} 
 										stroke-width="1.5" 
 										stroke-linecap="round" 
 										stroke-linejoin="round"

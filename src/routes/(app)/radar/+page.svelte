@@ -148,7 +148,7 @@
 				<span>Ingest Feed / Radar Themes</span>
 				<span>robinhood chain · dexscreener</span>
 			</div>
-			<div class="p-4 flex-1 overflow-y-auto">
+			<div class="p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none; -ms-overflow-style: none;">
 				<TokenLookup />
 				<div class="mt-6">
 					{#if clustersQuery.isLoading}
@@ -251,7 +251,7 @@
 				<div class="px-4 py-3 border-b border-[var(--rule)] text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest">
 					Raw Activity Log
 				</div>
-				<div class="p-4 flex-1 overflow-y-auto">
+				<div class="p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none; -ms-overflow-style: none;">
 					{#if clustersQuery.isLoading}
 						<p class="text-[var(--text-secondary)]">Loading...</p>
 					{:else if recentTokens.length === 0}
@@ -327,7 +327,7 @@
 	
 	<div 
 		transition:fly={{ x: 400, duration: 300, easing: cubicOut }}
-		class="fixed top-0 right-0 h-full w-[400px] max-w-[92vw] bg-[#0A0D14] border-l border-[var(--rule)] p-[32px] overflow-y-auto z-50 shadow-2xl font-mono"
+		class="fixed top-0 right-0 h-full w-[400px] max-w-[92vw] bg-[#0A0D14] border-l border-[var(--rule)] p-[32px] overflow-y-auto scrollbar-hide z-50 shadow-2xl font-mono"
 	>
 		<button class="bg-transparent border border-[var(--rule)] text-[var(--text-secondary)] rounded-[4px] w-[32px] h-[32px] cursor-pointer text-[14px] mb-[24px] hover:text-white hover:border-white transition-colors" aria-label="Close details" onclick={closeDetail}>
 			✕
