@@ -184,3 +184,12 @@ export type NewCluster = typeof clusters.$inferInsert;
 
 export type TokenStatus = (typeof tokenStatusEnum.enumValues)[number];
 export type ClusterStatus = (typeof clusterStatusEnum.enumValues)[number];
+
+export const cronLogs = pgTable('cron_logs', {
+	id: uuid('id').defaultRandom().primaryKey(),
+	timestamp: timestamp('timestamp').notNull().defaultNow(),
+	ingested: integer('ingested').notNull(),
+	embedded: integer('embedded').notNull(),
+	clustered: integer('clustered').notNull(),
+	newClusters: integer('new_clusters').notNull()
+});

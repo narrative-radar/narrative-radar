@@ -68,7 +68,7 @@
           <span class="absolute left-[-23px] top-1 text-[10px] text-[var(--live)]">03</span>
           <p>
             <strong class="text-[var(--live)] font-bold">ENTER TYCHO.</strong><br/><br/>
-            Tycho is an autonomous radar system. It does not read tweets. It does not listen to influencers. It ingests raw deployment data at the block level, embeds the semantic meaning using state-of-the-art LLMs, and maps them in 1536-dimensional space.
+            Tycho is an autonomous radar system. It does not read tweets. It does not listen to influencers. It ingests raw deployment data at the block level, embeds the semantic meaning using state-of-the-art LLMs, and maps them in 3072-dimensional space.
           </p>
         </div>
       {/if}

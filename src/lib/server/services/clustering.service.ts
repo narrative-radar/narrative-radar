@@ -51,9 +51,20 @@ export async function runClusteringAssignment(): Promise<{ processed: number; ne
 			const oldCentroidVec: number[] = JSON.parse(bestMatch.centroid!);
 			const newCentroidVec = recalculateCentroid(oldCentroidVec, bestMatch.memberCount, tokenVec);
 			
-			// Mock growth rate for now (real logic requires querying previous hour count)
-			// For V1, we simply bump the growth rate based on new members
-			const simulatedGrowth = Number(bestMatch.growthRate) + (100 / newMemberCount);
+			// Mock growth rate for V1 simulation
+			// if token is older than 24h, it shouldn't pump the growth rate
+			const ageInHours = (new Date().getTime() - new Date(token.createdAt).getTime()) / (1000 * 60 * 60);
+			let growthDelta = 0;
+			
+			if (ageInHours < 24) {
+				growthDelta = (100 / newMemberCount); // Active breakout simulation
+			} else if (ageInHours > 72) {
+				growthDelta = -5; // Dying out
+			} else {
+				growthDelta = -1; // Cooling down
+			}
+
+			const simulatedGrowth = Math.max(-99, Number(bestMatch.growthRate) + growthDelta);
 			
 			// Check breakout status
 			const isBreakoutNow = newMemberCount >= BREAKOUT_MEMBER_MIN && simulatedGrowth >= BREAKOUT_GROWTH_MIN;
@@ -69,15 +80,19 @@ export async function runClusteringAssignment(): Promise<{ processed: number; ne
 				everReachedBreakout
 			});
 
-			// Check if we need to generate a label (Brief §4a: at 2nd or 3rd member)
-			if (!bestMatch.label && newMemberCount >= 2) {
+			// Check if we need to generate a label
+			if (!bestMatch.label && newMemberCount >= 3) {
 				const clusterTokens = await tokenRepo.getTokensByClusterId(bestMatch.id);
 				const names = clusterTokens.map((t) => t.name);
-				const tickers = clusterTokens.map((t) => t.ticker);
-				const label = await generateClusterLabel(names, tickers);
-				await clusterRepo.setClusterLabel(bestMatch.id, label);
-				// Update in memory for the next loop iteration
-				bestMatch.label = label;
+				const uniqueNames = new Set(names.map(n => n.toLowerCase().replace(/\s+/g, '')));
+				
+				if (uniqueNames.size >= 3) {
+					const tickers = clusterTokens.map((t) => t.ticker);
+					const label = await generateClusterLabel(names, tickers);
+					await clusterRepo.setClusterLabel(bestMatch.id, label);
+					// Update in memory for the next loop iteration
+					bestMatch.label = label;
+				}
 			}
 
 			// Update in memory so subsequent tokens in this batch see the new centroid

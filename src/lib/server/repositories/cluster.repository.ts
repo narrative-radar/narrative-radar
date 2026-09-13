@@ -28,7 +28,12 @@ export async function getActiveClusters(): Promise<Cluster[]> {
 		.select()
 		.from(clusters)
 		.where(
-			sql`${clusters.status} IN ('active', 'cooling')`
+			and(
+				sql`${clusters.status} IN ('active', 'cooling')`,
+				sql`${clusters.memberCount} >= 3`,
+				isNotNull(clusters.label),
+				sql`${clusters.label} != ''`
+			)
 		)
 		.orderBy(desc(clusters.growthRate));
 }

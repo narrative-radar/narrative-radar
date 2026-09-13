@@ -29,26 +29,18 @@
 
 	// Generate SVG points based on a 64x20 grid
 	function generatePoints(data: number[], idx: number) {
-		if (!data || data.length < 2) {
-			// Generate pseudo-random sparklines so they don't look identical
-			data = Array.from({length: 12}, (_, i) => {
-				const trend = i * 2.5;
-				const noise = Math.sin((idx + 1) * i * 1.3) * 12;
-				return Math.max(2, 10 + trend + noise);
-			});
+		if (!data || data.length < 3) {
+			return "";
 		}
 		
 		const max = Math.max(...data, 1);
 		const min = Math.min(...data, 0);
-		const range = max - min;
+		const range = max - min || 1;
 		
-		const width = 64;
-		const height = 18; 
-		const step = width / (data.length - 1);
-		
+		// Map values to 0-16 range (inverted Y)
 		return data.map((val, i) => {
-			const x = i * step;
-			const y = 19 - ((val - min) / (range || 1)) * height;
+			const x = (i / (data.length - 1)) * 48;
+			const y = 16 - ((val - min) / range) * 16;
 			return `${x},${y}`;
 		}).join(' ');
 	}
@@ -64,23 +56,35 @@
 	<span class="w-[7px] h-[7px] rounded-full {statusColor === 'var(--state-quiet)' ? '' : 'animate-pulse'}" style="background: {statusColor}; box-shadow: {statusGlow || 'none'}"></span>
 	<span class="text-[14px] font-medium truncate" style="color: {statusColor === 'var(--state-quiet)' ? 'var(--fg)' : statusColor};">{name}</span>
 	
-	<svg viewBox="0 0 64 20" class="w-[64px] h-[20px] overflow-visible">
-		<polyline 
-			points={generatePoints(sparklinePoints, index)} 
-			fill="none" 
-			stroke={statusColor} 
-			stroke-width="1.6" 
-			stroke-linecap="round" 
-			stroke-linejoin="round"
-			in:draw={{ duration: 700, delay: 550 + index * 80, easing: cubicOut }}
-		/>
-	</svg>
+	{#if sparklinePoints && sparklinePoints.length >= 3}
+		<svg viewBox="0 0 64 20" class="w-[64px] h-[20px] overflow-visible">
+			<polyline 
+				points={generatePoints(sparklinePoints, index)} 
+				fill="none" 
+				stroke={statusColor} 
+				stroke-width="1.6" 
+				stroke-linecap="round" 
+				stroke-linejoin="round"
+				in:draw={{ duration: 700, delay: 550 + index * 80, easing: cubicOut }}
+			/>
+		</svg>
+	{:else}
+		<div class="w-[64px] text-center text-[var(--text-tertiary)] font-[var(--font-mono)]">--</div>
+	{/if}
 	
 	<span class="font-[var(--font-mono)] text-[12.5px] text-[var(--text-secondary)] text-right group-hover:text-[var(--fg)] transition-colors">
 		{memberCount}
 	</span>
 	
 	<span class="font-[var(--font-mono)] text-[12.5px] font-semibold text-right" style="color: {statusColor}; text-shadow: {statusGlow || 'none'}">
-		+{Math.round(growthRate)}%
+		{#if Number(growthRate) === 999999}
+			new
+		{:else if Number(growthRate) > 0}
+			+{Math.round(Number(growthRate))}%
+		{:else if Number(growthRate) < 0}
+			{Math.round(Number(growthRate))}%
+		{:else}
+			—
+		{/if}
 	</span>
 </button>

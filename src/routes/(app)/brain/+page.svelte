@@ -1,50 +1,40 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { createQuery } from '@tanstack/svelte-query';
 	// @ts-ignore
 	let { data } = $props();
 
 	let brainLogs: string[] = $state([]);
 	let terminalContainer: HTMLElement;
 
-	const thoughts = [
-		"[SYS] Hourly retraining sequence initiated.",
-		"[AI] Re-calculating Vapnik-Chervonenkis penalty across 450 nodes.",
-		"[AI] Measured AUC: 0.5192. Variance: 0.0738 against a 0.02 bound.",
-		"[SYS] Sample volume: 445 of 1,000 validation gate.",
-		"[AI] Positive class: 107 of 300.",
-		"[SYS] Gate function evaluates to FALSE. 6 conditions unmet.",
-		"[AI] Executing idea generator (100 candidates/hr).",
-		"[SYS] Commitment log timestamped.",
-		"[AI] Mapping semantic similarities (dim=1536)...",
-		"[SYS] Ingesting new Ponsfamily contract deployments.",
-		"[AI] Inferred narrative generation active. Awaiting threshold.",
-		"[SYS] Proven floor holding at +0.0782."
-	];
+	const clusterQuery = createQuery(() => ({
+		queryKey: ['clusters-brain'],
+		queryFn: async () => {
+			const res = await fetch('/api/clusters');
+			return res.json();
+		},
+		refetchInterval: 10000
+	}));
 
-	onMount(() => {
-		// Initialize with some logs
-		for(let i=0; i<8; i++) {
-			brainLogs.push(`> ${thoughts[Math.floor(Math.random() * thoughts.length)]}`);
+	$effect(() => {
+		const log = clusterQuery.data?.latestCronLog;
+		if (log) {
+			const d = new Date(log.timestamp);
+			const timeStr = d.toLocaleTimeString('en-US', { hour12: false });
+			
+			brainLogs = [
+				`[SYS] CRON SCAN EXECUTED AT ${timeStr}`,
+				`[INGEST] Retrieved ${log.ingested} raw contracts from Robinhood RPC/Gecko`,
+				`[EMBED] Processed ${log.embedded} tokens via gemini-embedding-2 (3072-D)`,
+				`[CLUSTER] Assigned tokens to vector space. ${log.clustered} processed.`,
+				`[AI] Discovered ${log.newClusters} new emerging sub-clusters.`,
+				`[SYS] Standby for next cycle...`
+			];
+		} else {
+			brainLogs = [
+				"[SYS] Awaiting first cron execution..."
+			];
 		}
-		
-		const interval = setInterval(() => {
-			const time = new Date().toISOString().split('T')[1].substring(0,8);
-			const msg = thoughts[Math.floor(Math.random() * thoughts.length)];
-			brainLogs = [...brainLogs, `[${time}] ${msg}`];
-			
-			// Auto scroll
-			if (brainLogs.length > 50) {
-				brainLogs.shift();
-			}
-			
-			setTimeout(() => {
-				if (terminalContainer) {
-					terminalContainer.scrollTop = terminalContainer.scrollHeight;
-				}
-			}, 50);
-		}, 1500);
-
-		return () => clearInterval(interval);
 	});
 </script>
 
@@ -64,24 +54,6 @@
 			</p>
 		</div>
 		
-		<div class="flex flex-wrap gap-4 sm:gap-6 text-[9px] sm:text-[10px] font-[var(--font-mono)] bg-[#0A0D14] p-3 border border-[var(--divider)] rounded-[4px] w-full xl:w-auto">
-			<div class="flex flex-col gap-1">
-				<span class="text-[var(--text-tertiary)]">MEASURED AUC</span>
-				<span class="text-[var(--fg)]">0.5192</span>
-			</div>
-			<div class="flex flex-col gap-1">
-				<span class="text-[var(--text-tertiary)]">VC PENALTY</span>
-				<span class="text-[var(--fg)]">0.4410</span>
-			</div>
-			<div class="flex flex-col gap-1">
-				<span class="text-[var(--text-tertiary)]">PROVEN FLOOR</span>
-				<span class="text-[#4ade80]">+0.0782</span>
-			</div>
-			<div class="flex flex-col gap-1 border-l border-[var(--divider)] pl-4 ml-2">
-				<span class="text-[var(--text-tertiary)]">GATE FUNCTION</span>
-				<span class="text-[#f87171]">FALSE (6 BLOCKING)</span>
-			</div>
-		</div>
 	</div>
 
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full h-[600px] max-h-[75vh]">
@@ -90,7 +62,10 @@
 			<div class="absolute top-0 left-0 w-full h-[1px] bg-[var(--live)] opacity-20"></div>
 			<div class="bg-[#0A0D14] border-b border-[var(--rule)] px-4 py-2 flex justify-between items-center z-10">
 				<span class="text-[10px] font-[var(--font-mono)] text-[var(--text-secondary)] tracking-widest uppercase">INTERNAL_STATE.LOG</span>
-				<span class="text-[9px] font-[var(--font-mono)] text-[var(--live)] animate-pulse">STREAMING</span>
+				<span class="flex items-center gap-2">
+					<span class="text-[9px] font-[var(--font-mono)] bg-[#60a5fa]/10 text-[#60a5fa] border border-[#60a5fa]/30 px-1.5 py-0.5 rounded">LIVE SYSTEM</span>
+					<span class="text-[9px] font-[var(--font-mono)] text-[var(--live)] animate-pulse">STREAMING</span>
+				</span>
 			</div>
 			<div 
 				bind:this={terminalContainer}
@@ -169,7 +144,7 @@
 				<div class="flex flex-col gap-3">
 					<div class="text-[var(--live)] text-[9px] tracking-widest border border-[var(--live)]/30 inline-block px-2 py-1 rounded bg-[var(--live)]/5 w-fit">PHASE 02</div>
 					<h4 class="text-white font-bold text-[12px] uppercase">Semantic Embedding</h4>
-					<p class="text-[11px] text-[var(--text-secondary)] leading-[1.8]">Raw string metadata is fed into state-of-the-art LLMs, converting human-readable context into 1536-dimensional vectors suitable for mathematical spatial analysis.</p>
+					<p class="text-[11px] text-[var(--text-secondary)] leading-[1.8]">Raw string metadata is fed into state-of-the-art LLMs, converting human-readable context into 3072-dimensional vectors suitable for mathematical spatial analysis.</p>
 				</div>
 				<!-- Step 3 -->
 				<div class="flex flex-col gap-3">
@@ -196,7 +171,7 @@
 			</p>
 		</div>
 		<div class="text-[11px] font-[var(--font-mono)] text-[var(--text-tertiary)] flex gap-6">
-			<a href="/api/dataset.csv" target="_blank" class="hover:text-[var(--fg)] cursor-crosshair transition-colors underline underline-offset-4">PUBLIC_DATASET.CSV</a>
+			<a href="/api/dataset.csv" target="_blank" class="text-[var(--fg)] hover:text-[var(--fg)] cursor-crosshair transition-colors underline underline-offset-4">PUBLIC_DATASET.CSV</a>
 			<!-- <span class="hover:text-[var(--fg)] cursor-crosshair transition-colors">LAUNCH_SPEC.PDF</span>
 			<span class="hover:text-[var(--fg)] cursor-crosshair transition-colors">WALLET: 0 SOL</span> -->
 		</div>

@@ -35,13 +35,13 @@ In a production environment (Vercel), the pipeline runs autonomously via GitHub 
 **Trigger the AI Pipeline (Ingest, Embed, Cluster):**
 ```bash
 curl -X GET http://localhost:5173/api/cron \
-  -H "Authorization: Bearer KunciRadarTycho2026"
+  -H "Authorization: Bearer [REDACTED]"
 ```
 
 **Trigger the X (Twitter) Bot:**
 ```bash
 curl -X POST http://localhost:5173/api/cron/post-update \
-  -H "Authorization: Bearer KunciRadarTycho2026"
+  -H "Authorization: Bearer [REDACTED]"
 ```
 *(Note: If you receive a `402 Payment Required` error here, it means the bot logic is working perfectly, but the provided Twitter Developer API keys have depleted their free monthly credits).*
 

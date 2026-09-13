@@ -16,92 +16,67 @@ export interface IngestedToken {
  */
 export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 	try {
-		// DexScreener's public frontend API for latest coins
-		const response = await fetch('https://frontend-api.dexscreener.com/coins/latest', {
+		// PENGGUNAAN GECKOTERMINAL:
+		// GeckoTerminal punya endpoint khusus 'new_pools' per network (termasuk 'robinhood').
+		// Ini memecahkan masalah DexScreener frontend-api yang didominasi Solana/Ethereum.
+		const response = await fetch('https://api.geckoterminal.com/api/v2/networks/robinhood/new_pools?include=base_token', {
 			method: 'GET',
 			headers: {
 				Accept: 'application/json',
-				'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+				'User-Agent': 'TychoRadar/1.0'
 			},
-			// Don't wait forever, timeout after 5 seconds to prevent cron jobs from hanging
-			signal: AbortSignal.timeout(5000)
+			signal: AbortSignal.timeout(8000)
 		});
 
 		if (!response.ok) {
-			console.warn(`[DexScreener] API returned ${response.status}: ${response.statusText}. Falling back to DexScreener for real data...`);
-			
-			// Fallback ke DexScreener menggunakan Randomized Search Query
-			// Karena dexscreener.com memblokir akses server (Cloudflare 530) dan endpoint 'latest' Dexscreener jarang update,
-			// kita gunakan kata kunci acak untuk mensimulasikan aliran data koin yang beragam setiap menitnya.
-			const keywords = ['dog', 'cat', 'ai', 'trump', 'inu', 'pepe', 'moon', 'elon', 'sol', 'boy', 'girl', 'chad', 'meme', 'coin', 'based'];
-			const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
-			
-			const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${randomKeyword}`, {
-				signal: AbortSignal.timeout(5000)
-			});
-			
-			if (!dexResponse.ok) return [];
-			
-			const dexData = await dexResponse.json();
-			if (!dexData.pairs || !Array.isArray(dexData.pairs)) return [];
-			
-			const seenMints = new Set();
-			const result: IngestedToken[] = [];
-			
-			// Filter hanya robinhood chain (Ponsfamily)
-			// [PM DIRECTIVE: MIGRATED ONLY]
-			// We only accept tokens that have successfully migrated and established a Liquidity Pool (Raydium/Orca).
-			// DexScreener natively filters out pre-migration bonding curve tokens, ensuring we only track 'Robinhood/Ponsfamily' grade tokens.
-			const robinhoodPairs = dexData.pairs.filter((p: any) => p.chainId === 'robinhood');
-			
-			for (const pair of robinhoodPairs) {
-				const mint = pair.baseToken.address;
-				
-				if (!seenMints.has(mint)) {
-					seenMints.add(mint);
-					result.push({
-						mint: mint,
-						ticker: pair.baseToken.symbol || 'UNKNOWN',
-						name: pair.baseToken.name || 'Unknown Token',
-						imageUrl: pair.info?.imageUrl || null,
-						// Kita gunakan waktu saat ini sebagai waktu 'ditemukan' di radar
-						createdAt: new Date()
-					});
-				}
-			}
-			return result.slice(0, 30);
-		}
-
-		const data = await response.json();
-		if (!Array.isArray(data)) {
-			console.warn('[DexScreener] Unexpected response format (not an array)');
+			console.warn(`[GeckoTerminal] API returned ${response.status}: ${response.statusText}`);
 			return [];
 		}
 
-		// Filter strictly for Solana and non-pump tokens
-		const filteredData = data.filter((coin: any) => {
-			// Some APIs might return chainId or baseToken.chainId, ensure we check properly
-			const isSolana = coin.chainId === 'robinhood' || (coin.baseToken && coin.baseToken.chainId === 'robinhood');
-			// Filter out anything related to pumpfun
-			const isPump = coin.dexId === 'pumpfun' || (coin.baseToken && coin.baseToken.dexId === 'pumpfun');
-			// Some coins might not have dexId exposed at the root, check the address
-			const hasPumpSuffix = coin.mint && typeof coin.mint === 'string' && coin.mint.endsWith(String.fromCharCode(112, 117, 109, 112));
-			
-			return isSolana && !isPump && !hasPumpSuffix;
-		});
+		const data = await response.json();
+		if (!data.data || !data.included) {
+			console.warn('[GeckoTerminal] Unexpected response format (missing data/included arrays)');
+			return [];
+		}
 
-		// Map API fields to our normalized format
-		return filteredData.map((coin: any) => ({
-			mint: coin.mint,
-			ticker: coin.symbol || 'UNKNOWN',
-			name: coin.name || 'Unknown Coin',
-			imageUrl: coin.image_uri || null,
-			// DexScreener timestamps are usually in milliseconds
-			createdAt: coin.created_timestamp ? new Date(coin.created_timestamp) : new Date()
-		}));
+		// Extrak base_token dari array 'included'
+		const tokensMap = new Map();
+		for (const inc of data.included) {
+			if (inc.type === 'token' && inc.attributes) {
+				tokensMap.set(inc.attributes.address.toLowerCase(), inc.attributes);
+			}
+		}
+
+		const seenMints = new Set();
+		const result: IngestedToken[] = [];
+
+		for (const pool of data.data) {
+			const relationships = pool.relationships;
+			if (!relationships?.base_token?.data?.id) continue;
+			
+			// id format: "robinhood_0x..."
+			const baseTokenIdStr = relationships.base_token.data.id;
+			const addressMatch = baseTokenIdStr.split('_');
+			if (addressMatch.length !== 2) continue;
+			
+			const mint = addressMatch[1].toLowerCase();
+			const tokenData = tokensMap.get(mint);
+
+			if (tokenData && !seenMints.has(mint)) {
+				seenMints.add(mint);
+				result.push({
+					mint: mint,
+					ticker: tokenData.symbol || 'UNKNOWN',
+					name: tokenData.name || 'Unknown Token',
+					imageUrl: tokenData.image_url || null,
+					createdAt: pool.attributes.pool_created_at ? new Date(pool.attributes.pool_created_at) : new Date()
+				});
+			}
+		}
+
+		return result.slice(0, 30);
 	} catch (error) {
-		console.error('[DexScreener] Network or timeout error fetching tokens:', error);
-		// Brief 4c: "Cron run tetap selesai tanpa error fatal"
+		console.error('[GeckoTerminal] Network or timeout error fetching tokens:', error);
 		return [];
 	}
 }

@@ -59,27 +59,22 @@
 		}, 1000);
 
         // Simulated Pipeline logs
-        const thoughts = [
-            "[INGEST] Block 324119: Extracted 84 new contract deployments.",
-            "[EMBED] Generating 1536-D vectors via text-embedding-3-small...",
-            "[SPACE] Computing cosine distance matrix across 12,400 active nodes.",
-            "[CLUSTER] Anomaly detected: Node density spiked +42% in sector 7.",
-            "[EVAL] Extracting semantic overlap: 'Terminal', 'Agent', 'Autonomous'",
-            "[EVAL] Cohesiveness score: 0.91 (High). Variance: 0.012.",
-            "[LABEL] Synthesized label: 'AI Terminal Agents'.",
-            "[SYSTEM] Updated active metas. Awaiting next block..."
-        ];
-
-        let logIndex = 0;
-        const logInterval = setInterval(() => {
-            const msg = thoughts[logIndex % thoughts.length];
-            pipelineLogs = [...pipelineLogs, msg];
-            if (pipelineLogs.length > 7) pipelineLogs.shift();
-            logIndex++;
-            setTimeout(() => {
-                if(pipelineContainer) pipelineContainer.scrollTop = pipelineContainer.scrollHeight;
-            }, 50);
-        }, 2000);
+        $effect(() => {
+            const log = clustersQuery.data?.latestCronLog;
+            if (log) {
+                const timeStr = new Date(log.timestamp).toLocaleTimeString('en-US', { hour12: false });
+                pipelineLogs = [
+                    `[SYS] CRON SCAN AT ${timeStr}`,
+                    `[INGEST] ${log.ingested} contracts from Robinhood RPC`,
+                    `[EMBED] ${log.embedded} embedded to 3072-D`,
+                    `[CLUSTER] Assigned ${log.clustered} to vector space.`,
+                    `[AI] Discovered ${log.newClusters} new sub-clusters.`,
+                    `[SYS] Standby for next cycle...`
+                ];
+            } else {
+                pipelineLogs = ["[SYS] Awaiting first cron execution..."];
+            }
+        });
 
 		const urlParams = new URLSearchParams(window.location.search);
 		const clusterParam = urlParams.get('cluster');
@@ -87,7 +82,6 @@
 
         return () => {
             clearInterval(scanInterval);
-            clearInterval(logInterval);
         };
 	});
 
@@ -95,6 +89,13 @@
 		const m = Math.floor(scanSeconds / 60);
 		const s = scanSeconds % 60;
 		return `${m}:${s < 10 ? '0' : ''}${s}`;
+	});
+
+	let lastScanMins = $derived(() => {
+		const log = clustersQuery.data?.latestCronLog;
+		if (!log) return 0;
+		const diff = Date.now() - new Date(log.timestamp).getTime();
+		return Math.floor(diff / 60000);
 	});
 
 	let shareBtnText = $state('Copy summary');
@@ -146,9 +147,12 @@
 		<div class="flex flex-col border-r border-[var(--rule)]">
 			<div class="px-4 py-2 border-b border-[var(--rule)] flex justify-between items-center text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest bg-[#0A0D14]">
 				<span>Ingest Feed / Radar Themes</span>
-				<span>robinhood chain · dexscreener</span>
+				<span>last scan: {lastScanMins()} mins ago · {clustersQuery.data?.latestCronLog?.ingested || 0} tokens ingested</span>
 			</div>
 			<div class="p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none; -ms-overflow-style: none;">
+				<div class="mb-4 text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider leading-relaxed border-b border-[var(--rule)] pb-4">
+					<span class="text-white font-bold">100% Autonomous:</span> Themes are not curated by humans. They are discovered algorithmically via cosine similarity and labeled by LLMs when ≥3 unique tokens share a semantic narrative.
+				</div>
 				<TokenLookup />
 				<div class="mt-6">
 					{#if clustersQuery.isLoading}
@@ -169,7 +173,7 @@
 		<!-- Right: Pipeline -->
 		<div class="flex flex-col">
 			<div class="px-4 py-2 border-b border-[var(--rule)] flex justify-between items-center text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest bg-[#0A0D14]">
-				<span>Learning Pipeline</span>
+				<span>Learning Pipeline <span class="ml-2 text-[8px] bg-[#60a5fa]/10 text-[#60a5fa] border border-[#60a5fa]/30 px-1.5 py-0.5 rounded normal-case">LIVE FEED</span></span>
 				<span class="text-[var(--live)] animate-pulse flex items-center gap-2">
 					<span class="w-[6px] h-[6px] bg-[var(--live)] rounded-full"></span>
 					evaluating
@@ -186,13 +190,13 @@
 				</button>
 				<div class="text-[#7f848e] mb-6 relative z-10 font-bold">
 					# measuring density anomalies<br/>
-					# mapping to 1536-d semantic space
+					# mapping to 3072-d semantic space
 				</div>
 				<div class="text-[#56b6c2] leading-[1.6] whitespace-pre-wrap flex-1 overflow-y-auto scrollbar-hide text-[12px] relative z-10 transition-all group-hover:brightness-110 font-mono">
 <span class="text-[#c678dd]">class</span> <span class="text-[#e5c07b]">TychoRadar</span>:
     <span class="text-[#c678dd]">def</span> <span class="text-[#61afef]">__init__</span>(self):
-        self.encoder = LLMEmbedder(dim=<span class="text-[#d19a66]">1536</span>)
-        self.space = DBSCAN(eps=<span class="text-[#d19a66]">0.82</span>, metric=<span class="text-[#98c379]">'cosine'</span>)
+        self.encoder = LLMEmbedder(dim=<span class="text-[#d19a66]">3072</span>)
+        self.space = DBSCAN(eps=<span class="text-[#d19a66]">{clustersQuery.data?.similarityThreshold || 0.75}</span>, metric=<span class="text-[#98c379]">'cosine'</span>)
 
     <span class="text-[#c678dd]">def</span> <span class="text-[#61afef]">evaluate_block</span>(self, contracts):
         <span class="text-[#7f848e]"># 1. Extract semantics & embed into high-dimensional space</span>
@@ -229,10 +233,7 @@
 					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">NEXT SCAN</span>
 					<span class="text-white text-[16px] font-bold">{formattedCountdown()}</span>
 				</div>
-				<div class="p-4 flex flex-col gap-2">
-					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">SURVIVAL</span>
-					<span class="text-[var(--live)] text-[16px] font-bold">14.2%</span>
-				</div>
+
 			</div>
 		</div>
 
@@ -340,9 +341,44 @@
 		<div class="bg-[#05070B] border border-[var(--rule)] rounded-[4px] p-[16px] mb-[28px] text-[12px] text-[var(--text-secondary)] overflow-hidden leading-[1.6]">
 			<div class="text-[var(--text-tertiary)] mb-[12px]">// cluster metrics</div>
 			<div class="flex flex-col gap-2">
-				<div class="flex justify-between"><span class="text-[#c678dd]">density_score</span> <span class="text-[#98c379]">{(Math.random() * 0.5 + 0.5).toFixed(4)}</span></div>
-				<div class="flex justify-between"><span class="text-[#c678dd]">silhouette_coeff</span> <span class="text-[#98c379]">{(Math.random() * 0.3 + 0.4).toFixed(4)}</span></div>
-				<div class="flex justify-between"><span class="text-[#c678dd]">spatial_variance</span> <span class="text-[#e5c07b]">0.012</span></div>
+				<div class="flex justify-between">
+					<span class="text-[#56b6c2]">status</span> 
+					<span class="text-[var(--state-active)]">{selectedCluster?.status || 'active'}</span>
+				</div>
+				<div class="flex justify-between">
+					<span class="text-[#56b6c2]">age</span> 
+					<span>{selectedCluster?.createdAt ? Math.floor((Date.now() - new Date(selectedCluster.createdAt).getTime()) / (1000 * 60 * 60)) : 0} hours</span>
+				</div>
+				<div class="flex justify-between">
+					<span class="text-[#56b6c2]">peak_size</span>  
+					<span>{selectedCluster?.peakMemberCount || selectedCluster?.memberCount} members (_{[...new Set(activeTokens.map(t => t.name.toLowerCase().replace(/\s+/g, '')))].length}_ unique)</span>
+				</div>
+				<div class="flex justify-between">
+					<span class="text-[#56b6c2]">peak_growth</span> 
+					<span class="text-[var(--live)]">
+						{#if Number(selectedCluster?.peakGrowthRate) === 999999}
+							new
+						{:else if Number(selectedCluster?.peakGrowthRate) > 0}
+							+{Math.round(Number(selectedCluster?.peakGrowthRate))}%
+						{:else if Number(selectedCluster?.peakGrowthRate) < 0}
+							{Math.round(Number(selectedCluster?.peakGrowthRate))}%
+						{:else}
+							—
+						{/if}
+					</span>
+				</div>
+				<div class="flex justify-between">
+					<span class="text-[#56b6c2]">sparkline</span> 
+					<span class="flex items-end gap-1">
+						{#if selectedCluster?.sparklinePoints && selectedCluster.sparklinePoints.length >= 3}
+							{#each selectedCluster.sparklinePoints as pt}
+								<span class="w-1.5 bg-[var(--live)]" style="height: {Math.max(2, (pt / Math.max(...selectedCluster.sparklinePoints)) * 14)}px; opacity: {pt === 0 ? 0.3 : 1};"></span>
+							{/each}
+						{:else}
+							<span class="text-[var(--text-tertiary)]">--</span>
+						{/if}
+					</span>
+				</div>
 				<div class="flex justify-between mt-3 pt-3 border-t border-[var(--rule)]">
 					<span class="text-[#56b6c2]">assigned_label</span> 
 					<span class="text-white font-bold">"{selectedCluster?.label || selectedCluster?.name}"</span>

@@ -26,7 +26,7 @@ When you are ready to put this online, follow these steps:
 Ensure these are set in your `.env` (for local) and your Vercel Project Settings:
 * `DATABASE_URL`: Transaction-mode pooler string from Supabase.
 * `GEMINI_API_KEY`: Google AI Studio key (for `text-embedding-004` / `gemini-embedding-2`).
-* `CRON_SECRET`: A secure, random string (e.g., `KunciRadarTycho2026`).
+* `CRON_SECRET`: A secure, random string (e.g., `[REDACTED]`).
 
 ### B. Setting up the Cron Job (CRITICAL)
 1. Deploy the site to Vercel (e.g., `https://your-domain.vercel.app`).

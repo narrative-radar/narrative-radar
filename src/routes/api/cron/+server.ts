@@ -5,6 +5,8 @@ import { generateEmbeddingsBatch } from '$lib/server/services/embedding.service.
 import { runClusteringAssignment } from '$lib/server/services/clustering.service.js';
 import * as tokenRepo from '$lib/server/repositories/token.repository.js';
 import type { NewToken } from '$lib/server/db/schema/index.js';
+import { db } from '$lib/server/db/client.js';
+import { cronLogs } from '$lib/server/db/schema/index.js';
 
 export async function GET({ request }) {
 	// [0] SECURITY CHECK
@@ -56,7 +58,7 @@ export async function GET({ request }) {
 		const pendingEmbeds = await tokenRepo.getTokensPendingEmbed();
 		if (pendingEmbeds.length > 0) {
 			// Limit to a reasonable batch size per cron run (e.g., 50) to respect API rate limits
-			const batch = pendingEmbeds.slice(0, 50);
+			const batch = pendingEmbeds.slice(0, 100);
 			const textsToEmbed = batch.map(t => `${t.name} (${t.ticker})`);
 			
 			const vectors = await generateEmbeddingsBatch(textsToEmbed);
@@ -88,6 +90,17 @@ export async function GET({ request }) {
 	}
 
 	console.log('[Cron] Execution finished:', stats);
+
+	try {
+		await db.insert(cronLogs).values({
+			ingested: stats.ingested,
+			embedded: stats.embedded,
+			clustered: stats.clustered,
+			newClusters: stats.newClusters
+		});
+	} catch (e: any) {
+		console.error('[Cron] Failed to save log:', e);
+	}
 
 	// Return 200 OK even if there were sub-stage errors, so the cron scheduler doesn't retry infinitely
 	return json({
