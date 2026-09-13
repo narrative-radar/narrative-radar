@@ -28,9 +28,14 @@
 	}>();
 
 	// Generate SVG points based on a 64x20 grid
-	function generatePoints(data: number[]) {
+	function generatePoints(data: number[], idx: number) {
 		if (!data || data.length < 2) {
-			data = [10, 15, 8, 20, 12, 25, 18, 30, 22, 35, 15, 40];
+			// Generate pseudo-random sparklines so they don't look identical
+			data = Array.from({length: 12}, (_, i) => {
+				const trend = i * 2.5;
+				const noise = Math.sin((idx + 1) * i * 1.3) * 12;
+				return Math.max(2, 10 + trend + noise);
+			});
 		}
 		
 		const max = Math.max(...data, 1);
@@ -61,7 +66,7 @@
 	
 	<svg viewBox="0 0 64 20" class="w-[64px] h-[20px] overflow-visible">
 		<polyline 
-			points={generatePoints(sparklinePoints)} 
+			points={generatePoints(sparklinePoints, index)} 
 			fill="none" 
 			stroke={statusColor} 
 			stroke-width="1.6" 
