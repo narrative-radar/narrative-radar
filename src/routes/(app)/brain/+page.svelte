@@ -156,8 +156,8 @@
 		</div>
 		<div class="text-[11px] font-[var(--font-mono)] text-[var(--text-tertiary)] flex gap-6">
 			<a href="/api/dataset.csv" target="_blank" class="hover:text-[var(--fg)] cursor-crosshair transition-colors underline underline-offset-4">PUBLIC_DATASET.CSV</a>
-			<span class="hover:text-[var(--fg)] cursor-crosshair transition-colors">LAUNCH_SPEC.PDF</span>
-			<span class="hover:text-[var(--fg)] cursor-crosshair transition-colors">WALLET: 0 SOL</span>
+			<!-- <span class="hover:text-[var(--fg)] cursor-crosshair transition-colors">LAUNCH_SPEC.PDF</span>
+			<span class="hover:text-[var(--fg)] cursor-crosshair transition-colors">WALLET: 0 SOL</span> -->
 		</div>
 	</div>
 </div>
