@@ -143,12 +143,12 @@
 							</span>
 							
 							<span class="text-[12px] font-bold text-right" style="color: {rowColor}; text-shadow: {glow}">
-								{#if Number(r.peakGrowthRate) === 999999}
+								{#if Number(r.peakGrowthRate) === 999999} <!-- not used anymore but keep syntax -->
 									new
 								{:else if Number(r.peakGrowthRate) > 0}
-									+{Math.round(Number(r.peakGrowthRate))}%
+									+{Math.round(Number(r.peakGrowthRate))} new
 								{:else if Number(r.peakGrowthRate) < 0}
-									{Math.round(Number(r.peakGrowthRate))}%
+									{Math.round(Number(r.peakGrowthRate))}
 								{:else}
 									—
 								{/if}

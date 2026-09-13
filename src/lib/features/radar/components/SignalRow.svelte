@@ -77,12 +77,12 @@
 	</span>
 	
 	<span class="font-[var(--font-mono)] text-[12.5px] font-semibold text-right" style="color: {statusColor}; text-shadow: {statusGlow || 'none'}">
-		{#if Number(growthRate) === 999999}
+		{#if Number(growthRate) === 999999} <!-- not used anymore but keep syntax -->
 			new
 		{:else if Number(growthRate) > 0}
-			+{Math.round(Number(growthRate))}%
+			+{Math.round(Number(growthRate))} new
 		{:else if Number(growthRate) < 0}
-			{Math.round(Number(growthRate))}%
+			{Math.round(Number(growthRate))}
 		{:else}
 			—
 		{/if}

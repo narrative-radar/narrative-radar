@@ -231,7 +231,7 @@
 				</div>
 				<div class="p-4 border-r border-[var(--rule)] flex flex-col gap-2">
 					<span class="text-[10px] uppercase text-[var(--text-tertiary)]">NEXT SCAN</span>
-					<span class="text-white text-[16px] font-bold">{formattedCountdown()}</span>
+					<span class="text-white text-[16px] font-bold">pending</span>
 				</div>
 
 			</div>
@@ -356,12 +356,12 @@
 				<div class="flex justify-between">
 					<span class="text-[#56b6c2]">peak_growth</span> 
 					<span class="text-[var(--live)]">
-						{#if Number(selectedCluster?.peakGrowthRate) === 999999}
+						{#if Number(selectedCluster?.peakGrowthRate) === 999999} <!-- not used anymore but keep syntax -->
 							new
 						{:else if Number(selectedCluster?.peakGrowthRate) > 0}
-							+{Math.round(Number(selectedCluster?.peakGrowthRate))}%
+							+{Math.round(Number(selectedCluster?.peakGrowthRate))} new
 						{:else if Number(selectedCluster?.peakGrowthRate) < 0}
-							{Math.round(Number(selectedCluster?.peakGrowthRate))}%
+							{Math.round(Number(selectedCluster?.peakGrowthRate))}
 						{:else}
 							—
 						{/if}

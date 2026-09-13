@@ -35,7 +35,7 @@ export async function getActiveClusters(): Promise<Cluster[]> {
 				sql`${clusters.label} != ''`
 			)
 		)
-		.orderBy(desc(clusters.growthRate));
+		.orderBy(desc(clusters.memberCount));
 }
 
 /**
@@ -155,7 +155,7 @@ export async function getBreakoutClusters(): Promise<Cluster[]> {
 				sql`${clusters.label} != ''`
 			)
 		)
-		.orderBy(desc(clusters.archivedAt));
+		.orderBy(desc(clusters.memberCount));
 }
 
 /**

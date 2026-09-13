@@ -15,7 +15,12 @@ export async function generateClusterLabel(tokenNames: string[], tokenTickers: s
 
 	const prompt = `
 	Based on these recent crypto token launches, give me a short, catchy, 2-4 word narrative theme that connects them. 
-	Make it plural. Use lowercase. Examples: "retro game villains", "cat cults", "ai poker bots".
+	Make it plural. Use lowercase. Examples: "dog memes", "tokenized stocks", "chinese memecoins", "ponzi jokes".
+	
+	CRITICAL RULES:
+	- You MUST return 2-4 words.
+	- DO NOT return a single word.
+	- DO NOT just return the raw token name.
 	
 	Tokens:
 	${tokenNames.map((n, i) => `- ${n} (${tokenTickers[i]})`).join('\n')}
