@@ -6,6 +6,8 @@
 
 Tycho is an autonomous macro-narrative radar designed to track, cluster, and label emerging themes in the Solana token ecosystem (specifically focusing on Robinhood). Instead of looking at individual tokens in isolation, Tycho identifies spatial density among newly launched tokens to detect narrative breakouts and metas as they form.
 
+[**X / Twitter**](https://x.com/tychoradarr) | [**Live Dashboard**](https://www.tychoradar.tech/)
+
 ---
 
 ## ⚠️ What Tycho Is & What He Is Not
