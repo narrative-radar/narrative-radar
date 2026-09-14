@@ -17,31 +17,42 @@ export interface IngestedToken {
 export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 	try {
 		// PENGGUNAAN GECKOTERMINAL:
-		// GeckoTerminal punya endpoint khusus 'new_pools' per network (termasuk 'robinhood').
-		// Ini memecahkan masalah DexScreener frontend-api yang didominasi Solana/Ethereum.
-		const response = await fetch('https://api.geckoterminal.com/api/v2/networks/robinhood/new_pools?include=base_token', {
-			method: 'GET',
-			headers: {
-				Accept: 'application/json',
-				'User-Agent': 'TychoRadar/1.0'
-			},
-			signal: AbortSignal.timeout(8000)
-		});
+		// Fetch from both 'new_pools' and 'trending_pools' to ensure we capture
+		// both newly launched tokens AND tokens that have migrated/gained high volume.
+		const [newPoolsRes, trendingPoolsRes] = await Promise.all([
+			fetch('https://api.geckoterminal.com/api/v2/networks/robinhood/new_pools?include=base_token', {
+				method: 'GET',
+				headers: { Accept: 'application/json', 'User-Agent': 'TychoRadar/1.0' },
+				signal: AbortSignal.timeout(8000)
+			}).catch(() => null),
+			fetch('https://api.geckoterminal.com/api/v2/networks/robinhood/trending_pools?include=base_token', {
+				method: 'GET',
+				headers: { Accept: 'application/json', 'User-Agent': 'TychoRadar/1.0' },
+				signal: AbortSignal.timeout(8000)
+			}).catch(() => null)
+		]);
 
-		if (!response.ok) {
-			console.warn(`[GeckoTerminal] API returned ${response.status}: ${response.statusText}`);
-			return [];
-		}
+		const processResponse = async (res: Response | null) => {
+			if (!res || !res.ok) return { data: [], included: [] };
+			const json = await res.json().catch(() => null);
+			if (!json || !json.data || !json.included) return { data: [], included: [] };
+			return json;
+		};
 
-		const data = await response.json();
-		if (!data.data || !data.included) {
-			console.warn('[GeckoTerminal] Unexpected response format (missing data/included arrays)');
+		const newPoolsData = await processResponse(newPoolsRes);
+		const trendingPoolsData = await processResponse(trendingPoolsRes);
+
+		const combinedData = [...trendingPoolsData.data, ...newPoolsData.data];
+		const combinedIncluded = [...trendingPoolsData.included, ...newPoolsData.included];
+
+		if (combinedData.length === 0) {
+			console.warn('[GeckoTerminal] No data found from both endpoints');
 			return [];
 		}
 
 		// Extrak base_token dari array 'included'
 		const tokensMap = new Map();
-		for (const inc of data.included) {
+		for (const inc of combinedIncluded) {
 			if (inc.type === 'token' && inc.attributes) {
 				tokensMap.set(inc.attributes.address.toLowerCase(), inc.attributes);
 			}
@@ -50,7 +61,7 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 		const seenMints = new Set();
 		const result: IngestedToken[] = [];
 
-		for (const pool of data.data) {
+		for (const pool of combinedData) {
 			const relationships = pool.relationships;
 			if (!relationships?.base_token?.data?.id) continue;
 			
@@ -74,7 +85,8 @@ export async function fetchRecentTokens(): Promise<IngestedToken[]> {
 			}
 		}
 
-		return result.slice(0, 30);
+		// Increase slice limit slightly since we are combining two sources
+		return result.slice(0, 50);
 	} catch (error) {
 		console.error('[GeckoTerminal] Network or timeout error fetching tokens:', error);
 		return [];

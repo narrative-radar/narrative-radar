@@ -159,7 +159,7 @@
 		<div class="flex flex-col border-r border-[var(--rule)]">
 			<div class="px-4 py-2 border-b border-[var(--rule)] flex justify-between items-center text-[10px] uppercase text-[var(--text-tertiary)] tracking-widest bg-[#0A0D14]">
 				<span>Ingest Feed / Radar Themes</span>
-				<span>last scan: {lastScanMins()} mins ago · {clustersQuery.data?.latestCronLog?.ingested || 0} tokens ingested</span>
+				<span class="text-[var(--live)]">last scan: {lastScanMins()} mins ago · {clustersQuery.data?.latestCronLog?.ingested || 0} tokens ingested</span>
 			</div>
 			<div class="p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none; -ms-overflow-style: none;">
 				<div class="mb-4 text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider leading-relaxed border-b border-[var(--rule)] pb-4">

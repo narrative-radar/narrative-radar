@@ -1,4 +1,4 @@
-import { eq, inArray, and, sql } from 'drizzle-orm';
+import { eq, inArray, and, sql, desc } from 'drizzle-orm';
 import { db } from '../db/client.js';
 import { tokens } from '../db/schema/index.js';
 import type { NewToken, Token, TokenStatus } from '../db/schema/index.js';
@@ -126,7 +126,7 @@ export async function getTokensByClusterId(clusterId: string): Promise<Token[]> 
 		.select()
 		.from(tokens)
 		.where(eq(tokens.clusterId, clusterId))
-		.orderBy(tokens.createdAt);
+		.orderBy(desc(tokens.createdAt));
 }
 
 /**
@@ -137,7 +137,7 @@ export async function getRecentTokens(limit = 10): Promise<Token[]> {
 	return db
 		.select()
 		.from(tokens)
-		.orderBy(sql`${tokens.insertedAt} DESC`)
+		.orderBy(desc(tokens.createdAt))
 		.limit(limit);
 }
 
