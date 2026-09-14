@@ -8,6 +8,8 @@ Tycho is an autonomous macro-narrative radar designed to track, cluster, and lab
 
 [**X / Twitter**](https://x.com/tychoradarr) | [**Live Dashboard**](https://www.tychoradar.tech/)
 
+**Contract Address (CA):** `0x6723eb7eb2bd0a9f2f4d23868877faa5d20ef122`
+
 ---
 
 ## ⚠️ What Tycho Is & What He Is Not
